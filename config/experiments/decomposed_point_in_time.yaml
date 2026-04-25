@@ -1,0 +1,67 @@
+{
+  "experiment_name": "decomposed_point_in_time",
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk",
+      "growth_lifecycle",
+      "network_position"
+    ],
+    "text": {
+      "method": "minilm",
+      "business_embedding_dim": 384,
+      "risk_embedding_dim": 384
+    }
+  },
+  "assembly": {
+    "dataset_name": "decomposed_point_in_time",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk",
+      "growth_lifecycle",
+      "network_position"
+    ],
+    "metadata_columns": [
+      "cik_str",
+      "title",
+      "search_label"
+    ]
+  },
+  "model": {
+    "name": "autoencoder",
+    "embedding_dim": 16,
+    "hidden_dim": 128,
+    "learning_rate": 0.001,
+    "epochs": 40,
+    "batch_size": 512,
+    "weight_decay": 0.00001,
+    "exclude_columns": [
+      "ticker",
+      "date",
+      "cik_str",
+      "title",
+      "search_label"
+    ]
+  },
+  "pipeline": {
+    "views": true,
+    "gmm": true,
+    "multiview_eval": false,
+    "smoke_test": false
+  },
+  "evaluation": {
+    "enabled": [
+      "clustering",
+      "peers",
+      "relationships",
+      "multiview_peers",
+      "view_comparison"
+    ]
+  }
+}

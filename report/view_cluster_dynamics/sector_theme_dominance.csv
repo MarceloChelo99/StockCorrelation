@@ -1,0 +1,749 @@
+view,year,sector,dominant_theme,dominant_label,dominant_share,n_tickers
+behavioral,2010,Communication Services,theme_20,BK / BRK-B / SO / LIN,0.875,16
+behavioral,2010,Consumer Discretionary,theme_20,BK / BRK-B / SO / LIN,0.8,40
+behavioral,2010,Consumer Staples,theme_20,BK / BRK-B / SO / LIN,1.0,34
+behavioral,2010,Energy,theme_20,BK / BRK-B / SO / LIN,0.9375,16
+behavioral,2010,Financials,theme_20,BK / BRK-B / SO / LIN,0.9230769230769231,65
+behavioral,2010,Health Care,theme_20,BK / BRK-B / SO / LIN,0.9607843137254902,51
+behavioral,2010,Industrials,theme_20,BK / BRK-B / SO / LIN,0.9393939393939394,66
+behavioral,2010,Information Technology,theme_20,BK / BRK-B / SO / LIN,0.8727272727272727,55
+behavioral,2010,Materials,theme_20,BK / BRK-B / SO / LIN,0.9545454545454546,22
+behavioral,2010,Real Estate,theme_20,BK / BRK-B / SO / LIN,0.9655172413793104,29
+behavioral,2010,Utilities,theme_20,BK / BRK-B / SO / LIN,1.0,29
+behavioral,2011,Communication Services,theme_12,OKE / MSI / BKR / DE,0.4117647058823529,17
+behavioral,2011,Consumer Discretionary,theme_18,VZ / VST / DECK / GNRC,0.35714285714285715,42
+behavioral,2011,Consumer Staples,theme_26,KIM / CB / TRV / AEP,0.20588235294117646,34
+behavioral,2011,Energy,theme_18,VZ / VST / DECK / GNRC,0.4117647058823529,17
+behavioral,2011,Financials,theme_18,VZ / VST / DECK / GNRC,0.4117647058823529,68
+behavioral,2011,Health Care,theme_12,OKE / MSI / BKR / DE,0.29411764705882354,51
+behavioral,2011,Industrials,theme_18,VZ / VST / DECK / GNRC,0.4925373134328358,67
+behavioral,2011,Information Technology,theme_18,VZ / VST / DECK / GNRC,0.35714285714285715,56
+behavioral,2011,Materials,theme_18,VZ / VST / DECK / GNRC,0.391304347826087,23
+behavioral,2011,Real Estate,theme_12,OKE / MSI / BKR / DE,0.5517241379310345,29
+behavioral,2011,Utilities,theme_26,KIM / CB / TRV / AEP,0.41379310344827586,29
+behavioral,2012,Communication Services,theme_22,MCD / FE / KO / PEG,0.23529411764705882,17
+behavioral,2012,Consumer Discretionary,theme_7,COO / DG / DXCM / BBY,0.20930232558139536,43
+behavioral,2012,Consumer Staples,theme_22,MCD / FE / KO / PEG,0.5294117647058824,34
+behavioral,2012,Energy,theme_2,STE / HSIC / AIZ / VLTO,0.21052631578947367,19
+behavioral,2012,Financials,theme_22,MCD / FE / KO / PEG,0.2028985507246377,69
+behavioral,2012,Health Care,theme_22,MCD / FE / KO / PEG,0.15384615384615385,52
+behavioral,2012,Industrials,theme_26,KIM / CB / TRV / AEP,0.18840579710144928,69
+behavioral,2012,Information Technology,theme_29,PHM / CMG / CI / LEN,0.14285714285714285,56
+behavioral,2012,Materials,theme_3,L / REG / O / WRB,0.13043478260869565,23
+behavioral,2012,Real Estate,theme_3,L / REG / O / WRB,0.6551724137931034,29
+behavioral,2012,Utilities,theme_3,L / REG / O / WRB,0.4827586206896552,29
+behavioral,2013,Communication Services,theme_26,KIM / CB / TRV / AEP,0.16666666666666666,18
+behavioral,2013,Consumer Discretionary,theme_2,STE / HSIC / AIZ / VLTO,0.16279069767441862,43
+behavioral,2013,Consumer Staples,theme_26,KIM / CB / TRV / AEP,0.3235294117647059,34
+behavioral,2013,Energy,theme_37,CHTR / PWR / FANG / GRMN,0.19047619047619047,21
+behavioral,2013,Financials,theme_26,KIM / CB / TRV / AEP,0.2898550724637681,69
+behavioral,2013,Health Care,theme_22,MCD / FE / KO / PEG,0.16981132075471697,53
+behavioral,2013,Industrials,theme_3,L / REG / O / WRB,0.2463768115942029,69
+behavioral,2013,Information Technology,theme_10,ROST / BALL / EG / DLR,0.11666666666666667,60
+behavioral,2013,Materials,theme_3,L / REG / O / WRB,0.16666666666666666,24
+behavioral,2013,Real Estate,theme_22,MCD / FE / KO / PEG,0.3793103448275862,29
+behavioral,2013,Utilities,theme_22,MCD / FE / KO / PEG,0.5517241379310345,29
+behavioral,2014,Communication Services,theme_12,OKE / MSI / BKR / DE,0.15,20
+behavioral,2014,Consumer Discretionary,theme_12,OKE / MSI / BKR / DE,0.2222222222222222,45
+behavioral,2014,Consumer Staples,theme_26,KIM / CB / TRV / AEP,0.2647058823529412,34
+behavioral,2014,Energy,theme_32,NVR / AVY / HD / WFC,0.19047619047619047,21
+behavioral,2014,Financials,theme_3,L / REG / O / WRB,0.37681159420289856,69
+behavioral,2014,Health Care,theme_26,KIM / CB / TRV / AEP,0.2727272727272727,55
+behavioral,2014,Industrials,theme_26,KIM / CB / TRV / AEP,0.34285714285714286,70
+behavioral,2014,Information Technology,theme_12,OKE / MSI / BKR / DE,0.2459016393442623,61
+behavioral,2014,Materials,theme_26,KIM / CB / TRV / AEP,0.20833333333333334,24
+behavioral,2014,Real Estate,theme_26,KIM / CB / TRV / AEP,0.6206896551724138,29
+behavioral,2014,Utilities,theme_10,ROST / BALL / EG / DLR,0.3793103448275862,29
+behavioral,2015,Communication Services,theme_1,GD / DOC / AWK / JNJ,0.15,20
+behavioral,2015,Consumer Discretionary,theme_12,OKE / MSI / BKR / DE,0.17777777777777778,45
+behavioral,2015,Consumer Staples,theme_26,KIM / CB / TRV / AEP,0.35294117647058826,34
+behavioral,2015,Energy,theme_4,APTV / PSX / EQT / NRG,0.3333333333333333,21
+behavioral,2015,Financials,theme_33,FAST / CME / ADM / KMB,0.4583333333333333,72
+behavioral,2015,Health Care,theme_12,OKE / MSI / BKR / DE,0.16363636363636364,55
+behavioral,2015,Industrials,theme_33,FAST / CME / ADM / KMB,0.17142857142857143,70
+behavioral,2015,Information Technology,theme_12,OKE / MSI / BKR / DE,0.15873015873015872,63
+behavioral,2015,Materials,theme_12,OKE / MSI / BKR / DE,0.20833333333333334,24
+behavioral,2015,Real Estate,theme_26,KIM / CB / TRV / AEP,0.5517241379310345,29
+behavioral,2015,Utilities,theme_3,L / REG / O / WRB,0.3448275862068966,29
+behavioral,2016,Communication Services,theme_22,MCD / FE / KO / PEG,0.2,20
+behavioral,2016,Consumer Discretionary,theme_7,COO / DG / DXCM / BBY,0.13333333333333333,45
+behavioral,2016,Consumer Staples,theme_22,MCD / FE / KO / PEG,0.22857142857142856,35
+behavioral,2016,Energy,theme_18,VZ / VST / DECK / GNRC,0.19047619047619047,21
+behavioral,2016,Financials,theme_6,BG / TRGP / KVUE / HAL,0.16216216216216217,74
+behavioral,2016,Health Care,theme_2,STE / HSIC / AIZ / VLTO,0.38181818181818183,55
+behavioral,2016,Industrials,theme_12,OKE / MSI / BKR / DE,0.17142857142857143,70
+behavioral,2016,Information Technology,theme_7,COO / DG / DXCM / BBY,0.13636363636363635,66
+behavioral,2016,Materials,theme_22,MCD / FE / KO / PEG,0.125,24
+behavioral,2016,Real Estate,theme_35,INVH / MTB / PNC / AVB,0.4827586206896552,29
+behavioral,2016,Utilities,theme_35,INVH / MTB / PNC / AVB,0.5517241379310345,29
+behavioral,2017,Communication Services,theme_32,NVR / AVY / HD / WFC,0.14285714285714285,21
+behavioral,2017,Consumer Discretionary,theme_30,UHS / CTSH / LDOS / HII,0.1111111111111111,45
+behavioral,2017,Consumer Staples,theme_3,L / REG / O / WRB,0.2857142857142857,35
+behavioral,2017,Energy,theme_10,ROST / BALL / EG / DLR,0.23809523809523808,21
+behavioral,2017,Financials,theme_22,MCD / FE / KO / PEG,0.2972972972972973,74
+behavioral,2017,Health Care,theme_22,MCD / FE / KO / PEG,0.2,55
+behavioral,2017,Industrials,theme_3,L / REG / O / WRB,0.19444444444444445,72
+behavioral,2017,Information Technology,theme_1,GD / DOC / AWK / JNJ,0.14925373134328357,67
+behavioral,2017,Materials,theme_3,L / REG / O / WRB,0.20833333333333334,24
+behavioral,2017,Real Estate,theme_22,MCD / FE / KO / PEG,0.41379310344827586,29
+behavioral,2017,Utilities,theme_22,MCD / FE / KO / PEG,0.5666666666666667,30
+behavioral,2018,Communication Services,theme_30,UHS / CTSH / LDOS / HII,0.3333333333333333,21
+behavioral,2018,Consumer Discretionary,theme_30,UHS / CTSH / LDOS / HII,0.21739130434782608,46
+behavioral,2018,Consumer Staples,theme_33,FAST / CME / ADM / KMB,0.22857142857142856,35
+behavioral,2018,Energy,theme_4,APTV / PSX / EQT / NRG,0.3333333333333333,21
+behavioral,2018,Financials,theme_28,NOC / LMT / CLX / RTX,0.3918918918918919,74
+behavioral,2018,Health Care,theme_28,NOC / LMT / CLX / RTX,0.2909090909090909,55
+behavioral,2018,Industrials,theme_28,NOC / LMT / CLX / RTX,0.547945205479452,73
+behavioral,2018,Information Technology,theme_30,UHS / CTSH / LDOS / HII,0.31343283582089554,67
+behavioral,2018,Materials,theme_30,UHS / CTSH / LDOS / HII,0.375,24
+behavioral,2018,Real Estate,theme_33,FAST / CME / ADM / KMB,0.5666666666666667,30
+behavioral,2018,Utilities,theme_33,FAST / CME / ADM / KMB,0.6333333333333333,30
+behavioral,2019,Communication Services,theme_24,EA / BDX / KDP / PFE,0.14285714285714285,21
+behavioral,2019,Consumer Discretionary,theme_2,STE / HSIC / AIZ / VLTO,0.17391304347826086,46
+behavioral,2019,Consumer Staples,theme_22,MCD / FE / KO / PEG,0.2,35
+behavioral,2019,Energy,theme_21,POOL / WAT / GPC / CBRE,0.19047619047619047,21
+behavioral,2019,Financials,theme_26,KIM / CB / TRV / AEP,0.1891891891891892,74
+behavioral,2019,Health Care,theme_12,OKE / MSI / BKR / DE,0.16071428571428573,56
+behavioral,2019,Industrials,theme_12,OKE / MSI / BKR / DE,0.1891891891891892,74
+behavioral,2019,Information Technology,theme_12,OKE / MSI / BKR / DE,0.1044776119402985,67
+behavioral,2019,Materials,theme_26,KIM / CB / TRV / AEP,0.20833333333333334,24
+behavioral,2019,Real Estate,theme_22,MCD / FE / KO / PEG,0.5483870967741935,31
+behavioral,2019,Utilities,theme_3,L / REG / O / WRB,0.5666666666666667,30
+behavioral,2020,Communication Services,theme_18,VZ / VST / DECK / GNRC,0.2608695652173913,23
+behavioral,2020,Consumer Discretionary,theme_19,LULU / REGN / IDXX / DXCM,0.2826086956521739,46
+behavioral,2020,Consumer Staples,theme_19,LULU / REGN / IDXX / DXCM,0.3142857142857143,35
+behavioral,2020,Energy,theme_9,DVA / KEYS / LYB / CF,0.3333333333333333,21
+behavioral,2020,Financials,theme_14,FSLR / ALGN / FISV / MRNA,0.33783783783783783,74
+behavioral,2020,Health Care,theme_19,LULU / REGN / IDXX / DXCM,0.30357142857142855,56
+behavioral,2020,Industrials,theme_19,LULU / REGN / IDXX / DXCM,0.41333333333333333,75
+behavioral,2020,Information Technology,theme_19,LULU / REGN / IDXX / DXCM,0.30434782608695654,69
+behavioral,2020,Materials,theme_19,LULU / REGN / IDXX / DXCM,0.46153846153846156,26
+behavioral,2020,Real Estate,theme_19,LULU / REGN / IDXX / DXCM,0.41935483870967744,31
+behavioral,2020,Utilities,theme_19,LULU / REGN / IDXX / DXCM,0.8,30
+behavioral,2021,Communication Services,theme_32,NVR / AVY / HD / WFC,0.13043478260869565,23
+behavioral,2021,Consumer Discretionary,theme_5,MAS / ADI / BA / NTRS,0.20833333333333334,48
+behavioral,2021,Consumer Staples,theme_31,ETR / HLT / AME / WAB,0.34285714285714286,35
+behavioral,2021,Energy,theme_29,PHM / CMG / CI / LEN,0.3333333333333333,21
+behavioral,2021,Financials,theme_32,NVR / AVY / HD / WFC,0.14864864864864866,74
+behavioral,2021,Health Care,theme_31,ETR / HLT / AME / WAB,0.23214285714285715,56
+behavioral,2021,Industrials,theme_10,ROST / BALL / EG / DLR,0.35064935064935066,77
+behavioral,2021,Information Technology,theme_37,CHTR / PWR / FANG / GRMN,0.15714285714285714,70
+behavioral,2021,Materials,theme_10,ROST / BALL / EG / DLR,0.3076923076923077,26
+behavioral,2021,Real Estate,theme_31,ETR / HLT / AME / WAB,0.5806451612903226,31
+behavioral,2021,Utilities,theme_35,INVH / MTB / PNC / AVB,0.5333333333333333,30
+behavioral,2022,Communication Services,theme_18,VZ / VST / DECK / GNRC,0.30434782608695654,23
+behavioral,2022,Consumer Discretionary,theme_18,VZ / VST / DECK / GNRC,0.4791666666666667,48
+behavioral,2022,Consumer Staples,theme_12,OKE / MSI / BKR / DE,0.2857142857142857,35
+behavioral,2022,Energy,theme_18,VZ / VST / DECK / GNRC,0.4090909090909091,22
+behavioral,2022,Financials,theme_18,VZ / VST / DECK / GNRC,0.5,76
+behavioral,2022,Health Care,theme_12,OKE / MSI / BKR / DE,0.32142857142857145,56
+behavioral,2022,Industrials,theme_18,VZ / VST / DECK / GNRC,0.4155844155844156,77
+behavioral,2022,Information Technology,theme_18,VZ / VST / DECK / GNRC,0.5915492957746479,71
+behavioral,2022,Materials,theme_18,VZ / VST / DECK / GNRC,0.5769230769230769,26
+behavioral,2022,Real Estate,theme_30,UHS / CTSH / LDOS / HII,0.41935483870967744,31
+behavioral,2022,Utilities,theme_12,OKE / MSI / BKR / DE,0.7,30
+behavioral,2023,Communication Services,theme_34,AXON / TTD / NCLH / COIN,0.17391304347826086,23
+behavioral,2023,Consumer Discretionary,theme_35,INVH / MTB / PNC / AVB,0.10416666666666667,48
+behavioral,2023,Consumer Staples,theme_3,L / REG / O / WRB,0.2,35
+behavioral,2023,Energy,theme_24,EA / BDX / KDP / PFE,0.22727272727272727,22
+behavioral,2023,Financials,theme_10,ROST / BALL / EG / DLR,0.25,76
+behavioral,2023,Health Care,theme_35,INVH / MTB / PNC / AVB,0.19298245614035087,57
+behavioral,2023,Industrials,theme_10,ROST / BALL / EG / DLR,0.2987012987012987,77
+behavioral,2023,Information Technology,theme_10,ROST / BALL / EG / DLR,0.15492957746478872,71
+behavioral,2023,Materials,theme_26,KIM / CB / TRV / AEP,0.11538461538461539,26
+behavioral,2023,Real Estate,theme_5,MAS / ADI / BA / NTRS,0.22580645161290322,31
+behavioral,2023,Utilities,theme_26,KIM / CB / TRV / AEP,0.45161290322580644,31
+behavioral,2024,Communication Services,theme_12,OKE / MSI / BKR / DE,0.17391304347826086,23
+behavioral,2024,Consumer Discretionary,theme_1,GD / DOC / AWK / JNJ,0.14583333333333334,48
+behavioral,2024,Consumer Staples,theme_1,GD / DOC / AWK / JNJ,0.3333333333333333,36
+behavioral,2024,Energy,theme_30,UHS / CTSH / LDOS / HII,0.2727272727272727,22
+behavioral,2024,Financials,theme_1,GD / DOC / AWK / JNJ,0.25,76
+behavioral,2024,Health Care,theme_30,UHS / CTSH / LDOS / HII,0.2631578947368421,57
+behavioral,2024,Industrials,theme_1,GD / DOC / AWK / JNJ,0.2948717948717949,78
+behavioral,2024,Information Technology,theme_1,GD / DOC / AWK / JNJ,0.14084507042253522,71
+behavioral,2024,Materials,theme_1,GD / DOC / AWK / JNJ,0.3076923076923077,26
+behavioral,2024,Real Estate,theme_1,GD / DOC / AWK / JNJ,0.5161290322580645,31
+behavioral,2024,Utilities,theme_1,GD / DOC / AWK / JNJ,0.5806451612903226,31
+behavioral,2025,Communication Services,theme_2,STE / HSIC / AIZ / VLTO,0.13043478260869565,23
+behavioral,2025,Consumer Discretionary,theme_18,VZ / VST / DECK / GNRC,0.10416666666666667,48
+behavioral,2025,Consumer Staples,theme_1,GD / DOC / AWK / JNJ,0.2222222222222222,36
+behavioral,2025,Energy,theme_19,LULU / REGN / IDXX / DXCM,0.18181818181818182,22
+behavioral,2025,Financials,theme_24,EA / BDX / KDP / PFE,0.21052631578947367,76
+behavioral,2025,Health Care,theme_1,GD / DOC / AWK / JNJ,0.15517241379310345,58
+behavioral,2025,Industrials,theme_24,EA / BDX / KDP / PFE,0.21518987341772153,79
+behavioral,2025,Information Technology,theme_34,AXON / TTD / NCLH / COIN,0.1267605633802817,71
+behavioral,2025,Materials,theme_24,EA / BDX / KDP / PFE,0.19230769230769232,26
+behavioral,2025,Real Estate,theme_24,EA / BDX / KDP / PFE,0.45161290322580644,31
+behavioral,2025,Utilities,theme_22,MCD / FE / KO / PEG,0.4838709677419355,31
+behavioral,2026,Communication Services,theme_21,POOL / WAT / GPC / CBRE,0.21739130434782608,23
+behavioral,2026,Consumer Discretionary,theme_32,NVR / AVY / HD / WFC,0.1875,48
+behavioral,2026,Consumer Staples,theme_32,NVR / AVY / HD / WFC,0.16666666666666666,36
+behavioral,2026,Energy,theme_37,CHTR / PWR / FANG / GRMN,0.36363636363636365,22
+behavioral,2026,Financials,theme_21,POOL / WAT / GPC / CBRE,0.21052631578947367,76
+behavioral,2026,Health Care,theme_32,NVR / AVY / HD / WFC,0.15517241379310345,58
+behavioral,2026,Industrials,theme_32,NVR / AVY / HD / WFC,0.13924050632911392,79
+behavioral,2026,Information Technology,theme_25,WDC / SNDK / LITE / CIEN,0.16666666666666666,72
+behavioral,2026,Materials,theme_32,NVR / AVY / HD / WFC,0.15384615384615385,26
+behavioral,2026,Real Estate,theme_35,INVH / MTB / PNC / AVB,0.25806451612903225,31
+behavioral,2026,Utilities,theme_22,MCD / FE / KO / PEG,0.25806451612903225,31
+business,2010,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,16
+business,2010,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,40
+business,2010,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2010,Energy,theme_0,EXPE / CINF / A / NI,1.0,16
+business,2010,Financials,theme_0,EXPE / CINF / A / NI,1.0,65
+business,2010,Health Care,theme_0,EXPE / CINF / A / NI,1.0,51
+business,2010,Industrials,theme_0,EXPE / CINF / A / NI,1.0,66
+business,2010,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2010,Materials,theme_0,EXPE / CINF / A / NI,1.0,22
+business,2010,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2010,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2011,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,17
+business,2011,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,42
+business,2011,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2011,Energy,theme_0,EXPE / CINF / A / NI,1.0,17
+business,2011,Financials,theme_0,EXPE / CINF / A / NI,1.0,68
+business,2011,Health Care,theme_0,EXPE / CINF / A / NI,1.0,51
+business,2011,Industrials,theme_0,EXPE / CINF / A / NI,1.0,67
+business,2011,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2011,Materials,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2011,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2011,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2012,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,17
+business,2012,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,43
+business,2012,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2012,Energy,theme_0,EXPE / CINF / A / NI,1.0,19
+business,2012,Financials,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2012,Health Care,theme_0,EXPE / CINF / A / NI,1.0,52
+business,2012,Industrials,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2012,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2012,Materials,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2012,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2012,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2013,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,18
+business,2013,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,43
+business,2013,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2013,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2013,Financials,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2013,Health Care,theme_0,EXPE / CINF / A / NI,1.0,53
+business,2013,Industrials,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2013,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,60
+business,2013,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2013,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2013,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2014,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,20
+business,2014,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,45
+business,2014,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2014,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2014,Financials,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2014,Health Care,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2014,Industrials,theme_0,EXPE / CINF / A / NI,1.0,70
+business,2014,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,61
+business,2014,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2014,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2014,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2015,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,20
+business,2015,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,45
+business,2015,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,34
+business,2015,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2015,Financials,theme_0,EXPE / CINF / A / NI,1.0,72
+business,2015,Health Care,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2015,Industrials,theme_0,EXPE / CINF / A / NI,1.0,70
+business,2015,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,63
+business,2015,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2015,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2015,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2016,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,20
+business,2016,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,45
+business,2016,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2016,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2016,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2016,Health Care,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2016,Industrials,theme_0,EXPE / CINF / A / NI,1.0,70
+business,2016,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,66
+business,2016,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2016,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2016,Utilities,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2017,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2017,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,45
+business,2017,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2017,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2017,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2017,Health Care,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2017,Industrials,theme_0,EXPE / CINF / A / NI,1.0,72
+business,2017,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,67
+business,2017,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2017,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,29
+business,2017,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2018,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2018,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,46
+business,2018,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2018,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2018,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2018,Health Care,theme_0,EXPE / CINF / A / NI,1.0,55
+business,2018,Industrials,theme_0,EXPE / CINF / A / NI,1.0,73
+business,2018,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,67
+business,2018,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2018,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2018,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2019,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2019,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,46
+business,2019,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2019,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2019,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2019,Health Care,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2019,Industrials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2019,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,67
+business,2019,Materials,theme_0,EXPE / CINF / A / NI,1.0,24
+business,2019,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2019,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2020,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2020,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,46
+business,2020,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2020,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2020,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2020,Health Care,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2020,Industrials,theme_0,EXPE / CINF / A / NI,1.0,75
+business,2020,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,69
+business,2020,Materials,theme_0,EXPE / CINF / A / NI,1.0,26
+business,2020,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2020,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2021,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2021,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,48
+business,2021,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2021,Energy,theme_0,EXPE / CINF / A / NI,1.0,21
+business,2021,Financials,theme_0,EXPE / CINF / A / NI,1.0,74
+business,2021,Health Care,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2021,Industrials,theme_0,EXPE / CINF / A / NI,1.0,77
+business,2021,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,70
+business,2021,Materials,theme_0,EXPE / CINF / A / NI,1.0,26
+business,2021,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2021,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2022,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2022,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,48
+business,2022,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2022,Energy,theme_0,EXPE / CINF / A / NI,1.0,22
+business,2022,Financials,theme_0,EXPE / CINF / A / NI,1.0,76
+business,2022,Health Care,theme_0,EXPE / CINF / A / NI,1.0,56
+business,2022,Industrials,theme_0,EXPE / CINF / A / NI,1.0,77
+business,2022,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,71
+business,2022,Materials,theme_0,EXPE / CINF / A / NI,1.0,26
+business,2022,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2022,Utilities,theme_0,EXPE / CINF / A / NI,1.0,30
+business,2023,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2023,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,48
+business,2023,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,35
+business,2023,Energy,theme_0,EXPE / CINF / A / NI,1.0,22
+business,2023,Financials,theme_0,EXPE / CINF / A / NI,1.0,76
+business,2023,Health Care,theme_0,EXPE / CINF / A / NI,1.0,57
+business,2023,Industrials,theme_0,EXPE / CINF / A / NI,1.0,77
+business,2023,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,71
+business,2023,Materials,theme_0,EXPE / CINF / A / NI,1.0,26
+business,2023,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2023,Utilities,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2024,Communication Services,theme_0,EXPE / CINF / A / NI,1.0,23
+business,2024,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,1.0,48
+business,2024,Consumer Staples,theme_0,EXPE / CINF / A / NI,1.0,36
+business,2024,Energy,theme_0,EXPE / CINF / A / NI,1.0,22
+business,2024,Financials,theme_0,EXPE / CINF / A / NI,1.0,76
+business,2024,Health Care,theme_0,EXPE / CINF / A / NI,1.0,57
+business,2024,Industrials,theme_0,EXPE / CINF / A / NI,1.0,78
+business,2024,Information Technology,theme_0,EXPE / CINF / A / NI,1.0,71
+business,2024,Materials,theme_0,EXPE / CINF / A / NI,1.0,26
+business,2024,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2024,Utilities,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2025,Communication Services,theme_0,EXPE / CINF / A / NI,0.6956521739130435,23
+business,2025,Consumer Discretionary,theme_0,EXPE / CINF / A / NI,0.8333333333333334,48
+business,2025,Consumer Staples,theme_0,EXPE / CINF / A / NI,0.6388888888888888,36
+business,2025,Energy,theme_0,EXPE / CINF / A / NI,1.0,22
+business,2025,Financials,theme_0,EXPE / CINF / A / NI,0.9342105263157895,76
+business,2025,Health Care,theme_0,EXPE / CINF / A / NI,0.8275862068965517,58
+business,2025,Industrials,theme_0,EXPE / CINF / A / NI,0.8227848101265823,79
+business,2025,Information Technology,theme_0,EXPE / CINF / A / NI,0.5352112676056338,71
+business,2025,Materials,theme_0,EXPE / CINF / A / NI,0.9230769230769231,26
+business,2025,Real Estate,theme_0,EXPE / CINF / A / NI,1.0,31
+business,2025,Utilities,theme_0,EXPE / CINF / A / NI,0.967741935483871,31
+business,2026,Communication Services,theme_28,FICO / TMUS / PSKY / CHTR,0.34782608695652173,23
+business,2026,Consumer Discretionary,theme_24,LYV / WBD / TJX / CCI,0.20833333333333334,48
+business,2026,Consumer Staples,theme_11,BF-B / GIS / DPZ / KHC,0.2222222222222222,36
+business,2026,Energy,theme_23,EVRG / WEC / CVX / EXE,0.4090909090909091,22
+business,2026,Financials,theme_25,USB / HST / WYNN / IVZ,0.18421052631578946,76
+business,2026,Health Care,theme_4,LH / PFE / BSX / VTRS,0.5172413793103449,58
+business,2026,Industrials,theme_29,V / KLAC / DELL / HUBB,0.1518987341772152,79
+business,2026,Information Technology,theme_13,LITE / SMCI / PLTR / CRM,0.2222222222222222,72
+business,2026,Materials,theme_19,APA / LYB / GNRC / OXY,0.2692307692307692,26
+business,2026,Real Estate,theme_17,AVB / EQR / EXR / BXP,0.45161290322580644,31
+business,2026,Utilities,theme_8,PCG / PNW / PEG / ATO,0.6129032258064516,31
+growth,2010,Communication Services,theme_24,CRH / BLK / SW / GEV,0.42857142857142855,7
+growth,2010,Consumer Discretionary,theme_14,GEHC / SOLV / PSKY / CRH,0.3684210526315789,19
+growth,2010,Consumer Staples,theme_14,GEHC / SOLV / PSKY / CRH,0.5,22
+growth,2010,Energy,theme_14,GEHC / SOLV / PSKY / CRH,0.38461538461538464,13
+growth,2010,Financials,theme_24,CRH / BLK / SW / GEV,0.6304347826086957,46
+growth,2010,Health Care,theme_14,GEHC / SOLV / PSKY / CRH,0.26666666666666666,30
+growth,2010,Industrials,theme_14,GEHC / SOLV / PSKY / CRH,0.45,40
+growth,2010,Information Technology,theme_8,SNDK / KVUE / VLTO / BLK,0.24242424242424243,33
+growth,2010,Materials,theme_14,GEHC / SOLV / PSKY / CRH,0.45454545454545453,11
+growth,2010,Real Estate,theme_14,GEHC / SOLV / PSKY / CRH,0.75,12
+growth,2010,Utilities,theme_14,GEHC / SOLV / PSKY / CRH,0.6842105263157895,19
+growth,2011,Communication Services,theme_31,VLTO / SOLV / TKO / KVUE,0.2,10
+growth,2011,Consumer Discretionary,theme_13,SNDK / BG / KVUE / GEV,0.2894736842105263,38
+growth,2011,Consumer Staples,theme_13,SNDK / BG / KVUE / GEV,0.3125,32
+growth,2011,Energy,theme_24,CRH / BLK / SW / GEV,0.3076923076923077,13
+growth,2011,Financials,theme_24,CRH / BLK / SW / GEV,0.4603174603174603,63
+growth,2011,Health Care,theme_13,SNDK / BG / KVUE / GEV,0.20454545454545456,44
+growth,2011,Industrials,theme_39,VLTO / SOLV / GEHC / KVUE,0.26666666666666666,60
+growth,2011,Information Technology,theme_8,SNDK / KVUE / VLTO / BLK,0.3,50
+growth,2011,Materials,theme_39,VLTO / SOLV / GEHC / KVUE,0.3333333333333333,18
+growth,2011,Real Estate,theme_39,VLTO / SOLV / GEHC / KVUE,0.52,25
+growth,2011,Utilities,theme_14,GEHC / SOLV / PSKY / CRH,0.46153846153846156,26
+growth,2012,Communication Services,theme_13,SNDK / BG / KVUE / GEV,0.18181818181818182,11
+growth,2012,Consumer Discretionary,theme_13,SNDK / BG / KVUE / GEV,0.2619047619047619,42
+growth,2012,Consumer Staples,theme_13,SNDK / BG / KVUE / GEV,0.21212121212121213,33
+growth,2012,Energy,theme_24,CRH / BLK / SW / GEV,0.25,16
+growth,2012,Financials,theme_24,CRH / BLK / SW / GEV,0.4393939393939394,66
+growth,2012,Health Care,theme_13,SNDK / BG / KVUE / GEV,0.1702127659574468,47
+growth,2012,Industrials,theme_39,VLTO / SOLV / GEHC / KVUE,0.25,68
+growth,2012,Information Technology,theme_13,SNDK / BG / KVUE / GEV,0.24074074074074073,54
+growth,2012,Materials,theme_13,SNDK / BG / KVUE / GEV,0.2777777777777778,18
+growth,2012,Real Estate,theme_39,VLTO / SOLV / GEHC / KVUE,0.2857142857142857,28
+growth,2012,Utilities,theme_36,GEV / SW / CRH / BG,0.42857142857142855,28
+growth,2013,Communication Services,theme_36,GEV / SW / CRH / BG,0.23076923076923078,13
+growth,2013,Consumer Discretionary,theme_13,SNDK / BG / KVUE / GEV,0.13953488372093023,43
+growth,2013,Consumer Staples,theme_39,VLTO / SOLV / GEHC / KVUE,0.15151515151515152,33
+growth,2013,Energy,theme_21,XYZ / EQR / HAL / TJX,0.16666666666666666,18
+growth,2013,Financials,theme_4,TFC / STT / PNC / FITB,0.22727272727272727,66
+growth,2013,Health Care,theme_28,FIS / WDC / HUBB / APP,0.14583333333333334,48
+growth,2013,Industrials,theme_28,FIS / WDC / HUBB / APP,0.11594202898550725,69
+growth,2013,Information Technology,theme_31,VLTO / SOLV / TKO / KVUE,0.1896551724137931,58
+growth,2013,Materials,theme_10,IFF / KMI / LIN / PSX,0.21052631578947367,19
+growth,2013,Real Estate,theme_39,VLTO / SOLV / GEHC / KVUE,0.2413793103448276,29
+growth,2013,Utilities,theme_6,APD / MLM / ETR / AWK,0.21428571428571427,28
+growth,2014,Communication Services,theme_38,ANET / PODD / FFIV / MSI,0.21428571428571427,14
+growth,2014,Consumer Discretionary,theme_0,WAT / ULTA / ALLE / ODFL,0.20454545454545456,44
+growth,2014,Consumer Staples,theme_0,WAT / ULTA / ALLE / ODFL,0.15151515151515152,33
+growth,2014,Energy,theme_10,IFF / KMI / LIN / PSX,0.1111111111111111,18
+growth,2014,Financials,theme_4,TFC / STT / PNC / FITB,0.31343283582089554,67
+growth,2014,Health Care,theme_18,CAH / STLD / EXR / KIM,0.1568627450980392,51
+growth,2014,Industrials,theme_0,WAT / ULTA / ALLE / ODFL,0.17391304347826086,69
+growth,2014,Information Technology,theme_9,DDOG / SNPS / INCY / REGN,0.18333333333333332,60
+growth,2014,Materials,theme_0,WAT / ULTA / ALLE / ODFL,0.21052631578947367,19
+growth,2014,Real Estate,theme_0,WAT / ULTA / ALLE / ODFL,0.2413793103448276,29
+growth,2014,Utilities,theme_21,XYZ / EQR / HAL / TJX,0.2857142857142857,28
+growth,2015,Communication Services,theme_23,TTD / TPL / MA / VRSN,0.14285714285714285,14
+growth,2015,Consumer Discretionary,theme_23,TTD / TPL / MA / VRSN,0.17777777777777778,45
+growth,2015,Consumer Staples,theme_21,XYZ / EQR / HAL / TJX,0.21212121212121213,33
+growth,2015,Energy,theme_10,IFF / KMI / LIN / PSX,0.2777777777777778,18
+growth,2015,Financials,theme_4,TFC / STT / PNC / FITB,0.3,70
+growth,2015,Health Care,theme_18,CAH / STLD / EXR / KIM,0.15384615384615385,52
+growth,2015,Industrials,theme_23,TTD / TPL / MA / VRSN,0.18571428571428572,70
+growth,2015,Information Technology,theme_9,DDOG / SNPS / INCY / REGN,0.1774193548387097,62
+growth,2015,Materials,theme_18,CAH / STLD / EXR / KIM,0.3157894736842105,19
+growth,2015,Real Estate,theme_0,WAT / ULTA / ALLE / ODFL,0.27586206896551724,29
+growth,2015,Utilities,theme_21,XYZ / EQR / HAL / TJX,0.35714285714285715,28
+growth,2016,Communication Services,theme_38,ANET / PODD / FFIV / MSI,0.2,15
+growth,2016,Consumer Discretionary,theme_0,WAT / ULTA / ALLE / ODFL,0.17777777777777778,45
+growth,2016,Consumer Staples,theme_21,XYZ / EQR / HAL / TJX,0.20588235294117646,34
+growth,2016,Energy,theme_10,IFF / KMI / LIN / PSX,0.3333333333333333,18
+growth,2016,Financials,theme_4,TFC / STT / PNC / FITB,0.29577464788732394,71
+growth,2016,Health Care,theme_18,CAH / STLD / EXR / KIM,0.15384615384615385,52
+growth,2016,Industrials,theme_23,TTD / TPL / MA / VRSN,0.24285714285714285,70
+growth,2016,Information Technology,theme_9,DDOG / SNPS / INCY / REGN,0.16923076923076924,65
+growth,2016,Materials,theme_18,CAH / STLD / EXR / KIM,0.3157894736842105,19
+growth,2016,Real Estate,theme_21,XYZ / EQR / HAL / TJX,0.2413793103448276,29
+growth,2016,Utilities,theme_21,XYZ / EQR / HAL / TJX,0.32142857142857145,28
+growth,2017,Communication Services,theme_3,SO / CNP / EVRG / AEE,0.125,16
+growth,2017,Consumer Discretionary,theme_0,WAT / ULTA / ALLE / ODFL,0.15555555555555556,45
+growth,2017,Consumer Staples,theme_21,XYZ / EQR / HAL / TJX,0.23529411764705882,34
+growth,2017,Energy,theme_10,IFF / KMI / LIN / PSX,0.3888888888888889,18
+growth,2017,Financials,theme_4,TFC / STT / PNC / FITB,0.2916666666666667,72
+growth,2017,Health Care,theme_18,CAH / STLD / EXR / KIM,0.17307692307692307,52
+growth,2017,Industrials,theme_23,TTD / TPL / MA / VRSN,0.18055555555555555,72
+growth,2017,Information Technology,theme_38,ANET / PODD / FFIV / MSI,0.15151515151515152,66
+growth,2017,Materials,theme_10,IFF / KMI / LIN / PSX,0.21052631578947367,19
+growth,2017,Real Estate,theme_0,WAT / ULTA / ALLE / ODFL,0.25,28
+growth,2017,Utilities,theme_6,APD / MLM / ETR / AWK,0.2857142857142857,28
+growth,2018,Communication Services,theme_38,ANET / PODD / FFIV / MSI,0.25,16
+growth,2018,Consumer Discretionary,theme_18,CAH / STLD / EXR / KIM,0.15217391304347827,46
+growth,2018,Consumer Staples,theme_21,XYZ / EQR / HAL / TJX,0.2647058823529412,34
+growth,2018,Energy,theme_10,IFF / KMI / LIN / PSX,0.47368421052631576,19
+growth,2018,Financials,theme_4,TFC / STT / PNC / FITB,0.3194444444444444,72
+growth,2018,Health Care,theme_18,CAH / STLD / EXR / KIM,0.19230769230769232,52
+growth,2018,Industrials,theme_0,WAT / ULTA / ALLE / ODFL,0.2328767123287671,73
+growth,2018,Information Technology,theme_38,ANET / PODD / FFIV / MSI,0.13432835820895522,67
+growth,2018,Materials,theme_18,CAH / STLD / EXR / KIM,0.2,20
+growth,2018,Real Estate,theme_0,WAT / ULTA / ALLE / ODFL,0.2413793103448276,29
+growth,2018,Utilities,theme_21,XYZ / EQR / HAL / TJX,0.32142857142857145,28
+growth,2019,Communication Services,theme_15,EL / INTC / CSCO / CHTR,0.17647058823529413,17
+growth,2019,Consumer Discretionary,theme_23,TTD / TPL / MA / VRSN,0.17391304347826086,46
+growth,2019,Consumer Staples,theme_18,CAH / STLD / EXR / KIM,0.17647058823529413,34
+growth,2019,Energy,theme_3,SO / CNP / EVRG / AEE,0.21052631578947367,19
+growth,2019,Financials,theme_4,TFC / STT / PNC / FITB,0.3611111111111111,72
+growth,2019,Health Care,theme_18,CAH / STLD / EXR / KIM,0.16363636363636364,55
+growth,2019,Industrials,theme_0,WAT / ULTA / ALLE / ODFL,0.1891891891891892,74
+growth,2019,Information Technology,theme_38,ANET / PODD / FFIV / MSI,0.16417910447761194,67
+growth,2019,Materials,theme_18,CAH / STLD / EXR / KIM,0.13636363636363635,22
+growth,2019,Real Estate,theme_21,XYZ / EQR / HAL / TJX,0.26666666666666666,30
+growth,2019,Utilities,theme_17,APD / ETR / AWK / PCG,0.20689655172413793,29
+growth,2020,Communication Services,theme_38,ANET / PODD / FFIV / MSI,0.2222222222222222,18
+growth,2020,Consumer Discretionary,theme_38,ANET / PODD / FFIV / MSI,0.13043478260869565,46
+growth,2020,Consumer Staples,theme_18,CAH / STLD / EXR / KIM,0.17647058823529413,34
+growth,2020,Energy,theme_10,IFF / KMI / LIN / PSX,0.42105263157894735,19
+growth,2020,Financials,theme_4,TFC / STT / PNC / FITB,0.375,72
+growth,2020,Health Care,theme_15,EL / INTC / CSCO / CHTR,0.125,56
+growth,2020,Industrials,theme_0,WAT / ULTA / ALLE / ODFL,0.21333333333333335,75
+growth,2020,Information Technology,theme_9,DDOG / SNPS / INCY / REGN,0.18840579710144928,69
+growth,2020,Materials,theme_10,IFF / KMI / LIN / PSX,0.25,24
+growth,2020,Real Estate,theme_0,WAT / ULTA / ALLE / ODFL,0.1935483870967742,31
+growth,2020,Utilities,theme_17,APD / ETR / AWK / PCG,0.23333333333333334,30
+growth,2021,Communication Services,theme_37,CARR / GE / EW / MMM,0.16666666666666666,18
+growth,2021,Consumer Discretionary,theme_38,ANET / PODD / FFIV / MSI,0.19148936170212766,47
+growth,2021,Consumer Staples,theme_37,CARR / GE / EW / MMM,0.20588235294117646,34
+growth,2021,Energy,theme_10,IFF / KMI / LIN / PSX,0.35,20
+growth,2021,Financials,theme_4,TFC / STT / PNC / FITB,0.3611111111111111,72
+growth,2021,Health Care,theme_37,CARR / GE / EW / MMM,0.17857142857142858,56
+growth,2021,Industrials,theme_0,WAT / ULTA / ALLE / ODFL,0.14285714285714285,77
+growth,2021,Information Technology,theme_0,WAT / ULTA / ALLE / ODFL,0.14285714285714285,70
+growth,2021,Materials,theme_10,IFF / KMI / LIN / PSX,0.20833333333333334,24
+growth,2021,Real Estate,theme_21,XYZ / EQR / HAL / TJX,0.2903225806451613,31
+growth,2021,Utilities,theme_20,STE / DECK / ECL / NUE,0.23333333333333334,30
+growth,2022,Communication Services,theme_2,AIZ / ORLY / RVTY / SWK,0.2222222222222222,18
+growth,2022,Consumer Discretionary,theme_37,CARR / GE / EW / MMM,0.16666666666666666,48
+growth,2022,Consumer Staples,theme_37,CARR / GE / EW / MMM,0.20588235294117646,34
+growth,2022,Energy,theme_15,EL / INTC / CSCO / CHTR,0.18181818181818182,22
+growth,2022,Financials,theme_4,TFC / STT / PNC / FITB,0.25675675675675674,74
+growth,2022,Health Care,theme_2,AIZ / ORLY / RVTY / SWK,0.21428571428571427,56
+growth,2022,Industrials,theme_37,CARR / GE / EW / MMM,0.14285714285714285,77
+growth,2022,Information Technology,theme_5,DECK / ROP / ECL / STE,0.1267605633802817,71
+growth,2022,Materials,theme_5,DECK / ROP / ECL / STE,0.20833333333333334,24
+growth,2022,Real Estate,theme_2,AIZ / ORLY / RVTY / SWK,0.16129032258064516,31
+growth,2022,Utilities,theme_11,CCL / T / AES / PPL,0.16666666666666666,30
+growth,2023,Communication Services,theme_16,CCL / KKR / APO / PPL,0.2777777777777778,18
+growth,2023,Consumer Discretionary,theme_2,AIZ / ORLY / RVTY / SWK,0.22916666666666666,48
+growth,2023,Consumer Staples,theme_2,AIZ / ORLY / RVTY / SWK,0.38235294117647056,34
+growth,2023,Energy,theme_29,CPAY / CCL / EXE / RCL,0.22727272727272727,22
+growth,2023,Financials,theme_4,TFC / STT / PNC / FITB,0.28,75
+growth,2023,Health Care,theme_2,AIZ / ORLY / RVTY / SWK,0.3392857142857143,56
+growth,2023,Industrials,theme_2,AIZ / ORLY / RVTY / SWK,0.2987012987012987,77
+growth,2023,Information Technology,theme_2,AIZ / ORLY / RVTY / SWK,0.22535211267605634,71
+growth,2023,Materials,theme_2,AIZ / ORLY / RVTY / SWK,0.2916666666666667,24
+growth,2023,Real Estate,theme_2,AIZ / ORLY / RVTY / SWK,0.22580645161290322,31
+growth,2023,Utilities,theme_11,CCL / T / AES / PPL,0.22580645161290322,31
+growth,2024,Communication Services,theme_30,GL / CMS / GPC / HIG,0.2631578947368421,19
+growth,2024,Consumer Discretionary,theme_30,GL / CMS / GPC / HIG,0.1875,48
+growth,2024,Consumer Staples,theme_30,GL / CMS / GPC / HIG,0.2777777777777778,36
+growth,2024,Energy,theme_28,FIS / WDC / HUBB / APP,0.13636363636363635,22
+growth,2024,Financials,theme_4,TFC / STT / PNC / FITB,0.30666666666666664,75
+growth,2024,Health Care,theme_30,GL / CMS / GPC / HIG,0.2631578947368421,57
+growth,2024,Industrials,theme_2,AIZ / ORLY / RVTY / SWK,0.2692307692307692,78
+growth,2024,Information Technology,theme_30,GL / CMS / GPC / HIG,0.15492957746478872,71
+growth,2024,Materials,theme_30,GL / CMS / GPC / HIG,0.2,25
+growth,2024,Real Estate,theme_30,GL / CMS / GPC / HIG,0.22580645161290322,31
+growth,2024,Utilities,theme_30,GL / CMS / GPC / HIG,0.1935483870967742,31
+growth,2025,Communication Services,theme_15,EL / INTC / CSCO / CHTR,0.21052631578947367,19
+growth,2025,Consumer Discretionary,theme_30,GL / CMS / GPC / HIG,0.22916666666666666,48
+growth,2025,Consumer Staples,theme_30,GL / CMS / GPC / HIG,0.25,36
+growth,2025,Energy,theme_29,CPAY / CCL / EXE / RCL,0.22727272727272727,22
+growth,2025,Financials,theme_4,TFC / STT / PNC / FITB,0.3157894736842105,76
+growth,2025,Health Care,theme_30,GL / CMS / GPC / HIG,0.2413793103448276,58
+growth,2025,Industrials,theme_30,GL / CMS / GPC / HIG,0.3037974683544304,79
+growth,2025,Information Technology,theme_30,GL / CMS / GPC / HIG,0.16901408450704225,71
+growth,2025,Materials,theme_30,GL / CMS / GPC / HIG,0.3076923076923077,26
+growth,2025,Real Estate,theme_30,GL / CMS / GPC / HIG,0.3225806451612903,31
+growth,2025,Utilities,theme_3,SO / CNP / EVRG / AEE,0.25806451612903225,31
+growth,2026,Communication Services,theme_15,EL / INTC / CSCO / CHTR,0.2,20
+growth,2026,Consumer Discretionary,theme_18,CAH / STLD / EXR / KIM,0.1875,48
+growth,2026,Consumer Staples,theme_21,XYZ / EQR / HAL / TJX,0.16666666666666666,36
+growth,2026,Energy,theme_21,XYZ / EQR / HAL / TJX,0.36363636363636365,22
+growth,2026,Financials,theme_4,TFC / STT / PNC / FITB,0.2894736842105263,76
+growth,2026,Health Care,theme_21,XYZ / EQR / HAL / TJX,0.1896551724137931,58
+growth,2026,Industrials,theme_21,XYZ / EQR / HAL / TJX,0.26582278481012656,79
+growth,2026,Information Technology,theme_15,EL / INTC / CSCO / CHTR,0.18055555555555555,72
+growth,2026,Materials,theme_21,XYZ / EQR / HAL / TJX,0.19230769230769232,26
+growth,2026,Real Estate,theme_21,XYZ / EQR / HAL / TJX,0.3870967741935484,31
+growth,2026,Utilities,theme_3,SO / CNP / EVRG / AEE,0.3548387096774194,31
+network,2010,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.3125,16
+network,2010,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15,40
+network,2010,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2010,Energy,theme_7,TPL / DE / XYL / NRG,0.3125,16
+network,2010,Financials,theme_1,MET / META / MLM / MCHP,0.13846153846153847,65
+network,2010,Health Care,theme_0,EQIX / BSX / ALGN / MCO,0.13725490196078433,51
+network,2010,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.15151515151515152,66
+network,2010,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.14545454545454545,55
+network,2010,Materials,theme_7,TPL / DE / XYL / NRG,0.18181818181818182,22
+network,2010,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2010,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2011,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.35294117647058826,17
+network,2011,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.16666666666666666,42
+network,2011,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2011,Energy,theme_7,TPL / DE / XYL / NRG,0.29411764705882354,17
+network,2011,Financials,theme_1,MET / META / MLM / MCHP,0.14705882352941177,68
+network,2011,Health Care,theme_0,EQIX / BSX / ALGN / MCO,0.13725490196078433,51
+network,2011,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14925373134328357,67
+network,2011,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,56
+network,2011,Materials,theme_7,TPL / DE / XYL / NRG,0.17391304347826086,23
+network,2011,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2011,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2012,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.35294117647058826,17
+network,2012,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.16279069767441862,43
+network,2012,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2012,Energy,theme_7,TPL / DE / XYL / NRG,0.2631578947368421,19
+network,2012,Financials,theme_1,MET / META / MLM / MCHP,0.14492753623188406,69
+network,2012,Health Care,theme_0,EQIX / BSX / ALGN / MCO,0.1346153846153846,52
+network,2012,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14492753623188406,69
+network,2012,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,56
+network,2012,Materials,theme_7,TPL / DE / XYL / NRG,0.17391304347826086,23
+network,2012,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2012,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2013,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.3333333333333333,18
+network,2013,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.16279069767441862,43
+network,2013,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2013,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2013,Financials,theme_1,MET / META / MLM / MCHP,0.14492753623188406,69
+network,2013,Health Care,theme_5,BK / CNC / TROW / WTW,0.1320754716981132,53
+network,2013,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14492753623188406,69
+network,2013,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.13333333333333333,60
+network,2013,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2013,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2013,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2014,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.35,20
+network,2014,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15555555555555556,45
+network,2014,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2014,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2014,Financials,theme_1,MET / META / MLM / MCHP,0.14492753623188406,69
+network,2014,Health Care,theme_5,BK / CNC / TROW / WTW,0.14545454545454545,55
+network,2014,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,70
+network,2014,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.13114754098360656,61
+network,2014,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2014,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2014,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2015,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.35,20
+network,2015,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15555555555555556,45
+network,2015,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.23529411764705882,34
+network,2015,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2015,Financials,theme_29,APA / APO / AOS / ARE,0.1527777777777778,72
+network,2015,Health Care,theme_5,BK / CNC / TROW / WTW,0.14545454545454545,55
+network,2015,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,70
+network,2015,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.12698412698412698,63
+network,2015,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2015,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2015,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2016,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.35,20
+network,2016,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15555555555555556,45
+network,2016,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2016,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2016,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2016,Health Care,theme_5,BK / CNC / TROW / WTW,0.14545454545454545,55
+network,2016,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,70
+network,2016,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.12121212121212122,66
+network,2016,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2016,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2016,Utilities,theme_16,ATO / AES / MGM / EIX,0.1724137931034483,29
+network,2017,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.3333333333333333,21
+network,2017,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15555555555555556,45
+network,2017,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2017,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2017,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2017,Health Care,theme_5,BK / CNC / TROW / WTW,0.14545454545454545,55
+network,2017,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.1388888888888889,72
+network,2017,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.11940298507462686,67
+network,2017,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2017,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.1724137931034483,29
+network,2017,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2018,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.3333333333333333,21
+network,2018,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15217391304347827,46
+network,2018,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2018,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2018,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2018,Health Care,theme_5,BK / CNC / TROW / WTW,0.14545454545454545,55
+network,2018,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.1506849315068493,73
+network,2018,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.11940298507462686,67
+network,2018,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2018,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16666666666666666,30
+network,2018,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2019,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.3333333333333333,21
+network,2019,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15217391304347827,46
+network,2019,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2019,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2019,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2019,Health Care,theme_5,BK / CNC / TROW / WTW,0.14285714285714285,56
+network,2019,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14864864864864866,74
+network,2019,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.11940298507462686,67
+network,2019,Materials,theme_7,TPL / DE / XYL / NRG,0.16666666666666666,24
+network,2019,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2019,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2020,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2020,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.15217391304347827,46
+network,2020,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2020,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2020,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2020,Health Care,theme_5,BK / CNC / TROW / WTW,0.14285714285714285,56
+network,2020,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14666666666666667,75
+network,2020,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.13043478260869565,69
+network,2020,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2020,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2020,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2021,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2021,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2021,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2021,Energy,theme_7,TPL / DE / XYL / NRG,0.23809523809523808,21
+network,2021,Financials,theme_29,APA / APO / AOS / ARE,0.14864864864864866,74
+network,2021,Health Care,theme_5,BK / CNC / TROW / WTW,0.14285714285714285,56
+network,2021,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,77
+network,2021,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.12857142857142856,70
+network,2021,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2021,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2021,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2022,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2022,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2022,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2022,Energy,theme_7,TPL / DE / XYL / NRG,0.22727272727272727,22
+network,2022,Financials,theme_29,APA / APO / AOS / ARE,0.14473684210526316,76
+network,2022,Health Care,theme_5,BK / CNC / TROW / WTW,0.14285714285714285,56
+network,2022,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,77
+network,2022,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.1267605633802817,71
+network,2022,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2022,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2022,Utilities,theme_16,ATO / AES / MGM / EIX,0.16666666666666666,30
+network,2023,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2023,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2023,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.22857142857142856,35
+network,2023,Energy,theme_7,TPL / DE / XYL / NRG,0.22727272727272727,22
+network,2023,Financials,theme_29,APA / APO / AOS / ARE,0.14473684210526316,76
+network,2023,Health Care,theme_5,BK / CNC / TROW / WTW,0.14035087719298245,57
+network,2023,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14285714285714285,77
+network,2023,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.1267605633802817,71
+network,2023,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2023,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2023,Utilities,theme_16,ATO / AES / MGM / EIX,0.16129032258064516,31
+network,2024,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2024,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2024,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.2222222222222222,36
+network,2024,Energy,theme_7,TPL / DE / XYL / NRG,0.22727272727272727,22
+network,2024,Financials,theme_29,APA / APO / AOS / ARE,0.14473684210526316,76
+network,2024,Health Care,theme_5,BK / CNC / TROW / WTW,0.14035087719298245,57
+network,2024,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.14102564102564102,78
+network,2024,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.1267605633802817,71
+network,2024,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2024,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2024,Utilities,theme_16,ATO / AES / MGM / EIX,0.16129032258064516,31
+network,2025,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2025,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2025,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.2222222222222222,36
+network,2025,Energy,theme_7,TPL / DE / XYL / NRG,0.22727272727272727,22
+network,2025,Financials,theme_29,APA / APO / AOS / ARE,0.14473684210526316,76
+network,2025,Health Care,theme_5,BK / CNC / TROW / WTW,0.13793103448275862,58
+network,2025,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.13924050632911392,79
+network,2025,Information Technology,theme_13,NVDA / CRWD / AMD / FTNT,0.1267605633802817,71
+network,2025,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2025,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2025,Utilities,theme_16,ATO / AES / MGM / EIX,0.16129032258064516,31
+network,2026,Communication Services,theme_23,TMUS / CHTR / SATS / KO,0.30434782608695654,23
+network,2026,Consumer Discretionary,theme_34,TRV / TFC / TSCO / TSLA,0.14583333333333334,48
+network,2026,Consumer Staples,theme_19,VRSN / PNC / HUM / HRL,0.2222222222222222,36
+network,2026,Energy,theme_7,TPL / DE / XYL / NRG,0.22727272727272727,22
+network,2026,Financials,theme_29,APA / APO / AOS / ARE,0.14473684210526316,76
+network,2026,Health Care,theme_5,BK / CNC / TROW / WTW,0.13793103448275862,58
+network,2026,Industrials,theme_17,TMO / CHRW / APH / PCAR,0.13924050632911392,79
+network,2026,Information Technology,theme_17,TMO / CHRW / APH / PCAR,0.125,72
+network,2026,Materials,theme_35,PM / MAS / HST / MAR,0.15384615384615385,26
+network,2026,Real Estate,theme_6,EQR / EQT / EOG / ERIE,0.16129032258064516,31
+network,2026,Utilities,theme_16,ATO / AES / MGM / EIX,0.16129032258064516,31

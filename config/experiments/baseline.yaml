@@ -1,0 +1,10 @@
+{
+  "experiment_name": "baseline",
+  "assembly": {
+    "dataset_name": "baseline"
+  },
+  "model": {
+    "name": "pca",
+    "embedding_dim": 4
+  }
+}

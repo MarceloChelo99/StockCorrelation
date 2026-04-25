@@ -1,0 +1,18 @@
+{
+  "epochs": 2.0,
+  "feature_columns": [
+    "net_in_degree",
+    "net_out_degree",
+    "net_in_degree_customer",
+    "net_in_degree_supplier",
+    "net_in_degree_competitor",
+    "net_pagerank",
+    "net_betweenness",
+    "net_clustering_coefficient",
+    "net_community_id",
+    "net_community_size"
+  ],
+  "final_reconstruction_mse": 0.7980108535871725,
+  "initial_reconstruction_mse": 1.060851309311286,
+  "view": "network"
+}

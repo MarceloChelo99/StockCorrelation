@@ -1,0 +1,37 @@
+{
+  "experiment_name": "ae_text_baseline",
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "text_baseline",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk"
+    ]
+  },
+  "model": {
+    "name": "autoencoder",
+    "embedding_dim": 8,
+    "hidden_dim": 64,
+    "learning_rate": 0.001,
+    "epochs": 40,
+    "batch_size": 512,
+    "weight_decay": 0.00001
+  },
+  "evaluation": {
+    "enabled": [
+      "clustering",
+      "peers"
+    ]
+  }
+}

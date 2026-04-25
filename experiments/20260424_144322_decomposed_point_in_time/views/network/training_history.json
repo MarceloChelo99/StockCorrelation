@@ -1,0 +1,22 @@
+{
+  "epochs": 40.0,
+  "feature_columns": [
+    "net_in_degree",
+    "net_out_degree",
+    "net_in_degree_customer",
+    "net_in_degree_supplier",
+    "net_in_degree_competitor",
+    "net_pagerank",
+    "net_betweenness",
+    "net_clustering_coefficient",
+    "net_community_id",
+    "net_community_size"
+  ],
+  "final_reconstruction_mse": 0.18231821829449288,
+  "initial_reconstruction_mse": 1.177365144946535,
+  "input_missing_rate_before_imputation": 0.0,
+  "median_imputation": true,
+  "min_feature_abs_sum": 1e-12,
+  "min_non_missing_features": 3,
+  "view": "network"
+}

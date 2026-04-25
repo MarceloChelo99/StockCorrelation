@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,2,Financials,2.058951518998954
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,2,Financials,1.9294582122343094
+CLX,2026-04-22,CLOROX CO /DE/,Clorox,Consumer Staples,Household Products,4,Health Care,1.9010111298290444
+SNA,2026-04-22,Snap-on Inc,Snap-on,Industrials,Industrial Machinery & Supplies & Components,4,Health Care,1.8743907233260126
+HRL,2026-04-22,HORMEL FOODS CORP /DE/,Hormel Foods,Consumer Staples,Packaged Foods & Meats,5,Industrials,1.8682960221522615
+CTRA,2026-04-22,Coterra Energy Inc.,Coterra,Energy,Oil & Gas Exploration & Production,10,Real Estate,1.778632978438577
+NWSA,2026-04-22,NEWS CORP,News Corp (Class A),Communication Services,Publishing,8,Consumer Staples,1.7648924693560752
+NWS,2026-04-22,NEWS CORP,News Corp (Class B),Communication Services,Publishing,8,Consumer Staples,1.764889511765439
+UHS,2026-04-22,UNIVERSAL HEALTH SERVICES INC,Universal Health Services,Health Care,Health Care Facilities,2,Financials,1.7621801707108795
+STE,2026-04-22,STERIS plc,Steris,Health Care,Health Care Equipment,5,Industrials,1.6980556951283878
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,8,Consumer Staples,1.6947625305287104
+RL,2026-04-22,RALPH LAUREN CORP,Ralph Lauren Corporation,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",8,Consumer Staples,1.6337025641671292
+IQV,2026-04-22,IQVIA HOLDINGS INC.,IQVIA,Health Care,Life Sciences Tools & Services,3,Information Technology,1.617049203042716
+ABNB,2026-04-22,"Airbnb, Inc.",Airbnb,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",8,Consumer Staples,1.6068416653278508
+WBD,2026-04-22,"Warner Bros. Discovery, Inc.",Warner Bros. Discovery,Communication Services,Broadcasting,10,Real Estate,1.6030347661575823
+AMD,2026-04-22,ADVANCED MICRO DEVICES INC,Advanced Micro Devices,Information Technology,Semiconductors,5,Industrials,1.602347798644055
+TPR,2026-04-22,"TAPESTRY, INC.","Tapestry, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",8,Consumer Staples,1.572277630360703
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,4,Health Care,1.5657799674127513
+TMO,2026-04-22,THERMO FISHER SCIENTIFIC INC.,Thermo Fisher Scientific,Health Care,Life Sciences Tools & Services,5,Industrials,1.564675916302775
+V,2026-04-22,VISA INC.,Visa Inc.,Financials,Transaction & Payment Processing Services,1,Information Technology,1.5610985261936852
+AMT,2026-04-22,AMERICAN TOWER CORP /MA/,American Tower,Real Estate,Telecom Tower REITs,9,Utilities,1.5428336278874588
+MTB,2026-04-22,M&T BANK CORP,M&T Bank,Financials,Regional Banks,9,Utilities,1.539818110132449
+RVTY,2026-04-22,"REVVITY, INC.",Revvity,Health Care,Health Care Equipment,5,Industrials,1.526226443617209
+KMB,2026-04-22,KIMBERLY CLARK CORP,Kimberly-Clark,Consumer Staples,Household Products,5,Industrials,1.5011224406984707
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",8,Consumer Staples,1.4990601171706683
+RCL,2026-04-22,ROYAL CARIBBEAN CRUISES LTD,Royal Caribbean Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",10,Real Estate,1.4916466995855528
+WAB,2026-04-22,WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP,Wabtec,Industrials,Construction Machinery & Heavy Transportation Equipment,1,Information Technology,1.4719849555284164
+PAYX,2026-04-22,PAYCHEX INC,Paychex,Industrials,Human Resource & Employment Services,6,Consumer Discretionary,1.4698924064544532
+TPL,2026-04-22,Texas Pacific Land Corp,Texas Pacific Land Corporation,Energy,Oil & Gas Exploration & Production,9,Utilities,1.468183013698727
+EFX,2026-04-22,EQUIFAX INC,Equifax,Industrials,Research & Consulting Services,4,Health Care,1.463459236155535
+NUE,2026-04-22,NUCOR CORP,Nucor,Materials,Steel,5,Industrials,1.4592878046292102
+AAPL,2026-04-22,Apple Inc.,Apple Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",6,Consumer Discretionary,1.4578006788353388
+GL,2026-04-22,GLOBE LIFE INC.,Globe Life,Financials,Life & Health Insurance,4,Health Care,1.4537710265378472
+LUV,2026-04-22,SOUTHWEST AIRLINES CO,Southwest Airlines,Industrials,Passenger Airlines,10,Real Estate,1.448967701541111
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,5,Industrials,1.4469835372012982
+ROK,2026-04-22,"ROCKWELL AUTOMATION, INC",Rockwell Automation,Industrials,Electrical Components & Equipment,6,Consumer Discretionary,1.4291918269237687
+AZO,2026-04-22,AUTOZONE INC,AutoZone,Consumer Discretionary,Automotive Retail,5,Industrials,1.423699037570301
+FE,2026-04-22,FIRSTENERGY CORP,FirstEnergy,Utilities,Electric Utilities,6,Consumer Discretionary,1.4202708726199709
+ROST,2026-04-22,"ROSS STORES, INC.",Ross Stores,Consumer Discretionary,Apparel Retail,8,Consumer Staples,1.3947533114704047
+FOX,2026-04-22,Fox Corp,Fox Corporation (Class B),Communication Services,Broadcasting,1,Information Technology,1.3923389225102483
+FOXA,2026-04-22,Fox Corp,Fox Corporation (Class A),Communication Services,Broadcasting,1,Information Technology,1.3923041101117049
+DOC,2026-04-22,"HEALTHPEAK PROPERTIES, INC.",Healthpeak Properties,Real Estate,Health Care REITs,2,Financials,1.3889049493149084
+STLD,2026-04-22,STEEL DYNAMICS INC,Steel Dynamics,Materials,Steel,5,Industrials,1.3798103452301103
+BKNG,2026-04-22,Booking Holdings Inc.,Booking Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",5,Industrials,1.37595173170517
+CSGP,2026-04-22,"COSTAR GROUP, INC.",CoStar Group,Real Estate,Real Estate Services,2,Financials,1.3706957288681627
+CPB,2026-04-22,CAMPBELL'S Co,Campbell's Company (The),Consumer Staples,Packaged Foods & Meats,5,Industrials,1.3689842493111788
+EOG,2026-04-22,EOG RESOURCES INC,EOG Resources,Energy,Oil & Gas Exploration & Production,5,Industrials,1.3633533577270822
+FCX,2026-04-22,FREEPORT-MCMORAN INC,Freeport-McMoRan,Materials,Copper,6,Consumer Discretionary,1.3548082646123565
+BKR,2026-04-22,Baker Hughes Co,Baker Hughes,Energy,Oil & Gas Equipment & Services,0,Industrials,1.3496218528551864
+DPZ,2026-04-22,DOMINOS PIZZA INC,Domino's,Consumer Discretionary,Restaurants,8,Consumer Staples,1.3433368430282073

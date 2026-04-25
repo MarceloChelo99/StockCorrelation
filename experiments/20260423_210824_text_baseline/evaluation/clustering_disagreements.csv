@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+NUE,2026-04-22,NUCOR CORP,Nucor,Materials,Steel,0,Industrials,42.092546234939306
+SYF,2026-04-22,Synchrony Financial,Synchrony Financial,Financials,Consumer Finance,3,Consumer Discretionary,40.5723041058022
+ETR,2026-04-22,ENTERGY CORP /DE/,Entergy,Utilities,Electric Utilities,1,Industrials,32.07221361961609
+DTE,2026-04-22,DTE ENERGY CO,DTE Energy,Utilities,Multi-Utilities,1,Industrials,28.795701627481115
+TSLA,2026-04-22,"Tesla, Inc.","Tesla, Inc.",Consumer Discretionary,Automobile Manufacturers,1,Industrials,27.938205284733886
+FOX,2026-04-22,Fox Corp,Fox Corporation (Class B),Communication Services,Broadcasting,2,Health Care,24.733059102007925
+FOXA,2026-04-22,Fox Corp,Fox Corporation (Class A),Communication Services,Broadcasting,2,Health Care,24.703021143715496
+AMZN,2026-04-22,AMAZON COM INC,Amazon,Consumer Discretionary,Broadline Retail,4,Consumer Staples,22.84809967709273
+SPG,2026-04-22,SIMON PROPERTY GROUP INC.,Simon Property Group,Real Estate,Retail REITs,3,Consumer Discretionary,22.367380654961554
+BRK-B,2026-04-22,BERKSHIRE HATHAWAY INC,Berkshire Hathaway,Financials,Multi-Sector Holdings,0,Industrials,22.29433545251503
+LIN,2026-04-22,LINDE PLC,Linde plc,Materials,Industrial Gases,4,Consumer Staples,22.20333789091907
+STLD,2026-04-22,STEEL DYNAMICS INC,Steel Dynamics,Materials,Steel,0,Industrials,21.5583267944393
+WMB,2026-04-22,"WILLIAMS COMPANIES, INC.",Williams Companies,Energy,Oil & Gas Storage & Transportation,5,Utilities,21.281331749583288
+GWW,2026-04-22,"W.W. GRAINGER, INC.",W. W. Grainger,Industrials,Industrial Machinery & Supplies & Components,4,Consumer Staples,21.09994134131444
+FSLR,2026-04-22,"FIRST SOLAR, INC.",First Solar,Information Technology,Semiconductors,3,Consumer Discretionary,21.096928728478087
+ADP,2026-04-22,AUTOMATIC DATA PROCESSING INC,Automatic Data Processing,Industrials,Human Resource & Employment Services,8,Information Technology,20.505624479739065
+MA,2026-04-22,Mastercard Inc,Mastercard,Financials,Transaction & Payment Processing Services,8,Information Technology,20.457354559415858
+EVRG,2026-04-22,"Evergy, Inc.",Evergy,Utilities,Electric Utilities,1,Industrials,20.363450551913466
+OMC,2026-04-22,OMNICOM GROUP INC.,Omnicom Group,Communication Services,Advertising,4,Consumer Staples,19.438550633109593
+MCO,2026-04-22,MOODYS CORP /DE/,Moody's Corporation,Financials,Financial Exchanges & Data,8,Information Technology,18.93879204267602
+AES,2026-04-22,AES CORP,AES Corporation,Utilities,Independent Power Producers & Energy Traders,1,Industrials,18.88096057876875
+TJX,2026-04-22,TJX COMPANIES INC /DE/,TJX Companies,Consumer Discretionary,Apparel Retail,4,Consumer Staples,18.5934375934941
+COIN,2026-04-22,"Coinbase Global, Inc.",Coinbase,Financials,Financial Exchanges & Data,3,Consumer Discretionary,18.590288912148534
+IP,2026-04-22,INTERNATIONAL PAPER CO /NEW/,International Paper,Materials,Paper & Plastic Packaging Products & Materials,8,Information Technology,18.517542204721753
+SLB,2026-04-22,SLB LIMITED/NV,Schlumberger,Energy,Oil & Gas Equipment & Services,0,Industrials,18.35627615213105
+JKHY,2026-04-22,JACK HENRY & ASSOCIATES INC,Jack Henry & Associates,Financials,Transaction & Payment Processing Services,8,Information Technology,18.269526242149944
+MPWR,2026-04-22,MONOLITHIC POWER SYSTEMS INC,Monolithic Power Systems,Information Technology,Semiconductors,0,Industrials,18.069543916426518
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,10,Energy,17.997948404724696
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",10,Energy,17.931651464898753
+CINF,2026-04-22,CINCINNATI FINANCIAL CORP,Cincinnati Financial,Financials,Property & Casualty Insurance,10,Energy,17.920467245419406
+BALL,2026-04-22,BALL Corp,Ball Corporation,Materials,"Metal, Glass & Plastic Containers",1,Industrials,17.833479819961664
+NRG,2026-04-22,"NRG ENERGY, INC.",NRG Energy,Utilities,Independent Power Producers & Energy Traders,1,Industrials,17.437129159168574
+AZO,2026-04-22,AUTOZONE INC,AutoZone,Consumer Discretionary,Automotive Retail,4,Consumer Staples,17.176490919829174
+INTC,2026-04-22,INTEL CORP,Intel,Information Technology,Semiconductors,0,Industrials,17.119526028357257
+PLTR,2026-04-22,Palantir Technologies Inc.,Palantir Technologies,Information Technology,Application Software,6,Financials,16.828360857191726
+PH,2026-04-22,Parker-Hannifin Corp,Parker Hannifin,Industrials,Industrial Machinery & Supplies & Components,4,Consumer Staples,16.810111267068176
+PSKY,2026-04-22,Paramount Skydance Corp,Paramount Skydance Corporation,Communication Services,Movies & Entertainment,2,Health Care,16.736909874505983
+SBAC,2026-04-22,SBA COMMUNICATIONS CORP,SBA Communications,Real Estate,Telecom Tower REITs,9,Financials,16.571201355952592
+DVA,2026-04-22,DAVITA INC.,DaVita,Health Care,Health Care Services,0,Industrials,16.55870324573265
+AAPL,2026-04-22,Apple Inc.,Apple Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",2,Health Care,16.408750266511156
+FDS,2026-04-22,FACTSET RESEARCH SYSTEMS INC,FactSet,Financials,Financial Exchanges & Data,8,Information Technology,16.397754874632305
+CMG,2026-04-22,CHIPOTLE MEXICAN GRILL INC,Chipotle Mexican Grill,Consumer Discretionary,Restaurants,4,Consumer Staples,16.37482437161526
+EQT,2026-04-22,EQT Corp,EQT Corporation,Energy,Oil & Gas Exploration & Production,9,Financials,16.14672916814918
+DELL,2026-04-22,Dell Technologies Inc.,Dell Technologies,Information Technology,"Technology Hardware, Storage & Peripherals",2,Health Care,16.1453730805063
+MCK,2026-04-22,MCKESSON CORP,McKesson Corporation,Health Care,Health Care Distributors,6,Financials,16.09366090084291
+JPM,2026-04-22,JPMORGAN CHASE & CO,JPMorgan Chase,Financials,Diversified Banks,10,Energy,15.794149253777679
+NEE,2026-04-22,NEXTERA ENERGY INC,NextEra Energy,Utilities,Multi-Utilities,9,Financials,15.729378106393451
+ABBV,2026-04-22,AbbVie Inc.,AbbVie,Health Care,Biotechnology,0,Industrials,15.699628236076721
+VRSK,2026-04-22,"Verisk Analytics, Inc.",Verisk Analytics,Industrials,Research & Consulting Services,8,Information Technology,15.65906809964153
+LOW,2026-04-22,LOWES COMPANIES INC,Lowe's,Consumer Discretionary,Home Improvement Retail,1,Industrials,15.601997333868665

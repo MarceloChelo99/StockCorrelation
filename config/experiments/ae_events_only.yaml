@@ -1,0 +1,29 @@
+{
+  "experiment_name": "ae_events_only",
+  "features": {
+    "enabled": [
+      "event_item_frequency"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "ae_events_only",
+    "required_feature_groups": [
+      "event_item_frequency"
+    ]
+  },
+  "model": {
+    "name": "autoencoder",
+    "embedding_dim": 8,
+    "hidden_dim": 32,
+    "learning_rate": 0.001,
+    "epochs": 40,
+    "batch_size": 512,
+    "weight_decay": 0.00001
+  },
+  "evaluation": {
+    "enabled": [
+      "clustering",
+      "peers"
+    ]
+  }
+}

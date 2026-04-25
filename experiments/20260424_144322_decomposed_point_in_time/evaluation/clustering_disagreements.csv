@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,6,Utilities,3.314309405376205
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,5,Energy,3.092975221648652
+CTRA,2026-04-22,Coterra Energy Inc.,Coterra,Energy,Oil & Gas Exploration & Production,10,Industrials,2.8689283342025185
+WBD,2026-04-22,"Warner Bros. Discovery, Inc.",Warner Bros. Discovery,Communication Services,Broadcasting,10,Industrials,2.786870507846047
+RCL,2026-04-22,ROYAL CARIBBEAN CRUISES LTD,Royal Caribbean Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",7,Financials,2.720900352678889
+FICO,2026-04-22,FAIR ISAAC CORP,Fair Isaac,Information Technology,Application Software,4,Financials,2.7171214529885472
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,7,Financials,2.6911844333265615
+TECH,2026-04-22,BIO-TECHNE Corp,Bio-Techne,Health Care,Life Sciences Tools & Services,4,Financials,2.673567481190526
+CINF,2026-04-22,CINCINNATI FINANCIAL CORP,Cincinnati Financial,Financials,Property & Casualty Insurance,10,Industrials,2.6732706855502277
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,1,Health Care,2.6420280393014863
+UHS,2026-04-22,UNIVERSAL HEALTH SERVICES INC,Universal Health Services,Health Care,Health Care Facilities,7,Financials,2.63718776978344
+TSN,2026-04-22,"TYSON FOODS, INC.",Tyson Foods,Consumer Staples,Packaged Foods & Meats,1,Health Care,2.619821273595888
+AMCR,2026-04-22,Amcor plc,Amcor,Materials,Paper & Plastic Packaging Products & Materials,2,Industrials,2.619349583739324
+GL,2026-04-22,GLOBE LIFE INC.,Globe Life,Financials,Life & Health Insurance,3,Communication Services,2.5970237933063327
+SATS,2026-04-22,EchoStar CORP,EchoStar,Communication Services,Wireless Telecommunication Services,4,Financials,2.5487245285172664
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,4,Financials,2.5235681117079527
+CL,2026-04-22,COLGATE PALMOLIVE CO,Colgate-Palmolive,Consumer Staples,Household Products,10,Industrials,2.497239756822831
+RTX,2026-04-22,RTX Corp,RTX Corporation,Industrials,Aerospace & Defense,4,Financials,2.4924647970207765
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",0,Consumer Staples,2.4871145996356234
+GEN,2026-04-22,Gen Digital Inc.,Gen Digital,Information Technology,Systems Software,3,Communication Services,2.477485600517849
+LHX,2026-04-22,"L3HARRIS TECHNOLOGIES, INC. /DE/",L3Harris,Industrials,Aerospace & Defense,9,Information Technology,2.4750877652428764
+CHD,2026-04-22,CHURCH & DWIGHT CO INC /DE/,Church & Dwight,Consumer Staples,Household Products,1,Health Care,2.4627260995097937
+HII,2026-04-22,"HUNTINGTON INGALLS INDUSTRIES, INC.",Huntington Ingalls Industries,Industrials,Aerospace & Defense,9,Information Technology,2.4295898584926885
+VICI,2026-04-22,VICI PROPERTIES INC.,Vici Properties,Real Estate,Hotel & Resort REITs,7,Financials,2.428590581400728
+CARR,2026-04-22,CARRIER GLOBAL Corp,Carrier Global,Industrials,Building Products,7,Financials,2.4261966373776267
+MSFT,2026-04-22,MICROSOFT CORP,Microsoft,Information Technology,Systems Software,3,Communication Services,2.4235950179226635
+FAST,2026-04-22,FASTENAL CO,Fastenal,Industrials,Trading Companies & Distributors,0,Consumer Staples,2.4196076093504915
+EFX,2026-04-22,EQUIFAX INC,Equifax,Industrials,Research & Consulting Services,4,Financials,2.418644826228669
+DPZ,2026-04-22,DOMINOS PIZZA INC,Domino's,Consumer Discretionary,Restaurants,0,Consumer Staples,2.4061525267584525
+HLT,2026-04-22,Hilton Worldwide Holdings Inc.,Hilton Worldwide,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",3,Communication Services,2.404478595390791
+WYNN,2026-04-22,WYNN RESORTS LTD,Wynn Resorts,Consumer Discretionary,Casinos & Gaming,7,Financials,2.400826366184391
+DASH,2026-04-22,"DoorDash, Inc.",DoorDash,Consumer Discretionary,Specialized Consumer Services,10,Industrials,2.3851452124802615
+KVUE,2026-04-22,Kenvue Inc.,Kenvue,Consumer Staples,Personal Care Products,1,Health Care,2.3789258230611883
+MAS,2026-04-22,MASCO CORP /DE/,Masco,Industrials,Building Products,7,Financials,2.375828279913098
+KLAC,2026-04-22,KLA CORP,KLA Corporation,Information Technology,Semiconductor Materials & Equipment,2,Industrials,2.375665697704823
+DE,2026-04-22,DEERE & CO,Deere & Company,Industrials,Agricultural & Farm Machinery,4,Financials,2.3578169093093018
+CSCO,2026-04-22,"CISCO SYSTEMS, INC.",Cisco,Information Technology,Communications Equipment,2,Industrials,2.3571101456873143
+DECK,2026-04-22,DECKERS OUTDOOR CORP,Deckers Brands,Consumer Discretionary,Footwear,8,Health Care,2.3446881347328494
+ROP,2026-04-22,ROPER TECHNOLOGIES INC,Roper Technologies,Information Technology,Electronic Equipment & Instruments,3,Communication Services,2.3439925657597542
+ROK,2026-04-22,"ROCKWELL AUTOMATION, INC",Rockwell Automation,Industrials,Electrical Components & Equipment,8,Health Care,2.3407028368439713
+APP,2026-04-22,AppLovin Corp,AppLovin,Information Technology,Application Software,10,Industrials,2.3394644120581494
+LRCX,2026-04-22,LAM RESEARCH CORP,Lam Research,Information Technology,Semiconductor Materials & Equipment,8,Health Care,2.3392180590756806
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",5,Energy,2.3371978393811874
+BKNG,2026-04-22,Booking Holdings Inc.,Booking Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",3,Communication Services,2.2966737666018675
+F,2026-04-22,FORD MOTOR CO,Ford Motor Company,Consumer Discretionary,Automobile Manufacturers,2,Industrials,2.2884286613224987
+AAPL,2026-04-22,Apple Inc.,Apple Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",10,Industrials,2.2867390315533425
+TGT,2026-04-22,TARGET CORP,Target Corporation,Consumer Staples,Consumer Staples Merchandise Retail,3,Communication Services,2.279129142972652
+MTD,2026-04-22,METTLER TOLEDO INTERNATIONAL INC/,Mettler Toledo,Health Care,Life Sciences Tools & Services,4,Financials,2.2774337031419174
+TKO,2026-04-22,"TKO Group Holdings, Inc.",TKO Group Holdings,Communication Services,Movies & Entertainment,10,Industrials,2.2566041511013752
+GRMN,2026-04-22,GARMIN LTD,Garmin,Consumer Discretionary,Consumer Electronics,2,Industrials,2.25577602018932

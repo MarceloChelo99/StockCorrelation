@@ -1,0 +1,12 @@
+{
+  "model_name": "autoencoder",
+  "input_dim": 10,
+  "embedding_dim": 8,
+  "hidden_dim": 32,
+  "learning_rate": 0.001,
+  "epochs": 40,
+  "batch_size": 512,
+  "weight_decay": 1e-05,
+  "random_seed": 7,
+  "standardized": true
+}

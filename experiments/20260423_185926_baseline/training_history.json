@@ -1,0 +1,16 @@
+{
+  "explained_variance_ratio": 1.0,
+  "feature_columns": [
+    "price_vol_21d",
+    "price_vol_63d",
+    "price_vol_252d",
+    "price_mom_21d",
+    "price_mom_63d",
+    "price_mom_252d",
+    "price_dollar_volume_21d",
+    "price_dollar_volume_63d",
+    "price_amihud_21d",
+    "price_amihud_63d"
+  ],
+  "model_name": "pca"
+}

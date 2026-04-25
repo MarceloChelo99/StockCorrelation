@@ -1,0 +1,1 @@
+[2026-04-23 22:13:03] [train] Training history: {'initial_reconstruction_mse': 1.0012087754319574, 'final_reconstruction_mse': 0.5534282905969155, 'epochs': 40.0}.

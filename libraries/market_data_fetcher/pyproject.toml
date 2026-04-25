@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "market-data-fetcher"
+version = "0.1.0"
+description = "Reusable market-data library for Yahoo price history plus SEC filing metrics and raw filing text."
+packages = [{ include = "market_data_fetcher", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+certifi = "*"
+pandas = "^3.0.0"
+pyarrow = "*"
+price-fetcher = { path = "../price_fetcher", develop = true }

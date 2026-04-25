@@ -1,0 +1,179 @@
+{
+  "experiment_name": "baseline",
+  "random_seed": 7,
+  "paths": {
+    "sqlite_path": "data/raw_filing_corpora/raw_filing_corpora.sqlite",
+    "metadata_path": "data/processed/metadata/sp500_gics.parquet",
+    "events_path": "data/processed/events/eight_k_events.parquet",
+    "relationships_path": "data/processed/relationships/relationships.parquet",
+    "fundamentals_path": "data/processed/features/fundamentals.parquet",
+    "sections_dir": "data/processed/sections",
+    "feature_dir": "data/processed/features",
+    "dataset_dir": "data/processed/datasets",
+    "experiments_dir": "experiments"
+  },
+  "data": {
+    "filings_group_name": "S&P 500 Filings (2026-04-23 roster)",
+    "prices_group_name": "S&P 500 Prices Since 2010 (2026-04-23 roster)",
+    "start_date": "2010-01-01",
+    "end_date": null,
+    "annual_form": "10-K",
+    "quarterly_form": "10-Q"
+  },
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity"
+    ],
+    "price": {
+      "volatility_windows": [21, 63, 252],
+      "momentum_windows": [21, 63, 252],
+      "liquidity_windows": [21, 63],
+      "min_history_days": 252
+    },
+    "text": {
+      "method": "hashed",
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "batch_size": 16,
+      "max_chars": 12000,
+      "normalize_embeddings": true,
+      "business_embedding_dim": 32,
+      "risk_embedding_dim": 32,
+      "min_token_length": 3
+    },
+    "events": {
+      "since": "2024-01-01",
+      "forms": ["8-K", "8-K/A"],
+      "items": ["1.01", "2.01", "2.02", "5.02", "5.07", "7.01", "8.01", "9.01"],
+      "windows": [90, 180, 365]
+    },
+    "graph": {
+      "min_confidence": 0.45
+    }
+  },
+  "fundamentals": {
+    "user_agent": "StockCorrelation research castellanosmarcelo1@gmail.com",
+    "request_delay_seconds": 0.12,
+    "max_retries": 4,
+    "failures_path": "data/raw/fundamentals_failures.csv",
+    "smoke_test": false,
+    "smoke_limit": 20
+  },
+  "assembly": {
+    "dataset_name": "baseline",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity"
+    ],
+    "metadata_columns": [
+      "cik_str",
+      "title",
+      "search_label"
+    ]
+  },
+  "model": {
+    "name": "pca",
+    "embedding_dim": 4,
+    "hidden_dims": [64],
+    "dropout": 0.0,
+    "learning_rate": 0.001,
+    "epochs": 40,
+    "batch_size": 512,
+    "weight_decay": 0.00001,
+    "train_val_split": 0.85,
+    "early_stopping_patience": 10,
+    "exclude_columns": [
+      "ticker",
+      "date",
+      "cik_str",
+      "title",
+      "search_label"
+    ]
+  },
+  "views": {
+    "business": {
+      "feature_pattern": "^(text_business|text_risk)_",
+      "embedding_dim": 32,
+      "hidden_dims": [256, 128]
+    },
+    "behavioral": {
+      "feature_pattern": "^price_",
+      "embedding_dim": 16,
+      "hidden_dims": [64, 32],
+      "reuse_embeddings_path": "experiments/20260423_232623_risk_embedding/embeddings.parquet"
+    },
+    "growth": {
+      "feature_pattern": "^growth_",
+      "embedding_dim": 8,
+      "hidden_dims": [32, 16]
+    },
+    "network": {
+      "feature_pattern": "^net_",
+      "embedding_dim": 8,
+      "hidden_dims": [32, 16],
+      "min_feature_abs_sum": 1e-12
+    }
+  },
+  "views_enabled": ["business", "behavioral", "growth", "network"],
+  "pipeline": {
+    "views": false,
+    "gmm": false,
+    "multiview_eval": false,
+    "smoke_test": false
+  },
+  "evaluation": {
+    "enabled": [],
+    "clustering": {
+      "label_column": "gics_sector",
+      "k": null,
+      "n_init": 20,
+      "max_iter": 200,
+      "top_disagreements": 50
+    },
+    "peers": {
+      "k": 5,
+      "forward_days": 21,
+      "max_observations": 5000,
+      "benchmark_column": "gics_sub_industry",
+      "min_benchmark_pool": 6,
+      "random_seed": 7
+    },
+    "covariance": {
+      "lookback_days": 252,
+      "holding_days": 21,
+      "start_date": "2024-01-31",
+      "end_date": null,
+      "min_assets": 50,
+      "max_assets": 150,
+      "embedding_alpha": 0.25,
+      "annualization_days": 252,
+      "bootstrap_samples": 500,
+      "random_seed": 7
+    },
+    "relationships": {
+      "relationship_path": "data/processed/relationships/relationships.parquet",
+      "k": 5,
+      "benchmark_column": "gics_sub_industry",
+      "min_confidence": 0.45,
+      "relationship_types": ["customer", "supplier", "competitor", "partner", "agreement"],
+      "random_seed": 7
+    },
+    "multiview_peers": {
+      "horizons": [21, 63, 126, 252, 504]
+    },
+    "multiview_covariance": {
+      "lookback_days": 252,
+      "holding_days": 21,
+      "start_date": "2024-01-31",
+      "end_date": null,
+      "min_assets": 50,
+      "max_assets": 150,
+      "max_systematic_fraction": 0.8,
+      "annualization_days": 252,
+      "bootstrap_samples": 500,
+      "random_seed": 7
+    }
+  }
+}

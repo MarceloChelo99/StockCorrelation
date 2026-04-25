@@ -1,0 +1,40 @@
+{
+  "experiment_name": "ae_minilm_text_only",
+  "features": {
+    "enabled": [
+      "text_business",
+      "text_risk"
+    ],
+    "text": {
+      "method": "minilm",
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "batch_size": 16,
+      "max_chars": 12000,
+      "normalize_embeddings": true,
+      "business_embedding_dim": 384,
+      "risk_embedding_dim": 384
+    }
+  },
+  "assembly": {
+    "dataset_name": "ae_minilm_text_only",
+    "required_feature_groups": [
+      "text_business",
+      "text_risk"
+    ]
+  },
+  "model": {
+    "name": "autoencoder",
+    "embedding_dim": 8,
+    "hidden_dim": 128,
+    "learning_rate": 0.001,
+    "epochs": 40,
+    "batch_size": 512,
+    "weight_decay": 0.00001
+  },
+  "evaluation": {
+    "enabled": [
+      "clustering",
+      "peers"
+    ]
+  }
+}

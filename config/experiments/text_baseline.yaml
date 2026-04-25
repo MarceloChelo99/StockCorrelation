@@ -1,0 +1,26 @@
+{
+  "experiment_name": "text_baseline",
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "text_baseline",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_business",
+      "text_risk"
+    ]
+  },
+  "model": {
+    "name": "pca",
+    "embedding_dim": 8
+  }
+}

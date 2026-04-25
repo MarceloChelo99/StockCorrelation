@@ -1,0 +1,25 @@
+{
+  "epochs": 40.0,
+  "feature_columns": [
+    "growth_revenue_yoy_1y",
+    "growth_revenue_cagr_3y",
+    "growth_revenue_volatility",
+    "growth_gross_margin",
+    "growth_gross_margin_trend",
+    "growth_operating_margin",
+    "growth_operating_margin_trend",
+    "growth_rd_intensity",
+    "growth_capex_intensity",
+    "growth_capex_intensity_trend",
+    "growth_payout_dividend_yield",
+    "growth_payout_buyback_yield",
+    "growth_payout_total_yield",
+    "growth_asset_growth_1y",
+    "growth_leverage",
+    "growth_size_log_assets",
+    "growth_has_full_history"
+  ],
+  "final_reconstruction_mse": 0.3775563682279128,
+  "initial_reconstruction_mse": 1.0152303300151453,
+  "view": "growth"
+}

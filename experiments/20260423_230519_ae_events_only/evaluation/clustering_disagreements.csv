@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+SYY,2026-04-22,SYSCO CORP,Sysco,Consumer Staples,Food Distributors,7,Consumer Discretionary,0.9244052501790355
+SLB,2026-04-22,SLB LIMITED/NV,Schlumberger,Energy,Oil & Gas Equipment & Services,6,Information Technology,0.8909564615691636
+CPAY,2026-04-22,"CORPAY, INC.",Corpay,Financials,Transaction & Payment Processing Services,2,Materials,0.8765493775901513
+EQT,2026-04-22,EQT Corp,EQT Corporation,Energy,Oil & Gas Exploration & Production,6,Information Technology,0.8729698151225261
+KDP,2026-04-22,Keurig Dr Pepper Inc.,Keurig Dr Pepper,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,2,Materials,0.8370156939901121
+PRU,2026-04-22,PRUDENTIAL FINANCIAL INC,Prudential Financial,Financials,Life & Health Insurance,4,Health Care,0.8141138972101589
+WBD,2026-04-22,"Warner Bros. Discovery, Inc.",Warner Bros. Discovery,Communication Services,Broadcasting,7,Consumer Discretionary,0.8112599052162583
+OMC,2026-04-22,OMNICOM GROUP INC.,Omnicom Group,Communication Services,Advertising,10,Materials,0.799534740903354
+CCL,2026-04-22,CARNIVAL CORP,Carnival,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",6,Information Technology,0.7602582081955158
+SATS,2026-04-22,EchoStar CORP,EchoStar,Communication Services,Wireless Telecommunication Services,7,Consumer Discretionary,0.7471611054933097
+CPT,2026-04-22,CAMDEN PROPERTY TRUST,Camden Property Trust,Real Estate,Multi-Family Residential REITs,7,Consumer Discretionary,0.7310947159025963
+FITB,2026-04-22,FIFTH THIRD BANCORP,Fifth Third Bancorp,Financials,Regional Banks,2,Materials,0.7251630551340938
+DIS,2026-04-22,Walt Disney Co,Walt Disney Company (The),Communication Services,Movies & Entertainment,6,Information Technology,0.7014137826672194
+COR,2026-04-22,"Cencora, Inc.",Cencora,Health Care,Health Care Distributors,6,Information Technology,0.6930139815652488
+LDOS,2026-04-22,"Leidos Holdings, Inc.",Leidos,Industrials,Diversified Support Services,2,Materials,0.6578435669941552
+PSA,2026-04-22,Public Storage,Public Storage,Real Estate,Self-Storage REITs,7,Consumer Discretionary,0.6569228336684275
+BDX,2026-04-22,BECTON DICKINSON & CO,Becton Dickinson,Health Care,Health Care Equipment,6,Information Technology,0.6513034372214385
+PSKY,2026-04-22,Paramount Skydance Corp,Paramount Skydance Corporation,Communication Services,Movies & Entertainment,6,Information Technology,0.6401678916071731
+VRT,2026-04-22,Vertiv Holdings Co,Vertiv,Industrials,Electrical Components & Equipment,10,Materials,0.6287368058044553
+TDG,2026-04-22,TransDigm Group INC,TransDigm Group,Industrials,Aerospace & Defense,6,Information Technology,0.6178232163480983
+HSIC,2026-04-22,HENRY SCHEIN INC,Henry Schein,Health Care,Health Care Distributors,7,Consumer Discretionary,0.6147053912906675
+BG,2026-04-22,Bunge Global SA,Bunge Global,Consumer Staples,Agricultural Products & Services,9,Financials,0.6048169019786045
+J,2026-04-22,JACOBS SOLUTIONS INC.,Jacobs Solutions,Industrials,Construction & Engineering,6,Information Technology,0.5829925639292631
+MKC,2026-04-22,MCCORMICK & CO INC,McCormick & Company,Consumer Staples,Packaged Foods & Meats,6,Information Technology,0.5800995720897926
+RJF,2026-04-22,RAYMOND JAMES FINANCIAL INC,Raymond James Financial,Financials,Investment Banking & Brokerage,6,Information Technology,0.5743288023076192
+TSLA,2026-04-22,"Tesla, Inc.","Tesla, Inc.",Consumer Discretionary,Automobile Manufacturers,3,Information Technology,0.568621736194945
+CNP,2026-04-22,CENTERPOINT ENERGY INC,CenterPoint Energy,Utilities,Multi-Utilities,6,Information Technology,0.5682893186185215
+BALL,2026-04-22,BALL Corp,Ball Corporation,Materials,"Metal, Glass & Plastic Containers",8,Financials,0.5643070637458469
+HRL,2026-04-22,HORMEL FOODS CORP /DE/,Hormel Foods,Consumer Staples,Packaged Foods & Meats,6,Information Technology,0.5447713167450801
+NRG,2026-04-22,"NRG ENERGY, INC.",NRG Energy,Utilities,Independent Power Producers & Energy Traders,2,Materials,0.5306871975763815
+CTAS,2026-04-22,CINTAS CORP,Cintas,Industrials,Diversified Support Services,3,Information Technology,0.5277853586413952
+FDS,2026-04-22,FACTSET RESEARCH SYSTEMS INC,FactSet,Financials,Financial Exchanges & Data,3,Information Technology,0.5263191879723247
+EG,2026-04-22,"EVEREST GROUP, LTD.",Everest Group,Financials,Reinsurance,7,Consumer Discretionary,0.5187988521523973
+TSN,2026-04-22,"TYSON FOODS, INC.",Tyson Foods,Consumer Staples,Packaged Foods & Meats,6,Information Technology,0.5183493381924553
+PG,2026-04-22,PROCTER & GAMBLE Co,Procter & Gamble,Consumer Staples,Personal Care Products,8,Financials,0.505482397074127
+AES,2026-04-22,AES CORP,AES Corporation,Utilities,Independent Power Producers & Energy Traders,7,Consumer Discretionary,0.5032009041003046
+ECL,2026-04-22,ECOLAB INC.,Ecolab,Materials,Specialty Chemicals,4,Health Care,0.4968875850880736
+DTE,2026-04-22,DTE ENERGY CO,DTE Energy,Utilities,Multi-Utilities,5,Financials,0.49604951862590485
+HBAN,2026-04-22,HUNTINGTON BANCSHARES INC /MD/,Huntington Bancshares,Financials,Regional Banks,2,Materials,0.47543204584344906
+AWK,2026-04-22,"American Water Works Company, Inc.",American Water Works,Utilities,Water Utilities,6,Information Technology,0.46117323510091246
+GPN,2026-04-22,GLOBAL PAYMENTS INC,Global Payments,Financials,Transaction & Payment Processing Services,10,Materials,0.460504160909862
+CHTR,2026-04-22,"CHARTER COMMUNICATIONS, INC. /MO/",Charter Communications,Communication Services,Cable & Satellite,4,Health Care,0.4595955587413185
+FISV,2026-04-22,FISERV INC,Fiserv,Financials,Transaction & Payment Processing Services,0,Industrials,0.45831197796018763
+APH,2026-04-22,AMPHENOL CORP /DE/,Amphenol,Information Technology,Electronic Components,10,Materials,0.44922585422204936
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,2,Materials,0.4454291303155981
+JKHY,2026-04-22,JACK HENRY & ASSOCIATES INC,Jack Henry & Associates,Financials,Transaction & Payment Processing Services,3,Information Technology,0.44457043614442243
+A,2026-04-22,"AGILENT TECHNOLOGIES, INC.",Agilent Technologies,Health Care,Life Sciences Tools & Services,6,Information Technology,0.44315879560016475
+BA,2026-04-22,BOEING CO,Boeing,Industrials,Aerospace & Defense,6,Information Technology,0.4370462112930824
+REGN,2026-04-22,"REGENERON PHARMACEUTICALS, INC.",Regeneron Pharmaceuticals,Health Care,Biotechnology,0,Industrials,0.43688923244570343
+LYB,2026-04-22,LyondellBasell Industries N.V.,LyondellBasell,Materials,Specialty Chemicals,7,Consumer Discretionary,0.4339801463516282

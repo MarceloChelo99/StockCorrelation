@@ -1,0 +1,26 @@
+[project]
+name = "stockcorrelation"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "MarceloChelo99",email = "castellanosmarcelo1@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.4",
+    "pandas>=3.0",
+    "pyarrow>=22.0",
+    "pyyaml>=6.0",
+    "torch==2.10.0",
+    "sentence-transformers==5.4.1",
+    "networkx>=3.6",
+    "scikit-learn>=1.8",
+    "cvxpy>=1.8",
+    "streamlit>=1.50",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

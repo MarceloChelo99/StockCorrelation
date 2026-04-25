@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+CINF,2026-04-22,CINCINNATI FINANCIAL CORP,Cincinnati Financial,Financials,Property & Casualty Insurance,7,Health Care,2.124690007283061
+GEN,2026-04-22,Gen Digital Inc.,Gen Digital,Information Technology,Systems Software,3,Industrials,1.9048541828989292
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",7,Health Care,1.8903316809565351
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,9,Industrials,1.8577499587741217
+LULU,2026-04-22,lululemon athletica inc.,Lululemon Athletica,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",2,Consumer Staples,1.6627389138898008
+CLX,2026-04-22,CLOROX CO /DE/,Clorox,Consumer Staples,Household Products,7,Health Care,1.632986845135535
+V,2026-04-22,VISA INC.,Visa Inc.,Financials,Transaction & Payment Processing Services,10,Communication Services,1.6220696539157735
+NUE,2026-04-22,NUCOR CORP,Nucor,Materials,Steel,7,Health Care,1.6154431293608416
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,7,Health Care,1.6045135695978863
+ROK,2026-04-22,"ROCKWELL AUTOMATION, INC",Rockwell Automation,Industrials,Electrical Components & Equipment,6,Financials,1.6019504916008205
+ADBE,2026-04-22,ADOBE INC.,Adobe Inc.,Information Technology,Application Software,10,Communication Services,1.5982594323349524
+LYB,2026-04-22,LyondellBasell Industries N.V.,LyondellBasell,Materials,Specialty Chemicals,0,Industrials,1.5821764187074119
+APA,2026-04-22,APA Corp,APA Corporation,Energy,Oil & Gas Exploration & Production,0,Industrials,1.5743569401639568
+AZO,2026-04-22,AUTOZONE INC,AutoZone,Consumer Discretionary,Automotive Retail,7,Health Care,1.5502362182308782
+TSLA,2026-04-22,"Tesla, Inc.","Tesla, Inc.",Consumer Discretionary,Automobile Manufacturers,1,Information Technology,1.5501697792071083
+EIX,2026-04-22,EDISON INTERNATIONAL,Edison International,Utilities,Electric Utilities,3,Industrials,1.5318837578331936
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,7,Health Care,1.5284288696135577
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,7,Health Care,1.5247004154622499
+EFX,2026-04-22,EQUIFAX INC,Equifax,Industrials,Research & Consulting Services,1,Information Technology,1.5098160714831799
+MSFT,2026-04-22,MICROSOFT CORP,Microsoft,Information Technology,Systems Software,10,Communication Services,1.4997307515904772
+XOM,2026-04-22,EXXON MOBIL CORP,ExxonMobil,Energy,Integrated Oil & Gas,5,Utilities,1.4991557472795196
+TPL,2026-04-22,Texas Pacific Land Corp,Texas Pacific Land Corporation,Energy,Oil & Gas Exploration & Production,5,Utilities,1.478435452820424
+AAPL,2026-04-22,Apple Inc.,Apple Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",3,Industrials,1.4747999277151458
+FICO,2026-04-22,FAIR ISAAC CORP,Fair Isaac,Information Technology,Application Software,10,Communication Services,1.4706992637761864
+WAB,2026-04-22,WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP,Wabtec,Industrials,Construction Machinery & Heavy Transportation Equipment,10,Communication Services,1.437364236718712
+MTB,2026-04-22,M&T BANK CORP,M&T Bank,Financials,Regional Banks,9,Industrials,1.434688844456917
+FRT,2026-04-22,FEDERAL REALTY INVESTMENT TRUST,Federal Realty Investment Trust,Real Estate,Retail REITs,3,Industrials,1.4331967783820805
+ON,2026-04-22,ON SEMICONDUCTOR CORP,ON Semiconductor,Information Technology,Semiconductors,8,Health Care,1.4319218869498385
+FCX,2026-04-22,FREEPORT-MCMORAN INC,Freeport-McMoRan,Materials,Copper,3,Industrials,1.4268196356989886
+LII,2026-04-22,LENNOX INTERNATIONAL INC,Lennox International,Industrials,Building Products,2,Consumer Staples,1.4245908529699531
+T,2026-04-22,AT&T INC.,AT&T,Communication Services,Integrated Telecommunication Services,6,Financials,1.4133435094601823
+KVUE,2026-04-22,Kenvue Inc.,Kenvue,Consumer Staples,Personal Care Products,7,Health Care,1.3901199037485605
+ARE,2026-04-22,"ALEXANDRIA REAL ESTATE EQUITIES, INC.",Alexandria Real Estate Equities,Real Estate,Office REITs,6,Financials,1.3822648487463645
+TPR,2026-04-22,"TAPESTRY, INC.","Tapestry, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",2,Consumer Staples,1.3725509631671253
+DPZ,2026-04-22,DOMINOS PIZZA INC,Domino's,Consumer Discretionary,Restaurants,2,Consumer Staples,1.3693613531208664
+SATS,2026-04-22,EchoStar CORP,EchoStar,Communication Services,Wireless Telecommunication Services,3,Industrials,1.363474551205747
+OXY,2026-04-22,OCCIDENTAL PETROLEUM CORP /DE/,Occidental Petroleum,Energy,Oil & Gas Exploration & Production,3,Industrials,1.362170126462096
+TSN,2026-04-22,"TYSON FOODS, INC.",Tyson Foods,Consumer Staples,Packaged Foods & Meats,4,Health Care,1.3586839345519686
+AMCR,2026-04-22,Amcor plc,Amcor,Materials,Paper & Plastic Packaging Products & Materials,7,Health Care,1.35646873357241
+NRG,2026-04-22,"NRG ENERGY, INC.",NRG Energy,Utilities,Independent Power Producers & Energy Traders,3,Industrials,1.352360195771881
+XEL,2026-04-22,XCEL ENERGY INC,Xcel Energy,Utilities,Multi-Utilities,0,Industrials,1.344382530949927
+JBHT,2026-04-22,HUNT J B TRANSPORT SERVICES INC,J.B. Hunt,Industrials,Cargo Ground Transportation,5,Utilities,1.3430921279030719
+ORCL,2026-04-22,ORACLE CORP,Oracle Corporation,Information Technology,Application Software,10,Communication Services,1.3389174150189644
+HAS,2026-04-22,"HASBRO, INC.",Hasbro,Consumer Discretionary,Leisure Products,3,Industrials,1.3189734138169693
+TGT,2026-04-22,TARGET CORP,Target Corporation,Consumer Staples,Consumer Staples Merchandise Retail,10,Communication Services,1.31584096885856
+DECK,2026-04-22,DECKERS OUTDOOR CORP,Deckers Brands,Consumer Discretionary,Footwear,3,Industrials,1.3094618303243808
+TDG,2026-04-22,TransDigm Group INC,TransDigm Group,Industrials,Aerospace & Defense,2,Consumer Staples,1.3063227129599226
+ROST,2026-04-22,"ROSS STORES, INC.",Ross Stores,Consumer Discretionary,Apparel Retail,2,Consumer Staples,1.305576861785658
+AMAT,2026-04-22,APPLIED MATERIALS INC /DE,Applied Materials,Information Technology,Semiconductor Materials & Equipment,0,Industrials,1.3031766727770646
+IBM,2026-04-22,INTERNATIONAL BUSINESS MACHINES CORP,IBM,Information Technology,IT Consulting & Other Services,10,Communication Services,1.3011016500856847

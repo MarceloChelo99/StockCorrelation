@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+CMG,2026-04-22,CHIPOTLE MEXICAN GRILL INC,Chipotle Mexican Grill,Consumer Discretionary,Restaurants,7,Utilities,3.014912096721186
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,3,Financials,2.89401706287953
+CLX,2026-04-22,CLOROX CO /DE/,Clorox,Consumer Staples,Household Products,0,Health Care,2.871796748335698
+BLDR,2026-04-22,"Builders FirstSource, Inc.",Builders FirstSource,Industrials,Building Products,2,Financials,2.8275879220631164
+AMCR,2026-04-22,Amcor plc,Amcor,Materials,Paper & Plastic Packaging Products & Materials,0,Health Care,2.7861622473749814
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,0,Health Care,2.7836250529744015
+AMD,2026-04-22,ADVANCED MICRO DEVICES INC,Advanced Micro Devices,Information Technology,Semiconductors,4,Financials,2.756135114584371
+LYV,2026-04-22,"Live Nation Entertainment, Inc.",Live Nation Entertainment,Communication Services,Movies & Entertainment,3,Financials,2.7528643052086488
+ORCL,2026-04-22,ORACLE CORP,Oracle Corporation,Information Technology,Application Software,3,Financials,2.7230728029840585
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,3,Financials,2.7184904571117756
+ABNB,2026-04-22,"Airbnb, Inc.",Airbnb,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",3,Financials,2.699573136928765
+FOXA,2026-04-22,Fox Corp,Fox Corporation (Class A),Communication Services,Broadcasting,3,Financials,2.625360873449521
+FOX,2026-04-22,Fox Corp,Fox Corporation (Class B),Communication Services,Broadcasting,3,Financials,2.623712294039519
+GEV,2026-04-22,GE Vernova Inc.,GE Vernova,Industrials,Heavy Electrical Equipment,7,Utilities,2.6091818830511397
+TTD,2026-04-22,"Trade Desk, Inc.",Trade Desk (The),Communication Services,Advertising,3,Financials,2.5806493371334596
+BKNG,2026-04-22,Booking Holdings Inc.,Booking Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",6,Industrials,2.5596114502055203
+NWS,2026-04-22,NEWS CORP,News Corp (Class B),Communication Services,Publishing,8,Information Technology,2.554283061504225
+NWSA,2026-04-22,NEWS CORP,News Corp (Class A),Communication Services,Publishing,8,Information Technology,2.5446559145880783
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",6,Industrials,2.5191909878548557
+NSC,2026-04-22,NORFOLK SOUTHERN CORP,Norfolk Southern,Industrials,Rail Transportation,1,Energy,2.516334155300366
+BKR,2026-04-22,Baker Hughes Co,Baker Hughes,Energy,Oil & Gas Equipment & Services,9,Industrials,2.514457353300072
+STE,2026-04-22,STERIS plc,Steris,Health Care,Health Care Equipment,4,Financials,2.5062413468707994
+MSFT,2026-04-22,MICROSOFT CORP,Microsoft,Information Technology,Systems Software,3,Financials,2.502509704619253
+GOOG,2026-04-22,Alphabet Inc.,Alphabet Inc. (Class C),Communication Services,Interactive Media & Services,3,Financials,2.465844340284126
+GOOGL,2026-04-22,Alphabet Inc.,Alphabet Inc. (Class A),Communication Services,Interactive Media & Services,3,Financials,2.461459795289536
+YUM,2026-04-22,YUM BRANDS INC,Yum! Brands,Consumer Discretionary,Restaurants,9,Industrials,2.457968837640113
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,9,Industrials,2.452439761980453
+BF-B,2026-04-22,BROWN FORMAN CORP,Brown–Forman,Consumer Staples,Distillers & Vintners,9,Industrials,2.445026818433389
+IBM,2026-04-22,INTERNATIONAL BUSINESS MACHINES CORP,IBM,Information Technology,IT Consulting & Other Services,3,Financials,2.4375581188192723
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,4,Financials,2.4324531298078798
+TER,2026-04-22,"TERADYNE, INC",Teradyne,Information Technology,Semiconductor Materials & Equipment,9,Industrials,2.429727691384298
+VICI,2026-04-22,VICI PROPERTIES INC.,Vici Properties,Real Estate,Hotel & Resort REITs,8,Information Technology,2.4296192230016156
+TSN,2026-04-22,"TYSON FOODS, INC.",Tyson Foods,Consumer Staples,Packaged Foods & Meats,0,Health Care,2.4271167036513894
+TECH,2026-04-22,BIO-TECHNE Corp,Bio-Techne,Health Care,Life Sciences Tools & Services,6,Industrials,2.4249212494043686
+ABBV,2026-04-22,AbbVie Inc.,AbbVie,Health Care,Biotechnology,4,Financials,2.4226472585354344
+ALGN,2026-04-22,ALIGN TECHNOLOGY INC,Align Technology,Health Care,Health Care Supplies,8,Information Technology,2.4223283925907966
+KVUE,2026-04-22,Kenvue Inc.,Kenvue,Consumer Staples,Personal Care Products,0,Health Care,2.4189412585188146
+TSCO,2026-04-22,TRACTOR SUPPLY CO /DE/,Tractor Supply,Consumer Discretionary,Other Specialty Retail,6,Industrials,2.416294823801132
+NXPI,2026-04-22,NXP Semiconductors N.V.,NXP Semiconductors,Information Technology,Semiconductors,9,Industrials,2.4145885663811377
+IBKR,2026-04-22,"Interactive Brokers Group, Inc.",Interactive Brokers,Financials,Investment Banking & Brokerage,8,Information Technology,2.413529204989108
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,1,Energy,2.40444290025336
+LHX,2026-04-22,"L3HARRIS TECHNOLOGIES, INC. /DE/",L3Harris,Industrials,Aerospace & Defense,4,Financials,2.3935952619324143
+GEN,2026-04-22,Gen Digital Inc.,Gen Digital,Information Technology,Systems Software,0,Health Care,2.3922966173290505
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",3,Financials,2.37854893913265
+AMT,2026-04-22,AMERICAN TOWER CORP /MA/,American Tower,Real Estate,Telecom Tower REITs,3,Financials,2.3775319825221826
+DOW,2026-04-22,DOW INC.,Dow Inc.,Materials,Commodity Chemicals,4,Financials,2.3742870575788744
+NVR,2026-04-22,NVR INC,"NVR, Inc.",Consumer Discretionary,Homebuilding,2,Financials,2.367347256189822
+TJX,2026-04-22,TJX COMPANIES INC /DE/,TJX Companies,Consumer Discretionary,Apparel Retail,9,Industrials,2.3655136870733338
+KMB,2026-04-22,KIMBERLY CLARK CORP,Kimberly-Clark,Consumer Staples,Household Products,6,Industrials,2.364589015092477
+AMAT,2026-04-22,APPLIED MATERIALS INC /DE,Applied Materials,Information Technology,Semiconductor Materials & Equipment,9,Industrials,2.360571248981468

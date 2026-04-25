@@ -1,0 +1,529 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720">
+<rect width="100%" height="100%" fill="#fbfaf6"/>
+<text x="40" y="38" font-family="Georgia, serif" font-size="24" fill="#17211a">Embedding Clusters vs GICS Sector</text>
+<text x="40" y="62" font-family="Verdana, sans-serif" font-size="12" fill="#516057">Latest ticker embeddings projected to 2D with PCA</text>
+<circle cx="306.15" cy="384.05" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>A: Health Care</title></circle>
+<circle cx="307.55" cy="362.08" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>AAPL: Information Technology</title></circle>
+<circle cx="389.49" cy="355.59" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ABBV: Health Care</title></circle>
+<circle cx="444.87" cy="423.61" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>ABNB: Consumer Discretionary</title></circle>
+<circle cx="394.71" cy="342.67" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ABT: Health Care</title></circle>
+<circle cx="471.57" cy="472.93" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>ACGL: Financials</title></circle>
+<circle cx="285.09" cy="466.65" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ACN: Information Technology</title></circle>
+<circle cx="365.20" cy="502.50" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ADBE: Information Technology</title></circle>
+<circle cx="288.59" cy="391.69" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ADI: Information Technology</title></circle>
+<circle cx="375.04" cy="324.51" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>ADM: Consumer Staples</title></circle>
+<circle cx="403.23" cy="508.11" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ADP: Industrials</title></circle>
+<circle cx="445.17" cy="469.62" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ADSK: Information Technology</title></circle>
+<circle cx="750.03" cy="393.42" r="4.2" fill="#264653" fill-opacity="0.78"><title>AEE: Utilities</title></circle>
+<circle cx="520.07" cy="314.38" r="4.2" fill="#264653" fill-opacity="0.78"><title>AEP: Utilities</title></circle>
+<circle cx="622.57" cy="309.22" r="4.2" fill="#264653" fill-opacity="0.78"><title>AES: Utilities</title></circle>
+<circle cx="532.90" cy="415.78" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AFL: Financials</title></circle>
+<circle cx="465.52" cy="494.80" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AIG: Financials</title></circle>
+<circle cx="403.71" cy="482.18" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AIZ: Financials</title></circle>
+<circle cx="467.94" cy="489.19" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AJG: Financials</title></circle>
+<circle cx="377.94" cy="522.17" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>AKAM: Information Technology</title></circle>
+<circle cx="439.53" cy="361.41" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>ALB: Materials</title></circle>
+<circle cx="307.00" cy="400.33" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ALGN: Health Care</title></circle>
+<circle cx="418.14" cy="453.74" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>ALL: Financials</title></circle>
+<circle cx="430.82" cy="322.29" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ALLE: Industrials</title></circle>
+<circle cx="280.73" cy="411.63" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>AMAT: Information Technology</title></circle>
+<circle cx="343.11" cy="305.31" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>AMCR: Materials</title></circle>
+<circle cx="371.36" cy="396.19" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>AMD: Information Technology</title></circle>
+<circle cx="338.45" cy="292.65" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>AME: Industrials</title></circle>
+<circle cx="285.53" cy="370.33" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>AMGN: Health Care</title></circle>
+<circle cx="480.14" cy="435.17" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AMP: Financials</title></circle>
+<circle cx="490.26" cy="470.91" r="4.2" fill="#17becf" fill-opacity="0.78"><title>AMT: Real Estate</title></circle>
+<circle cx="333.53" cy="449.96" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>AMZN: Consumer Discretionary</title></circle>
+<circle cx="341.59" cy="498.53" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ANET: Information Technology</title></circle>
+<circle cx="455.86" cy="478.89" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AON: Financials</title></circle>
+<circle cx="336.29" cy="279.03" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>AOS: Industrials</title></circle>
+<circle cx="443.78" cy="315.76" r="4.2" fill="#d62728" fill-opacity="0.78"><title>APA: Energy</title></circle>
+<circle cx="491.92" cy="357.42" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>APD: Materials</title></circle>
+<circle cx="370.70" cy="352.58" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>APH: Information Technology</title></circle>
+<circle cx="567.46" cy="453.36" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>APO: Financials</title></circle>
+<circle cx="244.19" cy="455.18" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>APP: Information Technology</title></circle>
+<circle cx="318.31" cy="275.96" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>APTV: Consumer Discretionary</title></circle>
+<circle cx="418.71" cy="411.03" r="4.2" fill="#17becf" fill-opacity="0.78"><title>ARE: Real Estate</title></circle>
+<circle cx="459.62" cy="522.65" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>ARES: Financials</title></circle>
+<circle cx="802.01" cy="453.62" r="4.2" fill="#264653" fill-opacity="0.78"><title>ATO: Utilities</title></circle>
+<circle cx="492.92" cy="505.92" r="4.2" fill="#17becf" fill-opacity="0.78"><title>AVB: Real Estate</title></circle>
+<circle cx="354.46" cy="436.40" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>AVGO: Information Technology</title></circle>
+<circle cx="334.10" cy="345.58" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>AVY: Materials</title></circle>
+<circle cx="466.93" cy="373.90" r="4.2" fill="#264653" fill-opacity="0.78"><title>AWK: Utilities</title></circle>
+<circle cx="360.49" cy="400.76" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>AXON: Industrials</title></circle>
+<circle cx="420.59" cy="514.26" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>AXP: Financials</title></circle>
+<circle cx="321.53" cy="253.56" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>AZO: Consumer Discretionary</title></circle>
+<circle cx="339.79" cy="296.34" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>BA: Industrials</title></circle>
+<circle cx="527.25" cy="464.13" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BAC: Financials</title></circle>
+<circle cx="427.04" cy="225.75" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>BALL: Materials</title></circle>
+<circle cx="329.74" cy="378.33" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>BAX: Health Care</title></circle>
+<circle cx="469.76" cy="382.47" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>BBY: Consumer Discretionary</title></circle>
+<circle cx="412.03" cy="358.20" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>BDX: Health Care</title></circle>
+<circle cx="408.62" cy="484.99" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BEN: Financials</title></circle>
+<circle cx="268.26" cy="319.66" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>BF-B: Consumer Staples</title></circle>
+<circle cx="360.53" cy="346.21" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>BG: Consumer Staples</title></circle>
+<circle cx="388.25" cy="396.12" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>BIIB: Health Care</title></circle>
+<circle cx="515.52" cy="449.93" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BK: Financials</title></circle>
+<circle cx="408.18" cy="507.44" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>BKNG: Consumer Discretionary</title></circle>
+<circle cx="432.39" cy="349.91" r="4.2" fill="#d62728" fill-opacity="0.78"><title>BKR: Energy</title></circle>
+<circle cx="365.06" cy="377.28" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>BLDR: Industrials</title></circle>
+<circle cx="446.74" cy="395.88" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BLK: Financials</title></circle>
+<circle cx="390.15" cy="413.25" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>BMY: Health Care</title></circle>
+<circle cx="419.81" cy="511.97" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>BR: Industrials</title></circle>
+<circle cx="392.68" cy="168.41" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BRK-B: Financials</title></circle>
+<circle cx="319.36" cy="417.61" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BRO: Financials</title></circle>
+<circle cx="373.54" cy="367.24" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>BSX: Health Care</title></circle>
+<circle cx="529.75" cy="490.41" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>BX: Financials</title></circle>
+<circle cx="480.50" cy="483.52" r="4.2" fill="#17becf" fill-opacity="0.78"><title>BXP: Real Estate</title></circle>
+<circle cx="477.00" cy="650.00" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>C: Financials</title></circle>
+<circle cx="278.16" cy="241.32" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CAG: Consumer Staples</title></circle>
+<circle cx="398.93" cy="431.41" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>CAH: Health Care</title></circle>
+<circle cx="331.50" cy="357.72" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CARR: Industrials</title></circle>
+<circle cx="410.94" cy="288.20" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CASY: Consumer Staples</title></circle>
+<circle cx="407.63" cy="404.77" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CAT: Industrials</title></circle>
+<circle cx="451.81" cy="469.11" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CB: Financials</title></circle>
+<circle cx="448.92" cy="459.83" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CBOE: Financials</title></circle>
+<circle cx="423.62" cy="472.66" r="4.2" fill="#17becf" fill-opacity="0.78"><title>CBRE: Real Estate</title></circle>
+<circle cx="406.25" cy="435.91" r="4.2" fill="#17becf" fill-opacity="0.78"><title>CCI: Real Estate</title></circle>
+<circle cx="483.71" cy="430.63" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>CCL: Consumer Discretionary</title></circle>
+<circle cx="338.68" cy="430.53" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CDNS: Information Technology</title></circle>
+<circle cx="381.66" cy="498.78" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CDW: Information Technology</title></circle>
+<circle cx="534.57" cy="324.09" r="4.2" fill="#264653" fill-opacity="0.78"><title>CEG: Utilities</title></circle>
+<circle cx="495.55" cy="314.52" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>CF: Materials</title></circle>
+<circle cx="427.44" cy="474.20" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CFG: Financials</title></circle>
+<circle cx="362.91" cy="357.47" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CHD: Consumer Staples</title></circle>
+<circle cx="433.78" cy="288.61" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CHRW: Industrials</title></circle>
+<circle cx="489.30" cy="385.73" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>CHTR: Communication Services</title></circle>
+<circle cx="453.76" cy="447.12" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>CI: Health Care</title></circle>
+<circle cx="364.23" cy="476.65" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CIEN: Information Technology</title></circle>
+<circle cx="369.59" cy="381.22" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CINF: Financials</title></circle>
+<circle cx="259.96" cy="308.43" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CL: Consumer Staples</title></circle>
+<circle cx="354.99" cy="343.30" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CLX: Consumer Staples</title></circle>
+<circle cx="420.68" cy="507.76" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>CMCSA: Communication Services</title></circle>
+<circle cx="455.20" cy="479.91" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CME: Financials</title></circle>
+<circle cx="419.88" cy="364.19" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>CMG: Consumer Discretionary</title></circle>
+<circle cx="435.73" cy="328.99" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CMI: Industrials</title></circle>
+<circle cx="837.62" cy="136.70" r="4.2" fill="#264653" fill-opacity="0.78"><title>CMS: Utilities</title></circle>
+<circle cx="464.52" cy="515.22" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>CNC: Health Care</title></circle>
+<circle cx="740.99" cy="328.94" r="4.2" fill="#264653" fill-opacity="0.78"><title>CNP: Utilities</title></circle>
+<circle cx="557.19" cy="498.50" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>COF: Financials</title></circle>
+<circle cx="269.66" cy="269.81" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>COHR: Information Technology</title></circle>
+<circle cx="558.90" cy="428.53" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>COIN: Financials</title></circle>
+<circle cx="400.70" cy="444.89" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>COO: Health Care</title></circle>
+<circle cx="395.87" cy="389.74" r="4.2" fill="#d62728" fill-opacity="0.78"><title>COP: Energy</title></circle>
+<circle cx="378.84" cy="473.09" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>COR: Health Care</title></circle>
+<circle cx="347.44" cy="291.83" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>COST: Consumer Staples</title></circle>
+<circle cx="416.38" cy="461.63" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>CPAY: Financials</title></circle>
+<circle cx="381.17" cy="352.47" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>CPB: Consumer Staples</title></circle>
+<circle cx="527.29" cy="473.70" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CPRT: Industrials</title></circle>
+<circle cx="374.89" cy="465.61" r="4.2" fill="#17becf" fill-opacity="0.78"><title>CPT: Real Estate</title></circle>
+<circle cx="419.78" cy="354.18" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>CRH: Materials</title></circle>
+<circle cx="391.86" cy="440.50" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>CRL: Health Care</title></circle>
+<circle cx="381.89" cy="583.06" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CRM: Information Technology</title></circle>
+<circle cx="341.46" cy="502.22" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CRWD: Information Technology</title></circle>
+<circle cx="429.04" cy="558.55" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CSCO: Information Technology</title></circle>
+<circle cx="350.00" cy="496.97" r="4.2" fill="#17becf" fill-opacity="0.78"><title>CSGP: Real Estate</title></circle>
+<circle cx="521.89" cy="329.07" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CSX: Industrials</title></circle>
+<circle cx="503.42" cy="414.45" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>CTAS: Industrials</title></circle>
+<circle cx="387.63" cy="346.18" r="4.2" fill="#d62728" fill-opacity="0.78"><title>CTRA: Energy</title></circle>
+<circle cx="356.26" cy="453.26" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>CTSH: Information Technology</title></circle>
+<circle cx="300.67" cy="296.67" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>CTVA: Materials</title></circle>
+<circle cx="399.51" cy="385.90" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>CVNA: Consumer Discretionary</title></circle>
+<circle cx="481.26" cy="343.26" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>CVS: Health Care</title></circle>
+<circle cx="481.87" cy="414.12" r="4.2" fill="#d62728" fill-opacity="0.78"><title>CVX: Energy</title></circle>
+<circle cx="628.31" cy="310.57" r="4.2" fill="#264653" fill-opacity="0.78"><title>D: Utilities</title></circle>
+<circle cx="526.14" cy="339.75" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>DAL: Industrials</title></circle>
+<circle cx="289.89" cy="502.78" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>DASH: Consumer Discretionary</title></circle>
+<circle cx="350.94" cy="338.05" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>DD: Materials</title></circle>
+<circle cx="368.64" cy="436.00" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>DDOG: Information Technology</title></circle>
+<circle cx="282.67" cy="270.49" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>DE: Industrials</title></circle>
+<circle cx="371.59" cy="335.03" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>DECK: Consumer Discretionary</title></circle>
+<circle cx="265.55" cy="438.57" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>DELL: Information Technology</title></circle>
+<circle cx="329.05" cy="361.77" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>DG: Consumer Staples</title></circle>
+<circle cx="436.86" cy="532.39" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>DGX: Health Care</title></circle>
+<circle cx="419.87" cy="526.64" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>DHI: Consumer Discretionary</title></circle>
+<circle cx="385.25" cy="461.39" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>DHR: Health Care</title></circle>
+<circle cx="438.83" cy="454.28" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>DIS: Communication Services</title></circle>
+<circle cx="403.63" cy="485.24" r="4.2" fill="#17becf" fill-opacity="0.78"><title>DLR: Real Estate</title></circle>
+<circle cx="381.95" cy="367.54" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>DLTR: Consumer Staples</title></circle>
+<circle cx="490.97" cy="484.46" r="4.2" fill="#17becf" fill-opacity="0.78"><title>DOC: Real Estate</title></circle>
+<circle cx="398.47" cy="331.48" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>DOV: Industrials</title></circle>
+<circle cx="471.36" cy="241.39" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>DOW: Materials</title></circle>
+<circle cx="428.03" cy="402.69" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>DPZ: Consumer Discretionary</title></circle>
+<circle cx="475.09" cy="377.72" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>DRI: Consumer Discretionary</title></circle>
+<circle cx="556.71" cy="191.09" r="4.2" fill="#264653" fill-opacity="0.78"><title>DTE: Utilities</title></circle>
+<circle cx="890.00" cy="70.00" r="4.2" fill="#264653" fill-opacity="0.78"><title>DUK: Utilities</title></circle>
+<circle cx="455.60" cy="379.13" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>DVA: Health Care</title></circle>
+<circle cx="392.73" cy="414.70" r="4.2" fill="#d62728" fill-opacity="0.78"><title>DVN: Energy</title></circle>
+<circle cx="361.34" cy="425.78" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>DXCM: Health Care</title></circle>
+<circle cx="303.08" cy="430.24" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>EA: Communication Services</title></circle>
+<circle cx="477.54" cy="495.93" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>EBAY: Consumer Discretionary</title></circle>
+<circle cx="414.28" cy="330.85" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>ECL: Materials</title></circle>
+<circle cx="807.75" cy="297.94" r="4.2" fill="#264653" fill-opacity="0.78"><title>ED: Utilities</title></circle>
+<circle cx="374.53" cy="464.67" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>EFX: Industrials</title></circle>
+<circle cx="496.88" cy="498.28" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>EG: Financials</title></circle>
+<circle cx="728.11" cy="374.55" r="4.2" fill="#264653" fill-opacity="0.78"><title>EIX: Utilities</title></circle>
+<circle cx="303.65" cy="364.23" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>EL: Consumer Staples</title></circle>
+<circle cx="420.18" cy="461.47" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ELV: Health Care</title></circle>
+<circle cx="516.89" cy="389.03" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>EME: Industrials</title></circle>
+<circle cx="447.42" cy="372.00" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>EMR: Industrials</title></circle>
+<circle cx="451.79" cy="342.31" r="4.2" fill="#d62728" fill-opacity="0.78"><title>EOG: Energy</title></circle>
+<circle cx="386.80" cy="465.65" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>EPAM: Information Technology</title></circle>
+<circle cx="382.32" cy="546.66" r="4.2" fill="#17becf" fill-opacity="0.78"><title>EQIX: Real Estate</title></circle>
+<circle cx="481.01" cy="491.35" r="4.2" fill="#17becf" fill-opacity="0.78"><title>EQR: Real Estate</title></circle>
+<circle cx="626.65" cy="411.33" r="4.2" fill="#d62728" fill-opacity="0.78"><title>EQT: Energy</title></circle>
+<circle cx="495.45" cy="456.72" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>ERIE: Financials</title></circle>
+<circle cx="676.00" cy="352.21" r="4.2" fill="#264653" fill-opacity="0.78"><title>ES: Utilities</title></circle>
+<circle cx="426.83" cy="509.99" r="4.2" fill="#17becf" fill-opacity="0.78"><title>ESS: Real Estate</title></circle>
+<circle cx="307.11" cy="276.80" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ETN: Industrials</title></circle>
+<circle cx="666.16" cy="330.17" r="4.2" fill="#264653" fill-opacity="0.78"><title>ETR: Utilities</title></circle>
+<circle cx="562.28" cy="275.89" r="4.2" fill="#264653" fill-opacity="0.78"><title>EVRG: Utilities</title></circle>
+<circle cx="386.90" cy="445.18" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>EW: Health Care</title></circle>
+<circle cx="658.35" cy="243.80" r="4.2" fill="#264653" fill-opacity="0.78"><title>EXC: Utilities</title></circle>
+<circle cx="531.58" cy="370.51" r="4.2" fill="#d62728" fill-opacity="0.78"><title>EXE: Energy</title></circle>
+<circle cx="437.94" cy="384.73" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>EXPD: Industrials</title></circle>
+<circle cx="368.08" cy="381.43" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>EXPE: Consumer Discretionary</title></circle>
+<circle cx="395.22" cy="446.50" r="4.2" fill="#17becf" fill-opacity="0.78"><title>EXR: Real Estate</title></circle>
+<circle cx="517.77" cy="319.16" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>F: Consumer Discretionary</title></circle>
+<circle cx="426.56" cy="355.08" r="4.2" fill="#d62728" fill-opacity="0.78"><title>FANG: Energy</title></circle>
+<circle cx="257.66" cy="360.38" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>FAST: Industrials</title></circle>
+<circle cx="413.10" cy="353.94" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>FCX: Materials</title></circle>
+<circle cx="330.73" cy="406.25" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>FDS: Financials</title></circle>
+<circle cx="462.93" cy="326.15" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>FDX: Industrials</title></circle>
+<circle cx="538.41" cy="414.10" r="4.2" fill="#264653" fill-opacity="0.78"><title>FE: Utilities</title></circle>
+<circle cx="301.81" cy="456.50" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>FFIV: Information Technology</title></circle>
+<circle cx="392.18" cy="471.48" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>FICO: Information Technology</title></circle>
+<circle cx="421.65" cy="511.40" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>FIS: Financials</title></circle>
+<circle cx="471.09" cy="542.07" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>FISV: Financials</title></circle>
+<circle cx="571.51" cy="437.12" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>FITB: Financials</title></circle>
+<circle cx="502.89" cy="391.41" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>FIX: Industrials</title></circle>
+<circle cx="327.18" cy="540.93" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>FOX: Communication Services</title></circle>
+<circle cx="327.04" cy="540.92" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>FOXA: Communication Services</title></circle>
+<circle cx="392.87" cy="468.66" r="4.2" fill="#17becf" fill-opacity="0.78"><title>FRT: Real Estate</title></circle>
+<circle cx="461.11" cy="216.13" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>FSLR: Information Technology</title></circle>
+<circle cx="387.24" cy="448.88" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>FTNT: Information Technology</title></circle>
+<circle cx="374.93" cy="492.28" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>FTV: Industrials</title></circle>
+<circle cx="433.06" cy="422.37" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>GD: Industrials</title></circle>
+<circle cx="361.87" cy="479.17" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>GDDY: Information Technology</title></circle>
+<circle cx="497.53" cy="397.83" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>GE: Industrials</title></circle>
+<circle cx="337.78" cy="465.74" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>GEHC: Health Care</title></circle>
+<circle cx="376.26" cy="541.46" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>GEN: Information Technology</title></circle>
+<circle cx="486.90" cy="386.57" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>GEV: Industrials</title></circle>
+<circle cx="396.91" cy="401.01" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>GILD: Health Care</title></circle>
+<circle cx="70.00" cy="135.71" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>GIS: Consumer Staples</title></circle>
+<circle cx="568.34" cy="490.34" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>GL: Financials</title></circle>
+<circle cx="244.86" cy="257.35" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>GLW: Information Technology</title></circle>
+<circle cx="492.95" cy="333.93" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>GM: Consumer Discretionary</title></circle>
+<circle cx="401.49" cy="346.77" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>GNRC: Industrials</title></circle>
+<circle cx="358.65" cy="473.21" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>GOOG: Communication Services</title></circle>
+<circle cx="357.99" cy="473.29" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>GOOGL: Communication Services</title></circle>
+<circle cx="318.37" cy="367.72" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>GPC: Consumer Discretionary</title></circle>
+<circle cx="417.06" cy="552.32" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>GPN: Financials</title></circle>
+<circle cx="357.31" cy="417.92" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>GRMN: Consumer Discretionary</title></circle>
+<circle cx="423.55" cy="521.91" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>GS: Financials</title></circle>
+<circle cx="350.63" cy="299.05" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>GWW: Industrials</title></circle>
+<circle cx="434.46" cy="409.63" r="4.2" fill="#d62728" fill-opacity="0.78"><title>HAL: Energy</title></circle>
+<circle cx="407.05" cy="368.07" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>HAS: Consumer Discretionary</title></circle>
+<circle cx="705.61" cy="507.27" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>HBAN: Financials</title></circle>
+<circle cx="599.61" cy="484.08" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>HCA: Health Care</title></circle>
+<circle cx="459.50" cy="394.20" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>HD: Consumer Discretionary</title></circle>
+<circle cx="484.22" cy="439.86" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>HIG: Financials</title></circle>
+<circle cx="411.83" cy="340.00" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>HII: Industrials</title></circle>
+<circle cx="342.03" cy="408.72" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>HLT: Consumer Discretionary</title></circle>
+<circle cx="379.71" cy="334.72" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>HON: Industrials</title></circle>
+<circle cx="521.89" cy="524.93" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>HOOD: Financials</title></circle>
+<circle cx="391.65" cy="453.14" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>HPE: Information Technology</title></circle>
+<circle cx="363.61" cy="382.48" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>HPQ: Information Technology</title></circle>
+<circle cx="414.72" cy="284.54" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>HRL: Consumer Staples</title></circle>
+<circle cx="413.23" cy="416.97" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>HSIC: Health Care</title></circle>
+<circle cx="441.67" cy="364.44" r="4.2" fill="#17becf" fill-opacity="0.78"><title>HST: Real Estate</title></circle>
+<circle cx="353.12" cy="321.28" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>HSY: Consumer Staples</title></circle>
+<circle cx="357.43" cy="277.32" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>HUBB: Industrials</title></circle>
+<circle cx="435.92" cy="413.30" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>HUM: Health Care</title></circle>
+<circle cx="476.59" cy="356.81" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>HWM: Industrials</title></circle>
+<circle cx="496.50" cy="562.48" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>IBKR: Financials</title></circle>
+<circle cx="313.25" cy="407.94" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>IBM: Information Technology</title></circle>
+<circle cx="369.13" cy="456.73" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>ICE: Financials</title></circle>
+<circle cx="403.16" cy="385.40" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>IDXX: Health Care</title></circle>
+<circle cx="358.43" cy="310.32" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>IEX: Industrials</title></circle>
+<circle cx="325.30" cy="336.15" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>IFF: Materials</title></circle>
+<circle cx="357.24" cy="400.30" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>INCY: Health Care</title></circle>
+<circle cx="404.37" cy="386.89" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>INTC: Information Technology</title></circle>
+<circle cx="391.27" cy="567.76" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>INTU: Information Technology</title></circle>
+<circle cx="419.21" cy="496.99" r="4.2" fill="#17becf" fill-opacity="0.78"><title>INVH: Real Estate</title></circle>
+<circle cx="379.28" cy="359.97" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>IP: Materials</title></circle>
+<circle cx="372.04" cy="449.40" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>IQV: Health Care</title></circle>
+<circle cx="359.69" cy="329.69" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>IR: Industrials</title></circle>
+<circle cx="364.67" cy="498.83" r="4.2" fill="#17becf" fill-opacity="0.78"><title>IRM: Real Estate</title></circle>
+<circle cx="372.62" cy="447.16" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ISRG: Health Care</title></circle>
+<circle cx="275.98" cy="430.74" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>IT: Information Technology</title></circle>
+<circle cx="356.93" cy="281.69" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ITW: Industrials</title></circle>
+<circle cx="462.73" cy="454.74" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>IVZ: Financials</title></circle>
+<circle cx="433.32" cy="439.61" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>J: Industrials</title></circle>
+<circle cx="485.51" cy="339.31" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>JBHT: Industrials</title></circle>
+<circle cx="369.91" cy="333.00" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>JBL: Information Technology</title></circle>
+<circle cx="381.02" cy="377.56" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>JCI: Industrials</title></circle>
+<circle cx="452.73" cy="469.72" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>JKHY: Financials</title></circle>
+<circle cx="365.64" cy="343.99" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>JNJ: Health Care</title></circle>
+<circle cx="437.27" cy="444.97" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>JPM: Financials</title></circle>
+<circle cx="429.32" cy="340.38" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KDP: Consumer Staples</title></circle>
+<circle cx="470.73" cy="498.81" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>KEY: Financials</title></circle>
+<circle cx="294.48" cy="399.55" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>KEYS: Information Technology</title></circle>
+<circle cx="327.90" cy="274.70" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KHC: Consumer Staples</title></circle>
+<circle cx="387.92" cy="440.50" r="4.2" fill="#17becf" fill-opacity="0.78"><title>KIM: Real Estate</title></circle>
+<circle cx="611.72" cy="523.97" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>KKR: Financials</title></circle>
+<circle cx="369.73" cy="403.04" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>KLAC: Information Technology</title></circle>
+<circle cx="394.32" cy="313.49" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KMB: Consumer Staples</title></circle>
+<circle cx="461.31" cy="388.29" r="4.2" fill="#d62728" fill-opacity="0.78"><title>KMI: Energy</title></circle>
+<circle cx="422.38" cy="427.61" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KO: Consumer Staples</title></circle>
+<circle cx="287.03" cy="248.93" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KR: Consumer Staples</title></circle>
+<circle cx="394.99" cy="404.04" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>KVUE: Consumer Staples</title></circle>
+<circle cx="605.98" cy="349.43" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>L: Financials</title></circle>
+<circle cx="434.08" cy="487.78" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>LDOS: Industrials</title></circle>
+<circle cx="471.26" cy="523.26" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>LEN: Consumer Discretionary</title></circle>
+<circle cx="428.34" cy="392.21" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>LH: Health Care</title></circle>
+<circle cx="414.85" cy="373.72" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>LHX: Industrials</title></circle>
+<circle cx="334.31" cy="320.15" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>LII: Industrials</title></circle>
+<circle cx="188.31" cy="225.15" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>LIN: Materials</title></circle>
+<circle cx="306.16" cy="325.52" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>LITE: Information Technology</title></circle>
+<circle cx="285.47" cy="400.58" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>LLY: Health Care</title></circle>
+<circle cx="367.15" cy="374.31" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>LMT: Industrials</title></circle>
+<circle cx="728.12" cy="304.66" r="4.2" fill="#264653" fill-opacity="0.78"><title>LNT: Utilities</title></circle>
+<circle cx="444.57" cy="290.85" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>LOW: Consumer Discretionary</title></circle>
+<circle cx="283.65" cy="344.77" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>LRCX: Information Technology</title></circle>
+<circle cx="296.79" cy="317.43" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>LULU: Consumer Discretionary</title></circle>
+<circle cx="487.81" cy="364.35" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>LUV: Industrials</title></circle>
+<circle cx="411.10" cy="354.93" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>LVS: Consumer Discretionary</title></circle>
+<circle cx="431.76" cy="369.64" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>LYB: Materials</title></circle>
+<circle cx="429.55" cy="404.74" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>LYV: Communication Services</title></circle>
+<circle cx="445.30" cy="596.03" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MA: Financials</title></circle>
+<circle cx="505.14" cy="472.13" r="4.2" fill="#17becf" fill-opacity="0.78"><title>MAA: Real Estate</title></circle>
+<circle cx="540.50" cy="415.81" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>MAR: Consumer Discretionary</title></circle>
+<circle cx="356.55" cy="329.52" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>MAS: Industrials</title></circle>
+<circle cx="404.73" cy="408.18" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>MCD: Consumer Discretionary</title></circle>
+<circle cx="294.89" cy="327.02" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>MCHP: Information Technology</title></circle>
+<circle cx="411.29" cy="543.79" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>MCK: Health Care</title></circle>
+<circle cx="386.88" cy="500.78" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MCO: Financials</title></circle>
+<circle cx="336.17" cy="318.71" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>MDLZ: Consumer Staples</title></circle>
+<circle cx="357.01" cy="401.15" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>MDT: Health Care</title></circle>
+<circle cx="507.21" cy="333.24" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MET: Financials</title></circle>
+<circle cx="360.59" cy="409.08" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>META: Communication Services</title></circle>
+<circle cx="493.08" cy="388.86" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>MGM: Consumer Discretionary</title></circle>
+<circle cx="346.50" cy="326.32" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>MKC: Consumer Staples</title></circle>
+<circle cx="486.91" cy="296.29" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>MLM: Materials</title></circle>
+<circle cx="322.92" cy="340.35" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>MMM: Industrials</title></circle>
+<circle cx="458.53" cy="392.74" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>MNST: Consumer Staples</title></circle>
+<circle cx="360.03" cy="346.64" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>MO: Consumer Staples</title></circle>
+<circle cx="529.86" cy="272.23" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>MOS: Materials</title></circle>
+<circle cx="426.88" cy="293.01" r="4.2" fill="#d62728" fill-opacity="0.78"><title>MPC: Energy</title></circle>
+<circle cx="241.13" cy="352.98" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>MPWR: Information Technology</title></circle>
+<circle cx="396.58" cy="368.11" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>MRK: Health Care</title></circle>
+<circle cx="368.18" cy="398.59" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>MRNA: Health Care</title></circle>
+<circle cx="427.71" cy="497.66" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MRSH: Financials</title></circle>
+<circle cx="404.91" cy="499.48" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MS: Financials</title></circle>
+<circle cx="392.71" cy="439.99" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MSCI: Financials</title></circle>
+<circle cx="387.14" cy="488.39" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>MSFT: Information Technology</title></circle>
+<circle cx="418.15" cy="474.66" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>MSI: Information Technology</title></circle>
+<circle cx="427.77" cy="446.48" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>MTB: Financials</title></circle>
+<circle cx="350.14" cy="306.24" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>MTD: Health Care</title></circle>
+<circle cx="313.23" cy="317.17" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>MU: Information Technology</title></circle>
+<circle cx="450.91" cy="490.10" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>NCLH: Consumer Discretionary</title></circle>
+<circle cx="334.74" cy="525.80" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>NDAQ: Financials</title></circle>
+<circle cx="377.90" cy="330.29" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>NDSN: Industrials</title></circle>
+<circle cx="569.72" cy="378.54" r="4.2" fill="#264653" fill-opacity="0.78"><title>NEE: Utilities</title></circle>
+<circle cx="274.29" cy="340.13" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>NEM: Materials</title></circle>
+<circle cx="413.36" cy="457.10" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>NFLX: Communication Services</title></circle>
+<circle cx="594.54" cy="365.09" r="4.2" fill="#264653" fill-opacity="0.78"><title>NI: Utilities</title></circle>
+<circle cx="323.09" cy="312.64" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>NKE: Consumer Discretionary</title></circle>
+<circle cx="397.40" cy="360.68" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>NOC: Industrials</title></circle>
+<circle cx="402.29" cy="525.45" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>NOW: Information Technology</title></circle>
+<circle cx="528.36" cy="203.64" r="4.2" fill="#264653" fill-opacity="0.78"><title>NRG: Utilities</title></circle>
+<circle cx="457.89" cy="407.25" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>NSC: Industrials</title></circle>
+<circle cx="392.49" cy="420.89" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>NTAP: Information Technology</title></circle>
+<circle cx="503.01" cy="499.40" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>NTRS: Financials</title></circle>
+<circle cx="517.27" cy="82.79" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>NUE: Materials</title></circle>
+<circle cx="341.32" cy="445.46" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>NVDA: Information Technology</title></circle>
+<circle cx="419.67" cy="459.09" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>NVR: Consumer Discretionary</title></circle>
+<circle cx="362.57" cy="432.00" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>NWS: Communication Services</title></circle>
+<circle cx="362.54" cy="431.96" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>NWSA: Communication Services</title></circle>
+<circle cx="307.14" cy="422.49" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>NXPI: Information Technology</title></circle>
+<circle cx="468.82" cy="421.60" r="4.2" fill="#17becf" fill-opacity="0.78"><title>O: Real Estate</title></circle>
+<circle cx="454.75" cy="350.47" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ODFL: Industrials</title></circle>
+<circle cx="553.28" cy="424.09" r="4.2" fill="#d62728" fill-opacity="0.78"><title>OKE: Energy</title></circle>
+<circle cx="356.00" cy="312.14" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>OMC: Communication Services</title></circle>
+<circle cx="298.26" cy="386.23" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ON: Information Technology</title></circle>
+<circle cx="443.64" cy="541.21" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ORCL: Information Technology</title></circle>
+<circle cx="323.33" cy="349.68" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>ORLY: Consumer Discretionary</title></circle>
+<circle cx="422.86" cy="360.30" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>OTIS: Industrials</title></circle>
+<circle cx="461.93" cy="322.51" r="4.2" fill="#d62728" fill-opacity="0.78"><title>OXY: Energy</title></circle>
+<circle cx="391.46" cy="493.06" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>PANW: Information Technology</title></circle>
+<circle cx="398.04" cy="535.77" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>PAYX: Industrials</title></circle>
+<circle cx="531.45" cy="295.06" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>PCAR: Industrials</title></circle>
+<circle cx="814.75" cy="314.18" r="4.2" fill="#264653" fill-opacity="0.78"><title>PCG: Utilities</title></circle>
+<circle cx="564.57" cy="337.21" r="4.2" fill="#264653" fill-opacity="0.78"><title>PEG: Utilities</title></circle>
+<circle cx="306.51" cy="348.26" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>PEP: Consumer Staples</title></circle>
+<circle cx="375.54" cy="443.47" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>PFE: Health Care</title></circle>
+<circle cx="537.05" cy="442.51" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>PFG: Financials</title></circle>
+<circle cx="371.45" cy="272.94" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>PG: Consumer Staples</title></circle>
+<circle cx="448.12" cy="443.18" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>PGR: Financials</title></circle>
+<circle cx="339.57" cy="273.99" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>PH: Industrials</title></circle>
+<circle cx="371.94" cy="558.44" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>PHM: Consumer Discretionary</title></circle>
+<circle cx="393.27" cy="234.43" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>PKG: Materials</title></circle>
+<circle cx="477.16" cy="349.64" r="4.2" fill="#17becf" fill-opacity="0.78"><title>PLD: Real Estate</title></circle>
+<circle cx="361.87" cy="539.23" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>PLTR: Information Technology</title></circle>
+<circle cx="311.87" cy="389.66" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>PM: Consumer Staples</title></circle>
+<circle cx="515.89" cy="496.50" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>PNC: Financials</title></circle>
+<circle cx="370.46" cy="333.88" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>PNR: Industrials</title></circle>
+<circle cx="542.36" cy="375.25" r="4.2" fill="#264653" fill-opacity="0.78"><title>PNW: Utilities</title></circle>
+<circle cx="316.31" cy="364.78" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>PODD: Health Care</title></circle>
+<circle cx="361.78" cy="420.01" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>POOL: Consumer Discretionary</title></circle>
+<circle cx="332.90" cy="293.05" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>PPG: Materials</title></circle>
+<circle cx="643.45" cy="362.29" r="4.2" fill="#264653" fill-opacity="0.78"><title>PPL: Utilities</title></circle>
+<circle cx="504.57" cy="424.83" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>PRU: Financials</title></circle>
+<circle cx="479.35" cy="439.53" r="4.2" fill="#17becf" fill-opacity="0.78"><title>PSA: Real Estate</title></circle>
+<circle cx="329.09" cy="442.78" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>PSKY: Communication Services</title></circle>
+<circle cx="443.51" cy="361.47" r="4.2" fill="#d62728" fill-opacity="0.78"><title>PSX: Energy</title></circle>
+<circle cx="373.43" cy="438.09" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>PTC: Information Technology</title></circle>
+<circle cx="539.41" cy="458.95" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>PWR: Industrials</title></circle>
+<circle cx="447.26" cy="559.50" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>PYPL: Financials</title></circle>
+<circle cx="293.45" cy="368.13" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>QCOM: Information Technology</title></circle>
+<circle cx="424.51" cy="447.35" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>RCL: Consumer Discretionary</title></circle>
+<circle cx="392.45" cy="387.55" r="4.2" fill="#17becf" fill-opacity="0.78"><title>REG: Real Estate</title></circle>
+<circle cx="309.52" cy="430.81" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>REGN: Health Care</title></circle>
+<circle cx="480.35" cy="530.02" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>RF: Financials</title></circle>
+<circle cx="445.01" cy="520.40" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>RJF: Financials</title></circle>
+<circle cx="333.37" cy="335.66" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>RL: Consumer Discretionary</title></circle>
+<circle cx="337.64" cy="412.16" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>RMD: Health Care</title></circle>
+<circle cx="361.86" cy="371.74" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ROK: Industrials</title></circle>
+<circle cx="380.96" cy="420.70" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>ROL: Industrials</title></circle>
+<circle cx="369.02" cy="411.49" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ROP: Information Technology</title></circle>
+<circle cx="315.74" cy="327.20" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>ROST: Consumer Discretionary</title></circle>
+<circle cx="505.90" cy="392.65" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>RSG: Industrials</title></circle>
+<circle cx="380.39" cy="354.07" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>RTX: Industrials</title></circle>
+<circle cx="354.76" cy="404.79" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>RVTY: Health Care</title></circle>
+<circle cx="468.84" cy="531.15" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>SATS: Communication Services</title></circle>
+<circle cx="545.15" cy="454.04" r="4.2" fill="#17becf" fill-opacity="0.78"><title>SBAC: Real Estate</title></circle>
+<circle cx="470.99" cy="285.82" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>SBUX: Consumer Discretionary</title></circle>
+<circle cx="608.74" cy="490.81" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>SCHW: Financials</title></circle>
+<circle cx="370.05" cy="333.94" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>SHW: Materials</title></circle>
+<circle cx="273.22" cy="295.10" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>SJM: Consumer Staples</title></circle>
+<circle cx="380.62" cy="266.62" r="4.2" fill="#d62728" fill-opacity="0.78"><title>SLB: Energy</title></circle>
+<circle cx="366.15" cy="412.96" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>SMCI: Information Technology</title></circle>
+<circle cx="367.52" cy="311.56" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>SNA: Industrials</title></circle>
+<circle cx="399.10" cy="372.86" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>SNDK: Information Technology</title></circle>
+<circle cx="332.70" cy="406.35" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>SNPS: Information Technology</title></circle>
+<circle cx="708.69" cy="277.01" r="4.2" fill="#264653" fill-opacity="0.78"><title>SO: Utilities</title></circle>
+<circle cx="354.37" cy="397.46" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>SOLV: Health Care</title></circle>
+<circle cx="481.92" cy="371.19" r="4.2" fill="#17becf" fill-opacity="0.78"><title>SPG: Real Estate</title></circle>
+<circle cx="414.53" cy="438.84" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>SPGI: Financials</title></circle>
+<circle cx="688.50" cy="370.52" r="4.2" fill="#264653" fill-opacity="0.78"><title>SRE: Utilities</title></circle>
+<circle cx="416.74" cy="461.24" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>STE: Health Care</title></circle>
+<circle cx="302.01" cy="209.99" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>STLD: Materials</title></circle>
+<circle cx="535.59" cy="504.32" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>STT: Financials</title></circle>
+<circle cx="326.40" cy="358.93" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>STX: Information Technology</title></circle>
+<circle cx="288.98" cy="350.18" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>STZ: Consumer Staples</title></circle>
+<circle cx="344.44" cy="373.63" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>SW: Materials</title></circle>
+<circle cx="405.01" cy="306.02" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>SWK: Industrials</title></circle>
+<circle cx="262.73" cy="329.70" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>SWKS: Information Technology</title></circle>
+<circle cx="476.82" cy="289.00" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>SYF: Financials</title></circle>
+<circle cx="338.30" cy="354.96" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>SYK: Health Care</title></circle>
+<circle cx="403.21" cy="304.24" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>SYY: Consumer Staples</title></circle>
+<circle cx="490.96" cy="421.32" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>T: Communication Services</title></circle>
+<circle cx="346.32" cy="393.47" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>TAP: Consumer Staples</title></circle>
+<circle cx="406.52" cy="340.13" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>TDG: Industrials</title></circle>
+<circle cx="365.65" cy="315.77" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TDY: Information Technology</title></circle>
+<circle cx="327.21" cy="428.46" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>TECH: Health Care</title></circle>
+<circle cx="330.60" cy="404.13" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TEL: Information Technology</title></circle>
+<circle cx="323.79" cy="304.50" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TER: Information Technology</title></circle>
+<circle cx="493.69" cy="463.54" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>TFC: Financials</title></circle>
+<circle cx="291.54" cy="337.64" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>TGT: Consumer Staples</title></circle>
+<circle cx="312.26" cy="356.01" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>TJX: Consumer Discretionary</title></circle>
+<circle cx="359.69" cy="463.41" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>TKO: Communication Services</title></circle>
+<circle cx="351.84" cy="397.37" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>TMO: Health Care</title></circle>
+<circle cx="459.62" cy="508.93" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>TMUS: Communication Services</title></circle>
+<circle cx="389.87" cy="414.32" r="4.2" fill="#d62728" fill-opacity="0.78"><title>TPL: Energy</title></circle>
+<circle cx="292.62" cy="418.39" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>TPR: Consumer Discretionary</title></circle>
+<circle cx="579.37" cy="465.76" r="4.2" fill="#d62728" fill-opacity="0.78"><title>TRGP: Energy</title></circle>
+<circle cx="335.84" cy="413.54" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TRMB: Information Technology</title></circle>
+<circle cx="471.94" cy="454.86" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>TROW: Financials</title></circle>
+<circle cx="511.43" cy="511.73" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>TRV: Financials</title></circle>
+<circle cx="354.50" cy="315.85" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>TSCO: Consumer Discretionary</title></circle>
+<circle cx="564.33" cy="296.76" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>TSLA: Consumer Discretionary</title></circle>
+<circle cx="435.76" cy="426.39" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>TSN: Consumer Staples</title></circle>
+<circle cx="370.21" cy="427.92" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>TT: Industrials</title></circle>
+<circle cx="330.17" cy="406.12" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>TTD: Communication Services</title></circle>
+<circle cx="350.31" cy="439.90" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>TTWO: Communication Services</title></circle>
+<circle cx="350.83" cy="347.93" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TXN: Information Technology</title></circle>
+<circle cx="400.57" cy="370.41" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>TXT: Industrials</title></circle>
+<circle cx="462.32" cy="448.05" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>TYL: Information Technology</title></circle>
+<circle cx="491.76" cy="287.63" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>UAL: Industrials</title></circle>
+<circle cx="401.66" cy="437.22" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>UBER: Industrials</title></circle>
+<circle cx="413.37" cy="520.94" r="4.2" fill="#17becf" fill-opacity="0.78"><title>UDR: Real Estate</title></circle>
+<circle cx="568.54" cy="429.77" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>UHS: Health Care</title></circle>
+<circle cx="387.72" cy="311.62" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>ULTA: Consumer Discretionary</title></circle>
+<circle cx="441.46" cy="387.73" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>UNH: Health Care</title></circle>
+<circle cx="514.73" cy="366.87" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>UNP: Industrials</title></circle>
+<circle cx="531.20" cy="415.21" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>UPS: Industrials</title></circle>
+<circle cx="427.24" cy="339.32" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>URI: Industrials</title></circle>
+<circle cx="475.61" cy="501.82" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>USB: Financials</title></circle>
+<circle cx="520.19" cy="539.81" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>V: Financials</title></circle>
+<circle cx="479.83" cy="382.94" r="4.2" fill="#17becf" fill-opacity="0.78"><title>VICI: Real Estate</title></circle>
+<circle cx="501.92" cy="308.01" r="4.2" fill="#d62728" fill-opacity="0.78"><title>VLO: Energy</title></circle>
+<circle cx="365.80" cy="355.51" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>VLTO: Industrials</title></circle>
+<circle cx="573.51" cy="425.01" r="4.2" fill="#bcbd22" fill-opacity="0.78"><title>VMC: Materials</title></circle>
+<circle cx="307.81" cy="513.22" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>VRSK: Industrials</title></circle>
+<circle cx="287.61" cy="457.15" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>VRSN: Information Technology</title></circle>
+<circle cx="393.48" cy="428.17" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>VRT: Industrials</title></circle>
+<circle cx="391.75" cy="398.65" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>VRTX: Health Care</title></circle>
+<circle cx="573.76" cy="354.98" r="4.2" fill="#264653" fill-opacity="0.78"><title>VST: Utilities</title></circle>
+<circle cx="480.84" cy="487.98" r="4.2" fill="#17becf" fill-opacity="0.78"><title>VTR: Real Estate</title></circle>
+<circle cx="271.63" cy="402.02" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>VTRS: Health Care</title></circle>
+<circle cx="477.77" cy="466.73" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>VZ: Communication Services</title></circle>
+<circle cx="348.98" cy="321.17" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>WAB: Industrials</title></circle>
+<circle cx="368.07" cy="357.88" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>WAT: Health Care</title></circle>
+<circle cx="360.96" cy="422.36" r="4.2" fill="#1f77b4" fill-opacity="0.78"><title>WBD: Communication Services</title></circle>
+<circle cx="332.57" cy="532.56" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>WDAY: Information Technology</title></circle>
+<circle cx="339.95" cy="382.11" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>WDC: Information Technology</title></circle>
+<circle cx="836.39" cy="303.52" r="4.2" fill="#264653" fill-opacity="0.78"><title>WEC: Utilities</title></circle>
+<circle cx="486.67" cy="482.44" r="4.2" fill="#17becf" fill-opacity="0.78"><title>WELL: Real Estate</title></circle>
+<circle cx="592.67" cy="497.81" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>WFC: Financials</title></circle>
+<circle cx="574.31" cy="393.93" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>WM: Industrials</title></circle>
+<circle cx="752.02" cy="362.43" r="4.2" fill="#d62728" fill-opacity="0.78"><title>WMB: Energy</title></circle>
+<circle cx="374.94" cy="376.39" r="4.2" fill="#2ca02c" fill-opacity="0.78"><title>WMT: Consumer Staples</title></circle>
+<circle cx="466.04" cy="505.56" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>WRB: Financials</title></circle>
+<circle cx="324.01" cy="333.47" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>WSM: Consumer Discretionary</title></circle>
+<circle cx="367.68" cy="348.97" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>WST: Health Care</title></circle>
+<circle cx="375.50" cy="532.73" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>WTW: Financials</title></circle>
+<circle cx="420.99" cy="381.56" r="4.2" fill="#17becf" fill-opacity="0.78"><title>WY: Real Estate</title></circle>
+<circle cx="511.25" cy="325.05" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>WYNN: Consumer Discretionary</title></circle>
+<circle cx="787.50" cy="247.00" r="4.2" fill="#264653" fill-opacity="0.78"><title>XEL: Utilities</title></circle>
+<circle cx="550.93" cy="268.44" r="4.2" fill="#d62728" fill-opacity="0.78"><title>XOM: Energy</title></circle>
+<circle cx="394.49" cy="389.30" r="4.2" fill="#e377c2" fill-opacity="0.78"><title>XYL: Industrials</title></circle>
+<circle cx="344.85" cy="465.91" r="4.2" fill="#9467bd" fill-opacity="0.78"><title>XYZ: Financials</title></circle>
+<circle cx="414.00" cy="426.00" r="4.2" fill="#ff7f0e" fill-opacity="0.78"><title>YUM: Consumer Discretionary</title></circle>
+<circle cx="294.37" cy="348.92" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ZBH: Health Care</title></circle>
+<circle cx="350.39" cy="433.75" r="4.2" fill="#7f7f7f" fill-opacity="0.78"><title>ZBRA: Information Technology</title></circle>
+<circle cx="305.14" cy="418.65" r="4.2" fill="#8c564b" fill-opacity="0.78"><title>ZTS: Health Care</title></circle>
+<circle cx="660" cy="90" r="5" fill="#1f77b4"/>
+<text x="672" y="94" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Communication Services</text>
+<circle cx="660" cy="114" r="5" fill="#ff7f0e"/>
+<text x="672" y="118" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Consumer Discretionary</text>
+<circle cx="660" cy="138" r="5" fill="#2ca02c"/>
+<text x="672" y="142" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Consumer Staples</text>
+<circle cx="660" cy="162" r="5" fill="#d62728"/>
+<text x="672" y="166" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Energy</text>
+<circle cx="660" cy="186" r="5" fill="#9467bd"/>
+<text x="672" y="190" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Financials</text>
+<circle cx="660" cy="210" r="5" fill="#8c564b"/>
+<text x="672" y="214" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Health Care</text>
+<circle cx="660" cy="234" r="5" fill="#e377c2"/>
+<text x="672" y="238" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Industrials</text>
+<circle cx="660" cy="258" r="5" fill="#7f7f7f"/>
+<text x="672" y="262" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Information Technology</text>
+<circle cx="660" cy="282" r="5" fill="#bcbd22"/>
+<text x="672" y="286" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Materials</text>
+<circle cx="660" cy="306" r="5" fill="#17becf"/>
+<text x="672" y="310" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Real Estate</text>
+<circle cx="660" cy="330" r="5" fill="#264653"/>
+<text x="672" y="334" font-family="Verdana, sans-serif" font-size="12" fill="#26312a">Utilities</text>
+</svg>

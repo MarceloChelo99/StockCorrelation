@@ -1,0 +1,8 @@
+{
+  "model_name": "pca",
+  "input_dim": 74,
+  "embedding_dim": 8,
+  "explained_variance_ratio": [
+    1.0
+  ]
+}

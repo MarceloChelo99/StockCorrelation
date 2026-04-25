@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+NEM,2026-04-22,NEWMONT Corp /DE/,Newmont,Materials,Gold,2,Consumer Discretionary,1.9613377340612863
+DTE,2026-04-22,DTE ENERGY CO,DTE Energy,Utilities,Multi-Utilities,4,Industrials,1.7564246289233378
+META,2026-04-22,"Meta Platforms, Inc.",Meta Platforms,Communication Services,Interactive Media & Services,9,Information Technology,1.5123954252731575
+OXY,2026-04-22,OCCIDENTAL PETROLEUM CORP /DE/,Occidental Petroleum,Energy,Oil & Gas Exploration & Production,4,Industrials,1.44641891281443
+MAR,2026-04-22,MARRIOTT INTERNATIONAL INC /MD/,Marriott International,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",4,Industrials,1.4223090356682686
+CTAS,2026-04-22,CINTAS CORP,Cintas,Industrials,Diversified Support Services,8,Utilities,1.4190635141606596
+PKG,2026-04-22,PACKAGING CORP OF AMERICA,Packaging Corporation of America,Materials,Paper & Plastic Packaging Products & Materials,4,Industrials,1.3794950407102038
+ADP,2026-04-22,AUTOMATIC DATA PROCESSING INC,Automatic Data Processing,Industrials,Human Resource & Employment Services,9,Information Technology,1.3545006731411684
+FOXA,2026-04-22,Fox Corp,Fox Corporation (Class A),Communication Services,Broadcasting,1,Consumer Staples,1.353682218789903
+FOX,2026-04-22,Fox Corp,Fox Corporation (Class B),Communication Services,Broadcasting,1,Consumer Staples,1.353642668935974
+TKO,2026-04-22,"TKO Group Holdings, Inc.",TKO Group Holdings,Communication Services,Movies & Entertainment,4,Industrials,1.3510589458338091
+DOW,2026-04-22,DOW INC.,Dow Inc.,Materials,Commodity Chemicals,8,Utilities,1.3501423246225064
+APA,2026-04-22,APA Corp,APA Corporation,Energy,Oil & Gas Exploration & Production,4,Industrials,1.3389908263008352
+TSN,2026-04-22,"TYSON FOODS, INC.",Tyson Foods,Consumer Staples,Packaged Foods & Meats,7,Information Technology,1.3338966832462449
+SYF,2026-04-22,Synchrony Financial,Synchrony Financial,Financials,Consumer Finance,1,Consumer Staples,1.330433707496815
+MMM,2026-04-22,3M CO,3M,Industrials,Industrial Conglomerates,7,Information Technology,1.3298868874974488
+GEN,2026-04-22,Gen Digital Inc.,Gen Digital,Information Technology,Systems Software,0,Consumer Discretionary,1.3178170990988993
+VLO,2026-04-22,VALERO ENERGY CORP/TX,Valero Energy,Energy,Oil & Gas Refining & Marketing,8,Utilities,1.311009565131348
+TTD,2026-04-22,"Trade Desk, Inc.",Trade Desk (The),Communication Services,Advertising,0,Consumer Discretionary,1.3093805973045298
+MCO,2026-04-22,MOODYS CORP /DE/,Moody's Corporation,Financials,Financial Exchanges & Data,9,Information Technology,1.2996491457289898
+CTRA,2026-04-22,Coterra Energy Inc.,Coterra,Energy,Oil & Gas Exploration & Production,4,Industrials,1.2919888035269693
+PHM,2026-04-22,PULTEGROUP INC/MI/,PulteGroup,Consumer Discretionary,Homebuilding,6,Financials,1.2901063084994902
+NWS,2026-04-22,NEWS CORP,News Corp (Class B),Communication Services,Publishing,1,Consumer Staples,1.2900711423530908
+NWSA,2026-04-22,NEWS CORP,News Corp (Class A),Communication Services,Publishing,1,Consumer Staples,1.288368923120149
+DIS,2026-04-22,Walt Disney Co,Walt Disney Company (The),Communication Services,Movies & Entertainment,1,Consumer Staples,1.2836629973699887
+LOW,2026-04-22,LOWES COMPANIES INC,Lowe's,Consumer Discretionary,Home Improvement Retail,1,Consumer Staples,1.277437108873679
+JBHT,2026-04-22,HUNT J B TRANSPORT SERVICES INC,J.B. Hunt,Industrials,Cargo Ground Transportation,10,Health Care,1.2670634841596282
+IBM,2026-04-22,INTERNATIONAL BUSINESS MACHINES CORP,IBM,Information Technology,IT Consulting & Other Services,10,Health Care,1.259378266610433
+FANG,2026-04-22,"Diamondback Energy, Inc.",Diamondback Energy,Energy,Oil & Gas Exploration & Production,4,Industrials,1.2527646631075957
+EXR,2026-04-22,Extra Space Storage Inc.,Extra Space Storage,Real Estate,Self-Storage REITs,6,Financials,1.2487038184241834
+JKHY,2026-04-22,JACK HENRY & ASSOCIATES INC,Jack Henry & Associates,Financials,Transaction & Payment Processing Services,0,Consumer Discretionary,1.245954954744793
+APD,2026-04-22,"Air Products & Chemicals, Inc.",Air Products,Materials,Industrial Gases,7,Information Technology,1.239585141691047
+RVTY,2026-04-22,"REVVITY, INC.",Revvity,Health Care,Health Care Equipment,7,Information Technology,1.2330876694120714
+HST,2026-04-22,"HOST HOTELS & RESORTS, INC.",Host Hotels & Resorts,Real Estate,Hotel & Resort REITs,4,Industrials,1.2135378430499586
+DRI,2026-04-22,DARDEN RESTAURANTS INC,Darden Restaurants,Consumer Discretionary,Restaurants,6,Financials,1.2098829567830882
+STZ,2026-04-22,"CONSTELLATION BRANDS, INC.",Constellation Brands,Consumer Staples,Distillers & Vintners,2,Consumer Discretionary,1.208131910801853
+EPAM,2026-04-22,"EPAM Systems, Inc.",EPAM Systems,Information Technology,IT Consulting & Other Services,0,Consumer Discretionary,1.2043698422805
+FDX,2026-04-22,FEDEX CORP,FedEx,Industrials,Air Freight & Logistics,8,Utilities,1.1946661361498494
+IEX,2026-04-22,IDEX CORP /DE/,IDEX Corporation,Industrials,Industrial Machinery & Supplies & Components,7,Information Technology,1.1919004640703528
+WMB,2026-04-22,"WILLIAMS COMPANIES, INC.",Williams Companies,Energy,Oil & Gas Storage & Transportation,3,Financials,1.1904337192203274
+BF-B,2026-04-22,BROWN FORMAN CORP,Brown–Forman,Consumer Staples,Distillers & Vintners,2,Consumer Discretionary,1.1854694628011242
+COST,2026-04-22,COSTCO WHOLESALE CORP /NEW,Costco,Consumer Staples,Consumer Staples Merchandise Retail,2,Consumer Discretionary,1.1851476403393255
+GPC,2026-04-22,GENUINE PARTS CO,Genuine Parts Company,Consumer Discretionary,Distributors,10,Health Care,1.1805165947336902
+EQT,2026-04-22,EQT Corp,EQT Corporation,Energy,Oil & Gas Exploration & Production,3,Financials,1.177000690970247
+GIS,2026-04-22,GENERAL MILLS INC,General Mills,Consumer Staples,Packaged Foods & Meats,2,Consumer Discretionary,1.176773797314602
+ROK,2026-04-22,"ROCKWELL AUTOMATION, INC",Rockwell Automation,Industrials,Electrical Components & Equipment,10,Health Care,1.1703356423883948
+PSKY,2026-04-22,Paramount Skydance Corp,Paramount Skydance Corporation,Communication Services,Movies & Entertainment,1,Consumer Staples,1.1680547102973367
+BRK-B,2026-04-22,BERKSHIRE HATHAWAY INC,Berkshire Hathaway,Financials,Multi-Sector Holdings,7,Information Technology,1.1644055072879511
+DECK,2026-04-22,DECKERS OUTDOOR CORP,Deckers Brands,Consumer Discretionary,Footwear,1,Consumer Staples,1.1639710320971013
+BLK,2026-04-22,"BlackRock, Inc.",BlackRock,Financials,Asset Management & Custody Banks,1,Consumer Staples,1.1556747445380378

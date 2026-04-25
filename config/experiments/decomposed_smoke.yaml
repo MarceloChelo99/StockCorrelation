@@ -1,0 +1,78 @@
+{
+  "experiment_name": "decomposed_smoke",
+  "data": {
+    "start_date": "2024-01-01"
+  },
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "network_position"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "decomposed_smoke",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "network_position"
+    ]
+  },
+  "views": {
+    "behavioral": {
+      "feature_pattern": "^price_",
+      "embedding_dim": 4,
+      "hidden_dims": [16],
+      "epochs": 2
+    },
+    "network": {
+      "feature_pattern": "^net_",
+      "embedding_dim": 4,
+      "hidden_dims": [16],
+      "epochs": 2
+    }
+  },
+  "views_enabled": ["behavioral", "network"],
+  "model": {
+    "name": "autoencoder",
+    "embedding_dim": 4,
+    "hidden_dim": 16,
+    "epochs": 2,
+    "batch_size": 256
+  },
+  "pipeline": {
+    "views": true,
+    "gmm": true,
+    "multiview_eval": true,
+    "smoke_test": true
+  },
+  "evaluation": {
+    "enabled": [
+      "view_comparison",
+      "multiview_peers",
+      "multiview_covariance"
+    ],
+    "peers": {
+      "k": 2,
+      "forward_days": 21,
+      "max_observations": 300,
+      "benchmark_column": "gics_sub_industry",
+      "min_benchmark_pool": 2,
+      "random_seed": 7
+    },
+    "multiview_peers": {
+      "horizons": [21]
+    },
+    "multiview_covariance": {
+      "lookback_days": 63,
+      "holding_days": 5,
+      "start_date": "2025-01-31",
+      "min_assets": 20,
+      "max_assets": 30,
+      "bootstrap_samples": 50,
+      "random_seed": 7
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "assembly": {
+    "dataset_name": "baseline",
+    "metadata_columns": [
+      "cik_str",
+      "title",
+      "search_label"
+    ],
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity"
+    ]
+  },
+  "data": {
+    "annual_form": "10-K",
+    "end_date": null,
+    "filings_group_name": "S&P 500 Filings (2026-04-23 roster)",
+    "prices_group_name": "S&P 500 Prices Since 2010 (2026-04-23 roster)",
+    "quarterly_form": "10-Q",
+    "start_date": "2010-01-01"
+  },
+  "evaluation": {
+    "enabled": []
+  },
+  "experiment_name": "baseline",
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity"
+    ],
+    "price": {
+      "liquidity_windows": [
+        21,
+        63
+      ],
+      "min_history_days": 252,
+      "momentum_windows": [
+        21,
+        63,
+        252
+      ],
+      "volatility_windows": [
+        21,
+        63,
+        252
+      ]
+    }
+  },
+  "model": {
+    "embedding_dim": 4,
+    "exclude_columns": [
+      "ticker",
+      "date",
+      "cik_str",
+      "title",
+      "search_label"
+    ],
+    "name": "pca"
+  },
+  "paths": {
+    "dataset_dir": "data/processed/datasets",
+    "experiments_dir": "experiments",
+    "feature_dir": "data/processed/features",
+    "sqlite_path": "data/raw_filing_corpora/raw_filing_corpora.sqlite"
+  },
+  "random_seed": 7
+}
