@@ -13,16 +13,21 @@ from sklearn.decomposition import PCA
 APP_DIR = Path(__file__).resolve().parent
 REPO_ROOT = APP_DIR.parents[1]
 PACKAGE_SRC = REPO_ROOT / "libraries" / "market_data_fetcher" / "src"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 if str(PACKAGE_SRC) not in sys.path:
     sys.path.insert(0, str(PACKAGE_SRC))
 
 from market_data_fetcher import DatabaseOperator
+from src.applications.sector_relative_outlook import sector_backtest_by_date, sector_outlook_backtest
+from src.config import load_config
+from src.db import FilingsDB
 
 
 DEFAULT_STORAGE_DIR = REPO_ROOT / "data" / "raw_filing_corpora"
 DEFAULT_IDENTITY = "StockCorrelation/0.1 castellanosmarcelo1@gmail.com"
-DEFAULT_THEME_LABELS_PATH = REPO_ROOT / "report" / "theme_labels.csv"
-DEFAULT_HISTORICAL_TEXT_DIR = REPO_ROOT / "data" / "processed" / "historical_text"
+DEFAULT_HISTORICAL_TEXT_DIR = REPO_ROOT / "data" / "processed" / "historical_text_10k_10q"
+FALLBACK_HISTORICAL_TEXT_DIR = REPO_ROOT / "data" / "processed" / "historical_text"
 TOPIC_OPTIONS = {
     "AI": "topic_ai_score_per_10k_words",
     "Cloud / Compute": "topic_cloud_compute_score_per_10k_words",
@@ -37,6 +42,14 @@ MENTION_OPTIONS = {
     "Supply Chain": "topic_supply_chain_mentions",
     "Electrification": "topic_electrification_mentions",
 }
+FRAGMENT_LABEL_SECTIONS = [
+    "business",
+    "risk_factors",
+    "mda",
+    "item_1c_cybersecurity",
+    "q_mda",
+    "q_risk_factors",
+]
 
 
 st.set_page_config(page_title="Stock Embeddings Dashboard", layout="wide")
@@ -118,6 +131,20 @@ def load_historical_embeddings(directory: str) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
+def load_historical_snippets(directory: str) -> pd.DataFrame:
+    """Load compact keyword-centered evidence snippets when available."""
+    path = Path(directory) / "historical_section_snippets.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    frame = pd.read_parquet(path)
+    frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    frame["filing_date"] = pd.to_datetime(frame["filing_date"])
+    if "period_end" in frame.columns:
+        frame["period_end"] = pd.to_datetime(frame["period_end"], errors="coerce")
+    return frame.sort_values(["ticker", "filing_date", "section", "snippet_rank"]).reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
 def load_historical_manifest(directory: str) -> dict:
     """Load compact historical text manifest when present."""
     path = Path(directory) / "historical_text_manifest.json"
@@ -126,6 +153,33 @@ def load_historical_manifest(directory: str) -> dict:
     import json
 
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def default_historical_text_dir() -> Path:
+    """Return the richest local historical text artifact directory."""
+    if DEFAULT_HISTORICAL_TEXT_DIR.exists():
+        return DEFAULT_HISTORICAL_TEXT_DIR
+    return FALLBACK_HISTORICAL_TEXT_DIR
+
+
+def available_historical_text_dirs() -> list[Path]:
+    """Return historical text artifact directories that look usable."""
+    processed = REPO_ROOT / "data" / "processed"
+    candidates = [
+        DEFAULT_HISTORICAL_TEXT_DIR,
+        FALLBACK_HISTORICAL_TEXT_DIR,
+        *(path for path in processed.glob("historical_text*") if path.is_dir()),
+    ]
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for path in candidates:
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if (path / "historical_section_topic_counts.parquet").exists():
+            unique.append(path)
+    return unique
 
 
 @st.cache_data(show_spinner=False)
@@ -214,66 +268,300 @@ def coalesce_metadata_columns(frame: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def load_theme_labels(path: Path) -> pd.DataFrame:
-    """Load optional manual theme labels from CSV."""
-    columns = ["view", "theme", "label", "description"]
-    if not path.exists():
-        return pd.DataFrame(columns=columns)
-    frame = pd.read_csv(path)
-    for column in columns:
-        if column not in frame.columns:
-            frame[column] = ""
-    frame["view"] = frame["view"].astype(str)
-    frame["theme"] = frame["theme"].astype(str)
-    frame["label"] = frame["label"].fillna("").astype(str)
-    frame["description"] = frame["description"].fillna("").astype(str)
-    return frame.loc[:, columns]
-
-
-def theme_label_lookup(labels: pd.DataFrame, view_name: str) -> dict[str, str]:
-    """Return display names for one view's themes."""
-    if labels.empty:
-        return {}
-    view_labels = labels[labels["view"] == view_name]
-    lookup = {}
-    for _, row in view_labels.iterrows():
-        label = str(row["label"]).strip()
-        if label:
-            lookup[str(row["theme"])] = f"{row['theme']} · {label}"
-    return lookup
-
-
 @st.cache_data(show_spinner=False)
 def auto_theme_label_lookup(loadings_path: str, metadata: pd.DataFrame, view_name: str) -> dict[str, str]:
-    """Create readable fallback labels from top firms and sector mix."""
+    """Create readable fallback labels from sector mix, without manual labels or ticker lists."""
     loadings = load_loadings(loadings_path)
     latest = loadings.sort_values(["ticker", "date"]).groupby("ticker", as_index=False).tail(1)
     latest = latest.merge(metadata, on="ticker", how="left")
     lookup = {}
     for theme in theme_columns(latest):
         top = latest.sort_values(theme, ascending=False).head(8)
-        top_tickers = ", ".join(top["ticker"].astype(str).head(3).tolist())
         if "gics_sector" in top.columns and top["gics_sector"].notna().any():
             sector = str(top["gics_sector"].dropna().mode().iloc[0])
-            label = f"{theme} · {sector} · {top_tickers}"
+            label = f"{sector} {view_label_noun(view_name)} mix"
         else:
-            label = f"{theme} · {top_tickers}"
+            label = f"{view_label_noun(view_name).title()} mix"
         lookup[theme] = label
     return lookup
 
 
-def ensure_label_rows(labels: pd.DataFrame, view_name: str, columns: list[str]) -> pd.DataFrame:
-    """Ensure the editable label table has one row per theme."""
-    existing = labels.copy()
-    existing_keys = set(zip(existing["view"], existing["theme"], strict=False)) if not existing.empty else set()
-    rows = []
+@st.cache_data(show_spinner=False)
+def fragment_theme_label_artifacts(
+    loadings_path: str,
+    historical_dir: str,
+    view_name: str,
+    as_of_date: str | None,
+    top_tickers: int = 12,
+    max_age_days: int = 730,
+) -> tuple[dict[str, str], pd.DataFrame]:
+    """Label business themes using representative historical filing fragments.
+
+    For each soft theme, we take the firms with the highest loading as of the
+    selected date, build a weighted centroid in section-embedding space, then
+    find the filing section fragment closest to that centroid. The label uses
+    that representative fragment's strongest tracked topics.
+    """
+    if view_name != "business":
+        return {}, pd.DataFrame()
+
+    loadings = load_loadings(loadings_path)
+    columns = theme_columns(loadings)
+    if not columns:
+        return {}, pd.DataFrame()
+
+    as_of_loadings = loadings_as_of(loadings, as_of_date)
+    if as_of_loadings.empty:
+        return {}, pd.DataFrame()
+
+    embeddings = load_historical_embeddings(historical_dir)
+    if embeddings.empty:
+        return {}, pd.DataFrame()
+    embeddings = embeddings[embeddings["section"].isin(FRAGMENT_LABEL_SECTIONS)].copy()
+    embedding_columns = [column for column in embeddings.columns if column.startswith("embedding_")]
+    if not embedding_columns:
+        return {}, pd.DataFrame()
+
+    topics = load_historical_topic_counts(historical_dir)
+    topic_lookup = pd.DataFrame()
+    if not topics.empty:
+        topic_lookup = topics.set_index(["ticker", "accession_no", "section"], drop=False)
+    filing_index = load_historical_filing_index(historical_dir)
+    source_lookup = pd.DataFrame()
+    if not filing_index.empty:
+        source_lookup = filing_index.set_index(["ticker", "accession_no"], drop=False)
+    snippets = load_historical_snippets(historical_dir)
+    snippet_lookup = pd.DataFrame()
+    if not snippets.empty:
+        snippet_lookup = snippets.set_index(["ticker", "accession_no", "section"], drop=False)
+
+    date_cutoff = pd.Timestamp(as_of_date) if as_of_date else pd.Timestamp(as_of_loadings["date"].max())
+    rows: list[dict[str, object]] = []
+    labels: dict[str, str] = {}
     for theme in columns:
-        key = (view_name, theme)
-        if key not in existing_keys:
-            rows.append({"view": view_name, "theme": theme, "label": "", "description": ""})
-    if rows:
-        existing = pd.concat([existing, pd.DataFrame(rows)], ignore_index=True)
-    return existing.sort_values(["view", "theme"]).reset_index(drop=True)
+        top = as_of_loadings.sort_values(theme, ascending=False).head(int(top_tickers))
+        top = top.loc[top[theme].astype(float) > 0.0].copy()
+        if top.empty:
+            continue
+        weights = dict(zip(top["ticker"], top[theme].astype(float), strict=False))
+        candidates = embeddings[embeddings["ticker"].isin(weights)].copy()
+        candidates = candidates[candidates["filing_date"] <= date_cutoff]
+        recent = candidates[candidates["filing_date"] >= date_cutoff - pd.Timedelta(days=int(max_age_days))]
+        if not recent.empty:
+            candidates = recent
+        if candidates.empty:
+            continue
+
+        candidates["theme_weight"] = candidates["ticker"].map(weights).astype(float)
+        matrix = candidates.loc[:, embedding_columns].astype(float).to_numpy()
+        matrix = np.nan_to_num(matrix, nan=0.0, posinf=0.0, neginf=0.0)
+        matrix_norm = np.linalg.norm(matrix, axis=1)
+        valid = matrix_norm > 0.0
+        if not valid.any():
+            continue
+        candidates = candidates.loc[valid].copy()
+        matrix = matrix[valid]
+        matrix_norm = matrix_norm[valid]
+        normalized = matrix / matrix_norm[:, None]
+        weight_values = candidates["theme_weight"].astype(float).to_numpy()
+        centroid = np.average(normalized, axis=0, weights=weight_values)
+        centroid_norm = float(np.linalg.norm(centroid))
+        if centroid_norm == 0.0:
+            continue
+        similarity = normalized @ (centroid / centroid_norm)
+        best_position = int(np.argmax(similarity))
+        representative = candidates.iloc[best_position]
+        topic_row = representative_topic_row(topic_lookup, representative)
+        filing_row = representative_filing_row(source_lookup, representative)
+        snippet_row = representative_snippet_row(snippet_lookup, representative)
+        topic_label = fragment_topic_label(topic_row)
+        section_label = short_section_label(str(representative.get("section_label", representative["section"])))
+        label_core = fragment_display_label(topic_label, section_label)
+        top_theme_tickers = ", ".join(top["ticker"].astype(str).head(4).tolist())
+        label = label_core
+        evidence = topic_evidence_summary(topic_row)
+        labels[theme] = label
+        row = {
+            "theme": theme,
+            "dynamic_label": label,
+            "label_basis": "nearest filing fragment to weighted theme centroid",
+            "representative_ticker": representative["ticker"],
+            "representative_filing_date": representative["filing_date"].strftime("%Y-%m-%d"),
+            "representative_form": representative.get("form", ""),
+            "representative_section": section_label,
+            "section_chars": int(representative.get("section_chars", 0)),
+            "word_count": int(topic_row.get("word_count", 0)) if not topic_row.empty else None,
+            "fragment_similarity": float(similarity[best_position]),
+            "fragment_topics": topic_label or "no tracked topic dominates",
+            "topic_evidence": evidence,
+            "snippet_topic": str(snippet_row.get("snippet_topic", "")) if not snippet_row.empty else "",
+            "snippet_terms": str(snippet_row.get("snippet_terms", "")) if not snippet_row.empty else "",
+            "evidence_snippet": str(snippet_row.get("evidence_snippet", "")) if not snippet_row.empty else "",
+            "top_theme_tickers": top_theme_tickers,
+            "source_url": str(filing_row.get("source_url", "")) if not filing_row.empty else "",
+        }
+        row.update(topic_metric_values(topic_row))
+        rows.append(row)
+
+    return labels, pd.DataFrame(rows)
+
+
+def view_label_noun(view_name: str) -> str:
+    """Return the kind of similarity represented by a non-business view."""
+    names = {
+        "behavioral": "trading-behavior",
+        "growth": "growth/lifecycle",
+        "network": "relationship-network",
+    }
+    return names.get(view_name, "similarity")
+
+
+def fragment_display_label(topic_label: str, section_label: str) -> str:
+    """Return a compact semantic label for a representative filing fragment."""
+    if topic_label:
+        return f"{topic_label} language"
+    section_labels = {
+        "Business": "Business model language",
+        "Risk Factors": "Risk language",
+        "MD&A": "Management discussion language",
+        "Cybersecurity": "Cybersecurity language",
+        "Q MD&A": "Quarterly management discussion",
+        "Q Risk Factors": "Quarterly risk language",
+    }
+    return section_labels.get(section_label, f"{section_label} language")
+
+
+def loadings_as_of(loadings: pd.DataFrame, as_of_date: str | None) -> pd.DataFrame:
+    """Return loadings for a selected date or latest loadings per ticker."""
+    frame = loadings.copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    if as_of_date:
+        date = pd.Timestamp(as_of_date)
+        exact = frame[frame["date"] == date].copy()
+        if not exact.empty:
+            return exact
+        frame = frame[frame["date"] <= date]
+        if frame.empty:
+            return frame
+    return frame.sort_values(["ticker", "date"]).groupby("ticker", as_index=False).tail(1)
+
+
+def representative_topic_row(topic_lookup: pd.DataFrame, representative: pd.Series) -> pd.Series:
+    """Return topic counts for a representative embedding row if available."""
+    if topic_lookup.empty:
+        return pd.Series(dtype=object)
+    key = (
+        str(representative["ticker"]),
+        str(representative.get("accession_no", "")),
+        str(representative["section"]),
+    )
+    if key not in topic_lookup.index:
+        return pd.Series(dtype=object)
+    row = topic_lookup.loc[key]
+    if isinstance(row, pd.DataFrame):
+        return row.iloc[0]
+    return row
+
+
+def representative_filing_row(source_lookup: pd.DataFrame, representative: pd.Series) -> pd.Series:
+    """Return filing-index metadata for a representative embedding row if available."""
+    if source_lookup.empty:
+        return pd.Series(dtype=object)
+    key = (
+        str(representative["ticker"]),
+        str(representative.get("accession_no", "")),
+    )
+    if key not in source_lookup.index:
+        return pd.Series(dtype=object)
+    row = source_lookup.loc[key]
+    if isinstance(row, pd.DataFrame):
+        return row.iloc[0]
+    return row
+
+
+def representative_snippet_row(snippet_lookup: pd.DataFrame, representative: pd.Series) -> pd.Series:
+    """Return the strongest stored snippet for a representative embedding row."""
+    if snippet_lookup.empty:
+        return pd.Series(dtype=object)
+    key = (
+        str(representative["ticker"]),
+        str(representative.get("accession_no", "")),
+        str(representative["section"]),
+    )
+    if key not in snippet_lookup.index:
+        return pd.Series(dtype=object)
+    row = snippet_lookup.loc[key]
+    if isinstance(row, pd.DataFrame):
+        return row.sort_values("snippet_rank").iloc[0]
+    return row
+
+
+def fragment_topic_label(topic_row: pd.Series) -> str:
+    """Return a short label from the strongest tracked topics in one fragment."""
+    if topic_row.empty:
+        return ""
+    scores = []
+    for label, column in TOPIC_OPTIONS.items():
+        if column not in topic_row or pd.isna(topic_row[column]):
+            continue
+        score = float(topic_row[column])
+        if score > 0.0:
+            scores.append((label, score))
+    if not scores:
+        return ""
+    return " / ".join(label for label, _ in sorted(scores, key=lambda item: item[1], reverse=True)[:2])
+
+
+def topic_evidence_summary(topic_row: pd.Series) -> str:
+    """Return a compact topic-score explanation for a representative fragment."""
+    if topic_row.empty:
+        return "no topic-count row available"
+    parts = []
+    for label, score_column in TOPIC_OPTIONS.items():
+        if score_column not in topic_row or pd.isna(topic_row[score_column]):
+            continue
+        score = float(topic_row[score_column])
+        if score <= 0.0:
+            continue
+        mention_column = MENTION_OPTIONS[label]
+        mentions = int(topic_row.get(mention_column, 0)) if mention_column in topic_row else 0
+        parts.append((label, score, mentions))
+    if not parts:
+        return "no tracked topic dominates"
+    parts = sorted(parts, key=lambda item: item[1], reverse=True)
+    return "; ".join(f"{label}: {score:.2f}/10k words ({mentions} mentions)" for label, score, mentions in parts)
+
+
+def topic_metric_values(topic_row: pd.Series) -> dict[str, float | int | None]:
+    """Return topic scores and mentions as flat evidence columns."""
+    values: dict[str, float | int | None] = {}
+    for label, score_column in TOPIC_OPTIONS.items():
+        key = label.lower().replace(" / ", "_").replace(" ", "_")
+        mention_column = MENTION_OPTIONS[label]
+        values[f"{key}_score_per_10k"] = (
+            float(topic_row[score_column])
+            if not topic_row.empty and score_column in topic_row and pd.notna(topic_row[score_column])
+            else None
+        )
+        values[f"{key}_mentions"] = (
+            int(topic_row[mention_column])
+            if not topic_row.empty and mention_column in topic_row and pd.notna(topic_row[mention_column])
+            else None
+        )
+    return values
+
+
+def short_section_label(label: str) -> str:
+    """Shorten verbose filing-section names for compact theme labels."""
+    replacements = {
+        "10-K Item 1 Business": "Business",
+        "10-K Item 1A Risk Factors": "Risk Factors",
+        "10-K Item 7 MD&A": "MD&A",
+        "10-K Item 1C Cybersecurity": "Cybersecurity",
+        "10-Q Item 2 MD&A": "Q MD&A",
+        "10-Q Part II Item 1A Risk Factors": "Q Risk Factors",
+    }
+    return replacements.get(label, label.replace("10-K ", "").replace("10-Q ", ""))
 
 
 def latest_decomposed_experiment() -> Path | None:
@@ -355,11 +643,44 @@ def display_theme_name(theme: str, labels: dict[str, str]) -> str:
     return labels.get(theme, theme.replace("theme_", "Theme "))
 
 
-def combined_theme_labels(manual_labels: dict[str, str], auto_labels: dict[str, str]) -> dict[str, str]:
-    """Use manual theme names when available and auto names for the rest."""
-    combined = dict(auto_labels)
-    combined.update(manual_labels)
-    return combined
+def unique_theme_label_lookup(labels: dict[str, str], columns: list[str]) -> dict[str, str]:
+    """Make duplicate dynamic labels distinct without falling back to ticker lists."""
+    counts: dict[str, int] = {}
+    unique: dict[str, str] = {}
+    for column in columns:
+        label = labels.get(column, column.replace("theme_", "Theme "))
+        counts[label] = counts.get(label, 0) + 1
+        if counts[label] == 1:
+            unique[column] = label
+        else:
+            unique[column] = f"{label} {counts[label]}"
+    return unique
+
+
+def theme_evidence_frame(fragment_explanations: pd.DataFrame, themes: list[str] | set[str]) -> pd.DataFrame:
+    """Return a compact evidence table for selected dynamic business labels."""
+    if fragment_explanations.empty:
+        return fragment_explanations
+    theme_set = {str(theme) for theme in themes}
+    frame = fragment_explanations[fragment_explanations["theme"].astype(str).isin(theme_set)].copy()
+    columns = [
+        "theme",
+        "dynamic_label",
+        "representative_ticker",
+        "representative_filing_date",
+        "representative_form",
+        "representative_section",
+        "fragment_similarity",
+        "topic_evidence",
+        "evidence_snippet",
+        "snippet_terms",
+        "top_theme_tickers",
+        "section_chars",
+        "word_count",
+        "source_url",
+    ]
+    frame = ensure_columns(frame, columns)
+    return safe_frame_subset(frame, columns).sort_values("theme").reset_index(drop=True)
 
 
 def loading_bar_frame(row: pd.Series, columns: list[str], labels: dict[str, str]) -> pd.DataFrame:
@@ -370,6 +691,73 @@ def loading_bar_frame(row: pd.Series, columns: list[str], labels: dict[str, str]
         }
     )
     return frame.sort_values("loading", ascending=False).set_index("theme")
+
+
+def theme_loading_long_frame(
+    company_history: pd.DataFrame,
+    columns: list[str],
+    labels: dict[str, str],
+) -> pd.DataFrame:
+    """Return long-form labeled theme loadings for charts."""
+    rows = []
+    for _, row in company_history.iterrows():
+        for column in columns:
+            rows.append(
+                {
+                    "date": row["date"],
+                    "date_label": row["date"].strftime("%Y-%m-%d"),
+                    "theme_id": column,
+                    "theme_label": display_theme_name(column, labels),
+                    "loading": float(row[column]),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def current_theme_loading_chart(row: pd.Series, columns: list[str], labels: dict[str, str]) -> alt.Chart:
+    """Build a labeled current theme-loading bar chart."""
+    frame = pd.DataFrame(
+        {
+            "theme_id": columns,
+            "theme_label": [display_theme_name(column, labels) for column in columns],
+            "loading": [float(row[column]) for column in columns],
+        }
+    ).sort_values("loading", ascending=False)
+    return (
+        alt.Chart(frame)
+        .mark_bar()
+        .encode(
+            x=alt.X("loading:Q", title="Loading"),
+            y=alt.Y("theme_label:N", title="Theme", sort="-x"),
+            color=alt.Color("theme_label:N", title="Theme", legend=None),
+            tooltip=[
+                alt.Tooltip("theme_label:N", title="Theme"),
+                alt.Tooltip("theme_id:N", title="Theme id"),
+                alt.Tooltip("loading:Q", title="Loading", format=".3f"),
+            ],
+        )
+        .properties(height=max(280, 28 * len(frame)))
+    )
+
+
+def theme_loading_timeline_chart(frame: pd.DataFrame) -> alt.Chart:
+    """Build a labeled multi-theme loading timeline chart."""
+    return (
+        alt.Chart(frame)
+        .mark_line(point=True)
+        .encode(
+            x=alt.X("date:T", title="Date"),
+            y=alt.Y("loading:Q", title="Theme loading"),
+            color=alt.Color("theme_label:N", title="Theme"),
+            tooltip=[
+                alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip("theme_label:N", title="Theme"),
+                alt.Tooltip("theme_id:N", title="Theme id"),
+                alt.Tooltip("loading:Q", title="Loading", format=".3f"),
+            ],
+        )
+        .properties(height=360)
+    )
 
 
 def movement_frame(
@@ -472,6 +860,7 @@ def market_map_chart(
                 alt.Tooltip("ticker:N", title="Ticker"),
                 alt.Tooltip("title:N", title="Company"),
                 alt.Tooltip("theme_label:N", title="Dominant theme"),
+                alt.Tooltip("dominant_theme:N", title="Theme id"),
                 alt.Tooltip("dominant_loading:Q", title="Loading", format=".3f"),
             ],
         )
@@ -502,7 +891,13 @@ def market_map_chart(
     return (base + rings + labels).properties(height=620)
 
 
-def market_trail_chart(projected: pd.DataFrame, selected_date: pd.Timestamp, highlighted: list[str], months: int) -> alt.Chart:
+def market_trail_chart(
+    projected: pd.DataFrame,
+    selected_date: pd.Timestamp,
+    highlighted: list[str],
+    months: int,
+    labels: dict[str, str],
+) -> alt.Chart:
     """Build movement trails for selected tickers up to the selected date."""
     if not highlighted:
         return alt.Chart(pd.DataFrame({"x": [], "y": []})).mark_line()
@@ -515,6 +910,10 @@ def market_trail_chart(projected: pd.DataFrame, selected_date: pd.Timestamp, hig
         & projected["date"].isin(trail_dates)
     ].copy()
     trail["date_label"] = trail["date"].dt.strftime("%Y-%m-%d")
+    trail["theme_label"] = [
+        display_theme_name(theme, labels)
+        for theme in trail["dominant_theme"].astype(str)
+    ]
     return (
         alt.Chart(trail)
         .mark_line(point=True)
@@ -522,7 +921,15 @@ def market_trail_chart(projected: pd.DataFrame, selected_date: pd.Timestamp, hig
             x=alt.X("x:Q", title="Similarity map X"),
             y=alt.Y("y:Q", title="Similarity map Y"),
             color=alt.Color("ticker:N", title="Ticker"),
-            tooltip=["ticker:N", "date_label:N", alt.Tooltip("x:Q", format=".3f"), alt.Tooltip("y:Q", format=".3f")],
+            tooltip=[
+                alt.Tooltip("ticker:N", title="Ticker"),
+                alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip("theme_label:N", title="Dominant theme"),
+                alt.Tooltip("dominant_theme:N", title="Theme id"),
+                alt.Tooltip("dominant_loading:Q", title="Loading", format=".3f"),
+                alt.Tooltip("x:Q", format=".3f"),
+                alt.Tooltip("y:Q", format=".3f"),
+            ],
         )
         .properties(height=260)
     )
@@ -610,6 +1017,83 @@ def company_topic_change_table(
     metadata_subset = ensure_columns(metadata, keep).loc[:, keep]
     result = result.merge(metadata_subset, on="ticker", how="left")
     return result.sort_values("change", ascending=False).reset_index(drop=True)
+
+
+def company_topic_delta_summary(
+    counts: pd.DataFrame,
+    ticker: str,
+    sections: list[str],
+    early_years: tuple[int, int],
+    late_years: tuple[int, int],
+) -> pd.DataFrame:
+    """Summarize all tracked topic changes for one company."""
+    frame = counts[(counts["ticker"] == ticker) & (counts["section"].isin(sections))].copy()
+    if frame.empty:
+        return pd.DataFrame()
+    rows = []
+    for topic_name, score_column in TOPIC_OPTIONS.items():
+        mention_column = MENTION_OPTIONS[topic_name]
+        early = frame[frame["year"].between(early_years[0], early_years[1])]
+        late = frame[frame["year"].between(late_years[0], late_years[1])]
+        if early.empty or late.empty or score_column not in frame.columns:
+            continue
+        rows.append(
+            {
+                "topic": topic_name,
+                "early_score": float(early[score_column].mean()),
+                "late_score": float(late[score_column].mean()),
+                "change": float(late[score_column].mean() - early[score_column].mean()),
+                "late_mentions": int(late[mention_column].sum()) if mention_column in late.columns else 0,
+                "early_rows": int(len(early)),
+                "late_rows": int(len(late)),
+            }
+        )
+    if not rows:
+        return pd.DataFrame()
+    return pd.DataFrame(rows).sort_values("change", ascending=False).reset_index(drop=True)
+
+
+def historical_embedding_drift_table(
+    embeddings: pd.DataFrame,
+    metadata: pd.DataFrame,
+    section: str,
+    early_years: tuple[int, int],
+    late_years: tuple[int, int],
+    min_rows: int = 1,
+) -> pd.DataFrame:
+    """Rank firms by semantic embedding displacement between two windows."""
+    frame = embeddings[embeddings["section"] == section].copy()
+    if frame.empty:
+        return pd.DataFrame()
+    embedding_columns = [column for column in frame.columns if column.startswith("embedding_")]
+    if not embedding_columns:
+        return pd.DataFrame()
+    frame["year"] = frame["filing_date"].dt.year
+    rows = []
+    for ticker, group in frame.groupby("ticker"):
+        early = group[group["year"].between(early_years[0], early_years[1])]
+        late = group[group["year"].between(late_years[0], late_years[1])]
+        if len(early) < min_rows or len(late) < min_rows:
+            continue
+        early_vector = early.loc[:, embedding_columns].astype(float).mean(axis=0).to_numpy()
+        late_vector = late.loc[:, embedding_columns].astype(float).mean(axis=0).to_numpy()
+        rows.append(
+            {
+                "ticker": ticker,
+                "embedding_displacement": float(np.linalg.norm(late_vector - early_vector)),
+                "early_rows": int(len(early)),
+                "late_rows": int(len(late)),
+                "first_filing": group["filing_date"].min(),
+                "latest_filing": group["filing_date"].max(),
+            }
+        )
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return result
+    keep = ["ticker", "title", "company_name", "gics_sector", "gics_sub_industry"]
+    metadata_subset = ensure_columns(metadata, keep).loc[:, keep]
+    result = result.merge(metadata_subset, on="ticker", how="left")
+    return result.sort_values("embedding_displacement", ascending=False).reset_index(drop=True)
 
 
 def sector_topic_heatmap(
@@ -744,19 +1228,211 @@ def historical_market_trend_chart(trend: pd.DataFrame, topic_name: str) -> alt.C
     )
 
 
+@st.cache_data(show_spinner=False)
+def load_sector_outlook_artifacts(
+    config_name: str,
+    horizon_days: int,
+    min_train_months: int,
+    ridge_alpha: float,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict, pd.DataFrame]:
+    """Load inputs and compute sector-relative outlook artifacts."""
+    config = load_config(config_name)
+    db = FilingsDB.from_config(config)
+    prices = db.load_prices(date_from=config["data"].get("start_date"), date_to=config["data"].get("end_date"))
+    metadata = load_metadata()
+    valuation = optional_feature_frame(REPO_ROOT / "data" / "processed" / "features" / "valuation.parquet")
+    growth = optional_feature_frame(REPO_ROOT / "data" / "processed" / "features" / "growth_lifecycle.parquet")
+    result = sector_outlook_backtest(
+        prices,
+        metadata,
+        valuation=valuation,
+        growth=growth,
+        horizon_days=int(horizon_days),
+        min_train_months=int(min_train_months),
+        ridge_alpha=float(ridge_alpha),
+    )
+    return result.panel, result.predictions, result.latest, result.metrics, result.coefficients
+
+
+def optional_feature_frame(path: Path) -> pd.DataFrame:
+    """Load an optional feature parquet with normalized ticker/date columns."""
+    if not path.exists():
+        return pd.DataFrame()
+    frame = pd.read_parquet(path)
+    if "ticker" in frame.columns:
+        frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    if "date" in frame.columns:
+        frame["date"] = pd.to_datetime(frame["date"])
+    return frame
+
+
+def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
+    """Build current sector outlook bar chart."""
+    frame = latest.copy()
+    frame["direction"] = np.where(frame["predicted_excess_return"] >= 0.0, "Positive", "Negative")
+    return (
+        alt.Chart(frame)
+        .mark_bar(cornerRadiusEnd=3)
+        .encode(
+            y=alt.Y("gics_sector:N", sort="-x", title="Sector"),
+            x=alt.X("predicted_excess_return:Q", title="Predicted excess return vs S&P"),
+            color=alt.Color("direction:N", scale=alt.Scale(range=["#1f7a4d", "#b8423f"]), legend=None),
+            tooltip=[
+                alt.Tooltip("gics_sector:N", title="Sector"),
+                alt.Tooltip("predicted_excess_return:Q", title="Predicted excess", format=".2%"),
+                alt.Tooltip("score_z:Q", title="Score z", format=".2f"),
+                alt.Tooltip("prediction_rank:Q", title="Rank", format=".0f"),
+            ],
+        )
+        .properties(height=360)
+    )
+
+
+def sector_backtest_chart(dated: pd.DataFrame) -> alt.Chart:
+    """Build date-level sector model backtest chart."""
+    frame = dated.copy()
+    frame["date_label"] = frame["date"].dt.strftime("%Y-%m-%d")
+    return (
+        alt.Chart(frame)
+        .mark_line(point=False)
+        .encode(
+            x=alt.X("date:T", title="Prediction date"),
+            y=alt.Y("top_minus_bottom:Q", title="Top 3 minus bottom 3 realized excess"),
+            tooltip=[
+                alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip("top_minus_bottom:Q", title="Top-bottom", format=".2%"),
+                alt.Tooltip("rank_ic:Q", title="Rank IC", format=".3f"),
+                alt.Tooltip("top_bucket_excess:Q", title="Top bucket excess", format=".2%"),
+            ],
+        )
+        .properties(height=260)
+    )
+
+
+def latest_coefficient_table(coefficients: pd.DataFrame) -> pd.DataFrame:
+    """Return latest model coefficients sorted by absolute weight."""
+    if coefficients.empty:
+        return coefficients
+    latest_date = coefficients["date"].max()
+    frame = coefficients[coefficients["date"] == latest_date].copy()
+    frame["abs_coefficient"] = frame["coefficient"].abs()
+    return frame.sort_values("abs_coefficient", ascending=False).reset_index(drop=True)
+
+
+def render_sector_outlook() -> None:
+    st.subheader("Sector Relative Outlook")
+    st.caption(
+        "A walk-forward research signal for sector excess returns versus the equal-weight S&P 500 universe. "
+        "This is a transparent backtest tool, not a trading recommendation."
+    )
+
+    controls = st.columns([1.3, 1.0, 1.0, 1.0])
+    config_name = controls[0].text_input("Experiment config", value="decomposed_point_in_time")
+    horizon_days = controls[1].selectbox("Forward horizon", [21, 63, 126, 252], index=1)
+    min_train_months = controls[2].slider("Min training months", min_value=12, max_value=84, value=36, step=6)
+    ridge_alpha = controls[3].select_slider("Ridge regularization", options=[0.1, 1.0, 3.0, 10.0, 30.0, 100.0], value=10.0)
+
+    try:
+        panel, predictions, latest, metrics, coefficients = load_sector_outlook_artifacts(
+            config_name,
+            int(horizon_days),
+            int(min_train_months),
+            float(ridge_alpha),
+        )
+    except Exception as exc:  # noqa: BLE001
+        st.error(f"Sector outlook failed: {exc}")
+        return
+
+    if latest.empty:
+        st.warning("Not enough completed history to fit the sector outlook model with these settings.")
+        return
+
+    metric_columns = st.columns(5)
+    metric_columns[0].metric("Prediction dates", f"{int(metrics.get('n_prediction_dates', 0)):,}")
+    metric_columns[1].metric("Mean rank IC", f"{float(metrics.get('mean_rank_ic', np.nan)):.3f}")
+    metric_columns[2].metric("Top-bottom avg", f"{float(metrics.get('mean_top_minus_bottom', np.nan)):.2%}")
+    metric_columns[3].metric("Top sector hit rate", f"{float(metrics.get('top_sector_hit_rate', np.nan)):.1%}")
+    metric_columns[4].metric("Latest date", latest["date"].max().strftime("%Y-%m-%d"))
+
+    st.markdown("**Current Sector Scores**")
+    st.altair_chart(sector_latest_score_chart(latest), width="stretch")
+
+    display_columns = [
+        "prediction_rank",
+        "gics_sector",
+        "predicted_excess_return",
+        "score_z",
+        "sector_excess_momentum_63d",
+        "sector_excess_momentum_126d",
+        "valuation_sales_yield",
+        "valuation_earnings_yield",
+        "valuation_book_to_market",
+        "growth_revenue_yoy_1y",
+        "growth_operating_margin",
+    ]
+    st.dataframe(
+        safe_frame_subset(ensure_columns(latest, display_columns), display_columns),
+        width="stretch",
+        hide_index=True,
+    )
+
+    dated = sector_backtest_by_date(predictions)
+    if not dated.empty:
+        st.markdown("**Walk-Forward Backtest**")
+        st.altair_chart(sector_backtest_chart(dated), width="stretch")
+        st.dataframe(
+            dated.sort_values("date", ascending=False).head(24),
+            width="stretch",
+            hide_index=True,
+        )
+
+    coefficient_table = latest_coefficient_table(coefficients)
+    if not coefficient_table.empty:
+        with st.expander("Latest model feature weights"):
+            st.dataframe(
+                safe_frame_subset(coefficient_table, ["feature", "coefficient", "abs_coefficient"]),
+                width="stretch",
+                hide_index=True,
+            )
+
+    with st.expander("How to read this"):
+        st.write(
+            "`Predicted excess return` is the model's estimate of future sector return minus the equal-weight S&P 500 "
+            "return over the selected horizon. Positive means the sector is scored as likely to outperform the broad "
+            "universe; negative means likely to lag."
+        )
+        st.write(
+            "The model is trained walk-forward. For each historical prediction date, it only trains on prior rows whose "
+            "forward horizon had already completed. That keeps this closer to point-in-time behavior."
+        )
+        st.write(
+            "The first version uses sector price momentum/volatility plus sector-mean growth and valuation features. "
+            "Filing-language topic acceleration can be added next as another feature block."
+        )
+
+
 def render_historical_text() -> None:
     st.subheader("Historical Filing Language")
     st.caption(
-        "Explore compact historical 10-K section features: keyword counts first, MiniLM embeddings second, "
-        "with raw SEC text discarded after processing."
+        "Explore compact historical filing-language features: keyword counts first, optional evidence snippets, "
+        "MiniLM embeddings second, with full raw SEC text discarded after processing."
     )
 
-    input_dir = Path(st.text_input("Historical text artifact directory", value=str(DEFAULT_HISTORICAL_TEXT_DIR)))
+    artifact_dirs = available_historical_text_dirs()
+    default_dir = default_historical_text_dir()
+    if artifact_dirs:
+        directory_labels = [str(path) for path in artifact_dirs]
+        default_index = directory_labels.index(str(default_dir)) if str(default_dir) in directory_labels else 0
+        selected_directory = st.selectbox("Historical text artifact directory", directory_labels, index=default_index)
+        input_dir = Path(selected_directory)
+    else:
+        input_dir = Path(st.text_input("Historical text artifact directory", value=str(default_dir)))
     counts = load_historical_topic_counts(str(input_dir))
     if counts.empty:
         st.warning(
             "No historical text topic counts found. Run "
-            "`.venv/bin/python scripts/24_stream_historical_text_features.py --since 2010-01-01` first."
+            "`.venv/bin/python -m scripts.historical_text.stream_features --since 2010-01-01 "
+            "--forms \"10-K,10-Q\" --output-dir data/processed/historical_text_10k_10q` first."
         )
         return
 
@@ -764,13 +1440,19 @@ def render_historical_text() -> None:
     metadata = load_metadata()
     filing_index = load_historical_filing_index(str(input_dir))
     embeddings = load_historical_embeddings(str(input_dir))
+    snippets = load_historical_snippets(str(input_dir))
 
-    summary_columns = st.columns(5)
+    summary_columns = st.columns(6)
     summary_columns[0].metric("Filings", f"{len(filing_index):,}" if not filing_index.empty else "n/a")
     summary_columns[1].metric("Topic rows", f"{len(counts):,}")
     summary_columns[2].metric("Embedding rows", f"{len(embeddings):,}" if not embeddings.empty else "0")
-    summary_columns[3].metric("Tickers", f"{counts['ticker'].nunique():,}")
-    summary_columns[4].metric("Failures", str(manifest.get("failures", "n/a")))
+    summary_columns[3].metric("Snippet rows", f"{len(snippets):,}" if not snippets.empty else "0")
+    summary_columns[4].metric("Tickers", f"{counts['ticker'].nunique():,}")
+    summary_columns[5].metric("Failures", str(manifest.get("failures", "n/a")))
+    if manifest:
+        forms = ", ".join(manifest.get("forms", [])) or "n/a"
+        sections_configured = len(manifest.get("sections", []))
+        st.caption(f"Loaded historical artifact: forms={forms}; configured sections={sections_configured}.")
 
     sections = sorted(counts["section"].dropna().unique().tolist())
     section_labels = counts.drop_duplicates("section").set_index("section")["section_label"].to_dict()
@@ -864,6 +1546,12 @@ def render_historical_text() -> None:
             ].sort_values("filing_date", ascending=False)
             st.dataframe(table, width="stretch", hide_index=True)
 
+    topic_delta = company_topic_delta_summary(counts, selected_ticker, selected_sections, early_years, late_years)
+    if not topic_delta.empty:
+        st.markdown(f"**What Changed For {selected_ticker}?**")
+        st.caption("Topic deltas compare the selected baseline and recent windows across the selected sections.")
+        st.dataframe(topic_delta, width="stretch", hide_index=True)
+
     st.markdown("**Largest Company Topic Increases**")
     if changes.empty:
         st.info("No company change rows available for the selected windows.")
@@ -932,6 +1620,46 @@ def render_historical_text() -> None:
         "This PCA map is fit over historical section embeddings. A highlighted line connects a company's filings over time, "
         "so visible drift means the language in that section is moving semantically."
     )
+
+    drift = historical_embedding_drift_table(embeddings, metadata, map_section, early_years, late_years)
+    if not drift.empty:
+        with st.expander("Semantic drift leaderboard", expanded=True):
+            st.write(
+                "This ranks companies by embedding displacement between the selected baseline and recent windows. "
+                "It is useful for finding firms whose filing language moved the most, even when the keyword topic is not obvious."
+            )
+            drift_display = ensure_columns(
+                drift,
+                [
+                    "ticker",
+                    "company_name",
+                    "gics_sector",
+                    "gics_sub_industry",
+                    "embedding_displacement",
+                    "early_rows",
+                    "late_rows",
+                    "first_filing",
+                    "latest_filing",
+                ],
+            )
+            st.dataframe(
+                safe_frame_subset(
+                    drift_display,
+                    [
+                        "ticker",
+                        "company_name",
+                        "gics_sector",
+                        "gics_sub_industry",
+                        "embedding_displacement",
+                        "early_rows",
+                        "late_rows",
+                        "first_filing",
+                        "latest_filing",
+                    ],
+                ).head(50),
+                width="stretch",
+                hide_index=True,
+            )
 
 
 def render_filing_browser() -> None:
@@ -1070,8 +1798,6 @@ def render_similarity_shifts() -> None:
     selected_view = controls[0].selectbox("Similarity view", views, index=views.index("business") if "business" in views else 0)
     loadings_path = experiment_root / "views" / selected_view / "loadings.parquet"
     loadings = load_loadings(str(loadings_path))
-    labels_path = Path(st.text_input("Theme labels CSV", value=str(DEFAULT_THEME_LABELS_PATH)))
-    theme_labels = load_theme_labels(labels_path)
     ticker_options = sorted(loadings["ticker"].unique().tolist())
     company_labels = metadata[metadata["ticker"].isin(ticker_options)].copy()
     label_lookup = dict(zip(company_labels["search_label"], company_labels["ticker"], strict=False))
@@ -1089,10 +1815,6 @@ def render_similarity_shifts() -> None:
         return
 
     all_theme_columns = theme_columns(company_history)
-    theme_labels = ensure_label_rows(theme_labels, selected_view, all_theme_columns)
-    manual_label_lookup = theme_label_lookup(theme_labels, selected_view)
-    auto_label_lookup = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
-    label_lookup_for_view = combined_theme_labels(manual_label_lookup, auto_label_lookup)
     max_themes = len(all_theme_columns)
     preset = controls[2].selectbox("Granularity", ["Coarse", "Medium", "Fine", "Custom"], index=1)
     default_k = {"Coarse": 5, "Medium": 10, "Fine": min(20, max_themes), "Custom": min(12, max_themes)}[preset]
@@ -1125,6 +1847,15 @@ def render_similarity_shifts() -> None:
         format="%d",
     )
     selected_date = dates[date_index]
+    label_lookup_for_view = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
+    fragment_label_lookup, fragment_explanations = fragment_theme_label_artifacts(
+        str(loadings_path),
+        str(default_historical_text_dir()),
+        selected_view,
+        None,
+    )
+    label_lookup_for_view.update(fragment_label_lookup)
+    label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, all_theme_columns)
 
     metric_columns = st.columns(4)
     metric_columns[0].metric("Selected ticker", selected_ticker)
@@ -1132,16 +1863,15 @@ def render_similarity_shifts() -> None:
     metric_columns[2].metric("Date", selected_date)
     metric_columns[3].metric("Groups shown", selected_k)
 
-    line_frame = company_history.set_index("date").loc[:, selected_columns]
-    line_frame = line_frame.rename(
-        columns={column: display_theme_name(column, label_lookup_for_view) for column in selected_columns}
-    )
-
     current_row = company_history.iloc[date_index]
     st.caption(f"{selected_ticker} category mixture on {selected_date}")
-    st.bar_chart(loading_bar_frame(current_row, selected_columns, label_lookup_for_view))
+    st.altair_chart(
+        current_theme_loading_chart(current_row, selected_columns, label_lookup_for_view),
+        width="stretch",
+    )
 
-    st.line_chart(line_frame, width="stretch")
+    timeline_frame = theme_loading_long_frame(company_history, selected_columns, label_lookup_for_view)
+    st.altair_chart(theme_loading_timeline_chart(timeline_frame), width="stretch")
 
     table_columns = st.columns(2)
     with table_columns[0]:
@@ -1172,28 +1902,34 @@ def render_similarity_shifts() -> None:
             hide_index=True,
         )
 
-    with st.expander("Label themes"):
+    with st.expander("Dynamic theme labels", expanded=True):
         st.write(
-            "Theme labels are manual on purpose. Inspect top firms and movement, then give a theme a short name."
+            "This dashboard ignores the manual label CSV. Business labels are generated from stable representative "
+            "filing fragments for each theme. Other views use computed sector-mix labels as a fallback."
         )
-        editable = theme_labels[theme_labels["view"] == selected_view].copy()
-        edited = st.data_editor(
-            editable,
-            width="stretch",
-            hide_index=True,
-            disabled=["view", "theme"],
-            column_config={
-                "label": st.column_config.TextColumn("Label", help="Short human-readable name."),
-                "description": st.column_config.TextColumn("Description", help="Optional interpretation notes."),
-            },
+        if selected_view == "business" and not fragment_explanations.empty:
+            st.markdown("**Evidence for visible dynamic labels**")
+            shown = theme_evidence_frame(fragment_explanations, selected_columns)
+            st.dataframe(
+                shown,
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "source_url": st.column_config.LinkColumn("SEC source filing"),
+                    "fragment_similarity": st.column_config.NumberColumn("fragment_similarity", format="%.3f"),
+                },
+            )
+            st.caption(
+                "The representative fragment is chosen by cosine similarity in MiniLM section-embedding space. "
+                "Compact snippets appear when `historical_section_snippets.parquet` has been generated; older artifacts "
+                "show topic counts and SEC source links only."
+            )
+        elif selected_view != "business":
+            st.info("Fragment-derived dynamic labels are currently available for the business view only.")
+        label_preview = pd.DataFrame(
+            [{"theme": theme, "dynamic_label": display_theme_name(theme, label_lookup_for_view)} for theme in all_theme_columns]
         )
-        if st.button("Save theme labels", width="stretch"):
-            labels_path.parent.mkdir(parents=True, exist_ok=True)
-            other_views = theme_labels[theme_labels["view"] != selected_view]
-            output = pd.concat([other_views, edited], ignore_index=True)
-            output = output.sort_values(["view", "theme"]).reset_index(drop=True)
-            output.to_csv(labels_path, index=False)
-            st.success(f"Saved labels to {labels_path}. Refresh or rerun controls to see labels everywhere.")
+        st.dataframe(label_preview, width="stretch", hide_index=True)
 
     with st.expander("What am I looking at?"):
         st.write(
@@ -1242,11 +1978,6 @@ def render_market_map() -> None:
     loadings_path = experiment_root / "views" / selected_view / "loadings.parquet"
     loadings = load_loadings(str(loadings_path))
     projected = load_projected_market_map(str(loadings_path))
-    labels_path = Path(st.text_input("Market map theme labels CSV", value=str(DEFAULT_THEME_LABELS_PATH)))
-    theme_labels = ensure_label_rows(load_theme_labels(labels_path), selected_view, theme_columns(loadings))
-    manual_label_lookup = theme_label_lookup(theme_labels, selected_view)
-    auto_label_lookup = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
-    label_lookup_for_view = combined_theme_labels(manual_label_lookup, auto_label_lookup)
 
     hide_collapsed = st.checkbox(
         "Hide collapsed / uninformative dates",
@@ -1285,6 +2016,15 @@ def render_market_map() -> None:
     )
     st.caption(f"Selected map date: {date_labels[int(date_index)]}")
     selected_date = pd.Timestamp(available_dates[date_index])
+    label_lookup_for_view = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
+    fragment_label_lookup, fragment_explanations = fragment_theme_label_artifacts(
+        str(loadings_path),
+        str(default_historical_text_dir()),
+        selected_view,
+        None,
+    )
+    label_lookup_for_view.update(fragment_label_lookup)
+    label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, theme_columns(loadings))
 
     ticker_options = sorted(projected["ticker"].unique().tolist())
     default_highlights = [ticker for ticker in ["META", "AAPL", "MSFT", "XOM", "JPM", "SBUX"] if ticker in ticker_options]
@@ -1309,7 +2049,7 @@ def render_market_map() -> None:
     if highlighted:
         st.markdown("**Highlighted Ticker Trails**")
         st.altair_chart(
-            market_trail_chart(projected, selected_date, highlighted, trail_months),
+            market_trail_chart(projected, selected_date, highlighted, trail_months, label_lookup_for_view),
             width="stretch",
         )
 
@@ -1328,6 +2068,26 @@ def render_market_map() -> None:
             hide_index=True,
         )
 
+    if selected_view == "business" and not fragment_explanations.empty:
+        with st.expander("Dynamic Labels: Representative Filing Fragments"):
+            shown_themes = set(points["dominant_theme"].astype(str).unique())
+            shown = theme_evidence_frame(fragment_explanations, shown_themes)
+            st.dataframe(
+                shown,
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "source_url": st.column_config.LinkColumn("SEC source filing"),
+                    "fragment_similarity": st.column_config.NumberColumn("fragment_similarity", format="%.3f"),
+                },
+            )
+            st.caption(
+                "Stable labels are generated by comparing candidate filing-section fragments to each theme centroid "
+                "in MiniLM embedding space, then using the nearest fragment's strongest tracked topics. "
+                "Compact snippets appear when the snippet artifact has been generated; otherwise use the source filing "
+                "link for the underlying text."
+            )
+
     with st.expander("How to read this map"):
         st.write(
             "Distance means similarity inside the selected view. If two stocks move in the same direction over time, "
@@ -1342,8 +2102,8 @@ def render_market_map() -> None:
         )
 
 
-filing_tab, historical_tab, shifts_tab, map_tab = st.tabs(
-    ["Filing Browser", "Historical Text", "Similarity Shifts", "Market Map"]
+filing_tab, historical_tab, shifts_tab, map_tab, sector_tab = st.tabs(
+    ["Filing Browser", "Historical Text", "Similarity Shifts", "Market Map", "Sector Outlook"]
 )
 
 with filing_tab:
@@ -1357,3 +2117,6 @@ with shifts_tab:
 
 with map_tab:
     render_market_map()
+
+with sector_tab:
+    render_sector_outlook()

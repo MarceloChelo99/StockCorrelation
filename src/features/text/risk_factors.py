@@ -1,4 +1,8 @@
-"""Risk-factor feature producer backed by parsed 10-K sections."""
+"""Legacy latest-risk-section text features.
+
+Superseded for new experiments by ``text_historical``, which uses historical
+MiniLM section embeddings. This producer is retained to reproduce earlier runs.
+"""
 from __future__ import annotations
 
 from src.features.base import FeatureProducer, FeatureSpec

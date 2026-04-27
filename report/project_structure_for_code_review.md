@@ -54,7 +54,7 @@ The project is configured through Poetry in `pyproject.toml`.
 | `pandas>=3.0` | Main table engine |
 | `pyarrow>=22.0` | Parquet IO |
 | `pyyaml>=6.0` | Config loading |
-| `torch==2.10.0` | Installed and base interface imports `torch.nn`, but current autoencoder is NumPy |
+| `torch==2.10.0` | PyTorch autoencoder implementation and neural-model base class |
 | `sentence-transformers==5.4.1` | MiniLM filing-section embeddings |
 | `networkx>=3.6` | Relationship graph features, centrality, Louvain communities |
 | `scikit-learn>=1.8` | PCA, GMMs, Ledoit-Wolf, clustering metrics |
@@ -62,7 +62,7 @@ The project is configured through Poetry in `pyproject.toml`.
 | `streamlit>=1.50` | Dashboard |
 | `altair` | Used by dashboard but not listed explicitly in `pyproject.toml` |
 
-Reviewer note: `altair` is imported by the dashboard and should probably be made an explicit dependency. Also, the current `Autoencoder` is a manual NumPy implementation even though PyTorch is installed; this is intentional for the current baseline but worth reviewing before adding more neural models.
+Reviewer note: `altair` is imported by the dashboard and should probably be made an explicit dependency. The current `Autoencoder` has been migrated to PyTorch; the old manual NumPy implementation remains as `_legacy_numpy_autoencoder.py` only for reading older artifacts and regression comparison.
 
 ## Configuration System
 
@@ -135,7 +135,7 @@ src/
 ├── features/             # Feature producers and assembly
 ├── filings/              # SEC filing section parsing and keyword topics
 ├── ingest/               # SEC fundamentals ingestion
-├── models/               # PCA, NumPy autoencoder, model training helper
+├── models/               # PCA, PyTorch autoencoder, legacy NumPy AE, model training helper
 ├── relationships/        # Relationship extraction from filing text
 ├── utils/                # Dates, IO, logging, seed helpers
 ├── config.py             # Config loading
@@ -166,8 +166,9 @@ Current producers:
 | `event_item_frequency` | `features/events/item_frequency.py` | Rolling 8-K item counts |
 | `growth_lifecycle` | `features/fundamentals/growth_lifecycle.py` | XBRL lifecycle features |
 | `network_position` | `features/graph/network_position.py` | Relationship graph position features |
-| `text_business` | `features/text/business_description.py` | Hashed latest business-section text features |
-| `text_risk` | `features/text/risk_factors.py` | Hashed latest risk-section text features |
+| `text_historical` | `features/text/historical_text_features.py` | PCA-reduced point-in-time MiniLM section embeddings |
+| `text_business` | `features/text/business_description.py` | Legacy hashed latest business-section text features |
+| `text_risk` | `features/text/risk_factors.py` | Legacy hashed latest risk-section text features |
 
 `src/features/assembly.py` builds the monthly ticker-date panel and merges feature groups point-in-time. The core convention is that keys are regular columns `ticker` and `date`, not indices.
 
@@ -199,11 +200,11 @@ MODEL_REGISTRY = {
 
 `PCAModel` is a lightweight SVD baseline.
 
-`Autoencoder` is a shallow nonlinear manual NumPy model with tanh activations, Adam, feature standardization, save/load via `.npz` and `meta.json`. It does not currently use PyTorch despite the project dependency. The abstract base class imports `torch.nn.Module` when available, but the concrete models use NumPy arrays and `.fit()` rather than a PyTorch training loop.
+`Autoencoder` is a PyTorch `nn.Module` with configurable `hidden_dims`, BatchNorm/ReLU/Dropout encoder and mirrored decoder, Adam optimization, feature standardization stored as buffers, validation split, and early stopping. It saves `weights.pt` plus `meta.json`. The deprecated manual NumPy autoencoder is kept in `src/models/_legacy_numpy_autoencoder.py` so older experiment artifacts remain readable.
 
 `src/models/train.py` selects numeric feature columns, builds the configured model, trains it, saves the model, and writes `embeddings.parquet` plus `training_history.json`.
 
-Reviewer note: this is a likely refactor point if the next work adds temporal autoencoders or richer architectures. There is a mismatch between the PyTorch-style `EmbeddingModel` base and the current NumPy implementation.
+Reviewer note: the model layer is now ready for a temporal autoencoder class, but training loops are still simple research-code helpers rather than a full trainer framework.
 
 ### `src/clustering/`
 
@@ -249,59 +250,81 @@ Small helpers for:
 
 ## Scripts
 
-Scripts are intentionally thin entry points, but the project has accumulated many analysis scripts. Most scripts manually add the repo root to `sys.path`; some also add `libraries/market_data_fetcher/src`.
+Scripts are intentionally thin entry points. They are now organized to mirror the
+project pipeline:
+
+```text
+scripts/
+├── _bootstrap.py
+├── pipeline/
+│   ├── run_experiment.py
+│   ├── stage_01_ingest/
+│   ├── stage_02_features/
+│   ├── stage_03_assembly/
+│   ├── stage_04_model/
+│   └── stage_05_evaluation/
+├── analysis/
+├── decomposed/
+├── historical_text/
+├── data_setup/
+└── audit/
+```
+
+`scripts/_bootstrap.py` is the only script module that mutates `sys.path`. The
+stage scripts import it before importing project code. A small set of root-level
+compatibility wrappers remains for common commands such as
+`scripts/02_compute_features.py`, but the real implementations live in the
+pipeline-stage folders.
 
 ### Core Pipeline Scripts
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/00_fetch_sp500_metadata.py` | Fetch current S&P 500/GICS metadata |
-| `scripts/run_sp500_market_build.py` | Build local raw filing/price corpus with `market_data_fetcher` |
-| `scripts/00_fetch_8k_events.py` | Fetch 8-K event metadata from SEC submissions |
-| `scripts/01_parse_sections.py` | Parse latest 10-K sections from stored filings |
-| `scripts/02_compute_features.py` | Run registered feature producers |
-| `scripts/03_assemble_dataset.py` | Build model-ready monthly dataset |
-| `scripts/04_train.py` | Train configured model and write embeddings |
-| `scripts/05_evaluate.py` | Run configured evaluators |
-| `scripts/run_experiment.py` | Orchestrate feature, assembly, training, evaluation, optional views/GMMs |
-| `scripts/20_run_decomposed.py` | Full decomposed-view orchestration |
+| `scripts/pipeline/stage_01_ingest/fetch_sp500_metadata.py` | Fetch current S&P 500/GICS metadata |
+| `scripts/pipeline/stage_01_ingest/fetch_8k_events.py` | Fetch 8-K event metadata from SEC submissions |
+| `scripts/pipeline/stage_01_ingest/parse_sections.py` | Parse latest 10-K sections from stored filings |
+| `scripts/pipeline/stage_01_ingest/ingest_fundamentals.py` | SEC XBRL companyfacts ingestion |
+| `scripts/pipeline/stage_02_features/compute_features.py` | Run registered feature producers |
+| `scripts/pipeline/stage_02_features/extract_relationships.py` | Extract relationship graph features |
+| `scripts/pipeline/stage_03_assembly/assemble_dataset.py` | Build model-ready monthly dataset |
+| `scripts/pipeline/stage_04_model/train.py` | Train configured model and write embeddings |
+| `scripts/pipeline/stage_05_evaluation/evaluate.py` | Run configured evaluators |
+| `scripts/pipeline/run_experiment.py` | Orchestrate feature, assembly, training, evaluation, optional views/GMMs |
 
 ### Decomposed Similarity Scripts
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/16_ingest_fundamentals.py` | SEC XBRL companyfacts ingestion |
-| `scripts/17_train_views.py` | Train/reuse one autoencoder per view |
-| `scripts/18_fit_gmms.py` | Fit GMM soft themes per view |
-| `scripts/19_interpret_views.py` | Generate theme interpretation reports |
-| `scripts/21_multiview_covariance_slices.py` | Slice multi-view covariance by sector/liquidity |
-| `scripts/22_analyze_theme_evolution.py` | Analyze theme dynamics and topic enrichment |
+| `scripts/pipeline/stage_04_model/train_views.py` | Train/reuse one autoencoder per view |
+| `scripts/pipeline/stage_04_model/fit_gmms.py` | Fit GMM soft themes per view |
+| `scripts/pipeline/stage_04_model/interpret_views.py` | Generate theme interpretation reports |
+| `scripts/decomposed/run_decomposed.py` | Full decomposed-view orchestration |
+| `scripts/decomposed/multiview_covariance_slices.py` | Slice multi-view covariance by sector/liquidity |
 
 ### Historical Text Scripts
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/23_fetch_historical_10k_filings.py` | Older raw historical 10-K streaming approach |
-| `scripts/24_stream_historical_text_features.py` | Preferred compact historical text stream: parse, count topics, embed, discard raw text |
-| `scripts/25_report_historical_text_trends.py` | Produce topic trend reports from compact historical features |
+| `scripts/historical_text/fetch_historical_10k_filings.py` | Older raw historical 10-K streaming approach |
+| `scripts/historical_text/stream_features.py` | Preferred compact historical text stream: parse, count topics, embed, discard raw text |
+| `scripts/historical_text/report_trends.py` | Produce topic trend reports from compact historical features |
 
 ### Analysis / Reporting Scripts
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/06_compare_experiments.py` | Summarize experiment metrics |
-| `scripts/07_qualitative_peers.py` | Generate qualitative nearest-peer examples |
-| `scripts/08_peer_horizon_sweep.py` | Peer test across forward horizons |
-| `scripts/09_covariance_slices.py` | Single-view covariance slice analysis |
-| `scripts/10_thematic_factor_tests.py` | Regress semantic peer clusters against market/sector |
-| `scripts/11_ablation_summary.py` | Summarize feature ablations |
-| `scripts/12_theme_residual_correlations.py` | Residual correlation between thematic clusters |
-| `scripts/13_hybrid_covariance_policy.py` | In-sample hybrid covariance routing summary |
-| `scripts/14_extract_relationships.py` | Extract relationship graph from parsed sections |
-| `scripts/15_relationship_graph_summary.py` | Summarize graph coverage and alignment |
-| `scripts/run_database_smoke_test.py` | Small ingestion smoke test |
-
-Reviewer note: many script names encode chronological research history. This is useful for exploration but may be worth grouping into subdirectories later: `scripts/pipeline/`, `scripts/analysis/`, `scripts/historical_text/`, `scripts/decomposed/`.
+| `scripts/analysis/compare_experiments.py` | Summarize experiment metrics |
+| `scripts/analysis/qualitative_peers.py` | Generate qualitative nearest-peer examples |
+| `scripts/analysis/peer_horizon_sweep.py` | Peer test across forward horizons |
+| `scripts/analysis/covariance_slices.py` | Single-view covariance slice analysis |
+| `scripts/analysis/thematic_factor_tests.py` | Regress semantic peer clusters against market/sector |
+| `scripts/analysis/ablation_summary.py` | Summarize feature ablations |
+| `scripts/analysis/theme_residual_correlations.py` | Residual correlation between thematic clusters |
+| `scripts/analysis/hybrid_covariance_policy.py` | In-sample hybrid covariance routing summary |
+| `scripts/analysis/relationship_graph_summary.py` | Summarize graph coverage and alignment |
+| `scripts/analysis/analyze_theme_evolution.py` | Analyze theme dynamics and topic enrichment |
+| `scripts/data_setup/run_sp500_market_build.py` | Build local raw filing/price corpus with `market_data_fetcher` |
+| `scripts/data_setup/run_database_smoke_test.py` | Small ingestion smoke test |
 
 ## Dashboard
 
@@ -473,10 +496,11 @@ The project has two related but different text feature systems:
 
 | Text system | Artifact | Purpose |
 | --- | --- | --- |
-| Latest-section feature producers | `data/processed/features/text_business.parquet`, `text_risk.parquet` | Simple hashed features from latest parsed 10-K sections for original model pipeline |
-| Compact historical text stream | `data/processed/historical_text*/historical_section_*.parquet` | Section-level topic counts and MiniLM embeddings over historical filings for dashboard/time analysis |
+| Legacy latest-section feature producers | `data/processed/features/text_business.parquet`, `text_risk.parquet` | Simple hashed features from latest parsed 10-K sections for reproducing older experiments |
+| Compact historical text stream | `data/processed/historical_text*/historical_section_*.parquet` | Section-level topic counts and MiniLM embeddings over historical filings |
+| First-class historical text producer | `data/processed/features/text_historical.parquet` | PCA-reduced point-in-time business/risk section embeddings for model training |
 
-Reviewer concern: the historical text stream is not yet a first-class `FeatureProducer` in the generic `02 → 03 → 04` pipeline. It currently feeds dashboard/report workflows more directly.
+Current state: historical text is now available both as raw section-level artifacts for dashboard/topic exploration and as the registered `text_historical` feature group for the generic `02 → 03 → 04` pipeline.
 
 ### Point-In-Time Mechanics
 
@@ -571,7 +595,7 @@ Network features use `networkx`, including degree variants, PageRank, betweennes
 Primary script:
 
 ```text
-scripts/24_stream_historical_text_features.py
+scripts/historical_text/stream_features.py
 ```
 
 Important CLI arguments:
@@ -669,23 +693,25 @@ Steps:
 1. Select numeric feature columns excluding configured metadata.
 2. Convert to float matrix.
 3. Replace NaN/Inf with zero.
-4. Instantiate `MODEL_REGISTRY[config["model"]["name"]]`.
-5. Call `.fit(matrix)`.
-6. Call `.encode(matrix)`.
-7. Write `embeddings.parquet`, `model/`, and `training_history.json`.
+4. Optionally fit only complete rows when `model.fit_complete_cases_only=true`.
+5. Instantiate `MODEL_REGISTRY[config["model"]["name"]]`.
+6. Call `.fit(fit_matrix)`.
+7. Call `.encode(matrix)` for the full panel.
+8. Write `embeddings.parquet`, `model/`, and `training_history.json`.
 
 `Autoencoder` details:
 
 | Property | Current behavior |
 | --- | --- |
-| Implementation | Manual NumPy backpropagation |
-| Standardization | Store feature mean/std; zero std set to 1 |
-| Encoder | `input → tanh(hidden) → tanh(embedding)` |
-| Decoder | `embedding → tanh(hidden) → linear reconstruction` |
+| Implementation | PyTorch `nn.Module` |
+| Standardization | Store feature mean/std as buffers; zero std set to 1 |
+| Encoder | `Linear → BatchNorm1d → ReLU → Dropout` blocks ending in a linear embedding layer |
+| Decoder | Mirrored MLP ending in a linear standardized reconstruction |
 | Loss | Mean squared reconstruction error in standardized feature space |
-| Optimizer | Small custom Adam |
-| Save format | `weights.npz` plus `meta.json` |
-| Hidden dims | Generic AE supports one `hidden_dim`; view configs may specify `hidden_dims` but only first value is used in `scripts/17_train_views.py` |
+| Optimizer | PyTorch Adam |
+| Validation | Deterministic train/validation split with early stopping |
+| Save format | `weights.pt` plus `meta.json` |
+| Hidden dims | Canonical `hidden_dims: list[int]`; legacy `hidden_dim` accepted for compatibility |
 
 `PCAModel` details:
 
@@ -695,15 +721,14 @@ Steps:
 
 Reviewer concerns:
 
-- No train/validation split in the generic NumPy AE path.
-- No early stopping in the generic AE path.
-- No mini-batch validation metrics beyond initial/final reconstruction MSE.
-- Feature imputation differs between generic training and view training.
-- If the project moves to temporal AE, PyTorch would likely be cleaner than extending custom NumPy backprop.
+- Generic training still uses a compact `.fit()` interface rather than explicit external PyTorch training loops.
+- NaN/Inf cells are still zero-filled for encoding, but `fit_complete_cases_only` can exclude incomplete rows from fitting.
+- View training and generic training now share the registry pattern, but reviewers should still check whether their missing-data policies should be unified further.
+- Deterministic CPU behavior is seeded, but PyTorch deterministic guarantees should be rechecked if GPU training is introduced.
 
 ### View-Specific Training Details
 
-`scripts/17_train_views.py` trains/reuses one autoencoder per view.
+`scripts/pipeline/stage_04_model/train_views.py` trains/reuses one autoencoder per view.
 
 Mechanics:
 
@@ -799,7 +824,8 @@ Rolling protocol:
    - If more than `max_assets=150`, choose deterministic low-volatility subset.
 3. Estimate covariance matrices:
    - Sample covariance.
-   - Ledoit-Wolf-style shrinkage toward constant-variance diagonal target.
+   - sklearn `LedoitWolf` shrinkage as the headline benchmark.
+   - Legacy constant-variance shrinkage retained for migration comparison.
    - Embedding-prior shrinkage.
 4. Solve long-only minimum-variance portfolios.
 5. Record realized forward portfolio returns and turnover.
@@ -822,14 +848,16 @@ embedding_alpha = 0.25
 
 Minimum-variance optimizer:
 
-- Single-view covariance evaluator uses an active-set analytical solve with pseudo-inverse fallback.
-- Multi-view covariance evaluator uses `cvxpy` with solvers `CLARABEL`, `OSQP`, then `SCS`, falling back to the analytical solver.
+- Single-view and multi-view covariance evaluators both use `src/applications/portfolio_optimization.py::minimum_variance_long_only`.
+- The shared helper uses `cvxpy` with `CLARABEL` primary and `SCS` as the only fallback.
+- The old active-set analytical solver lives in `src/applications/_legacy_analytical_optimizer.py` for regression tests only.
 
 Reviewer concerns:
 
-- The Ledoit-Wolf implementation is local, not imported from sklearn, and should be reviewed against the standard estimator.
+- `ledoit_wolf` now uses sklearn, but older reports may have been produced when the local constant-variance shrinker carried that label.
 - Asset selection by low volatility when above `max_assets` may bias covariance evaluation.
 - Bootstrap CIs are used in metrics, but dependence across overlapping holding periods may remain.
+- The optimizer migration slightly changed realized covariance metrics while preserving method rankings; see `report/covariance_optimizer_migration_note.md`.
 
 ### Multi-View Covariance Details
 
@@ -958,7 +986,7 @@ Remaining reproducibility gaps:
 - S&P 500 universe is current-roster based, not historical constituents.
 - Some scripts write reports outside experiment directories.
 - Historical text stream can resume, but parser/model version metadata is minimal.
-- PyTorch/CUDA determinism is not relevant to current NumPy AE but will matter if temporal neural models are added.
+- PyTorch CPU training is seeded for repeatability; CUDA determinism will matter if GPU training is introduced.
 
 ## Known Strengths
 
@@ -973,8 +1001,8 @@ Remaining reproducibility gaps:
 
 These are the areas where reviewer feedback would be especially useful:
 
-1. Model interface mismatch: `EmbeddingModel` subclasses `torch.nn.Module`, but current models are NumPy `.fit()` models. Temporal/neural models will likely force a decision.
-2. Autoencoder architecture: the current AE supports one hidden dimension, while view configs include `hidden_dims`; `scripts/17_train_views.py` handles view training separately rather than through the generic registry.
+1. Model layer transition: `Autoencoder` is now PyTorch and the legacy NumPy implementation remains for old artifacts; reviewers should audit save/load compatibility and training determinism.
+2. Autoencoder architecture: `hidden_dims` is now canonical, but historical experiment configs still use legacy `hidden_dim` in places for backward compatibility.
 3. Script sprawl: scripts are useful but chronologically organized; grouping or adding a CLI could improve usability.
 4. Dashboard size: `apps/raw_filing_browser/app.py` is a large single file and could be modularized.
 5. Dependency declaration: `altair` is imported but not explicitly listed in `pyproject.toml`.
@@ -983,7 +1011,7 @@ These are the areas where reviewer feedback would be especially useful:
 8. Data scale/resume: historical embedding runs can be long; resumability exists through output artifacts but could be hardened with accession-level caching.
 9. Raw/current versus point-in-time features: some older business/network artifacts projected current state backward; newer point-in-time work is correcting this, but reviewers should check assumptions carefully.
 10. Local library path handling: many scripts manually modify `sys.path` for repo root and `libraries/market_data_fetcher/src`; packaging this cleanly would reduce fragility.
-11. Historical text features are not yet integrated as first-class feature producers, which limits temporal model training.
+11. Historical text features are now first-class, but PCA fitting is controlled by a config cutoff and should be made split-aware for strict backtests.
 12. Current statistical tests do not use clustered/bootstrap inference for peer correlations, so significance should be interpreted cautiously.
 13. GMM theme identities can drift across experiments; theme labels are manually curated and not guaranteed stable after retraining.
 14. The covariance pipeline mixes custom covariance estimators, custom active-set optimization, and cvxpy optimization across evaluators; standardizing would reduce audit burden.
@@ -991,10 +1019,10 @@ These are the areas where reviewer feedback would be especially useful:
 
 ## Suggested Reviewer Questions
 
-- Should the project standardize around PyTorch now, before adding temporal autoencoders?
+- Is the PyTorch autoencoder API clean enough for temporal autoencoders, or should training loops be split by model type?
 - Should scripts be reorganized into pipeline stages versus exploratory analyses?
 - Is the current feature registry enough, or should it include output path/schema/version metadata more formally?
-- Should historical text artifacts become first-class feature producers rather than dashboard/report-only artifacts?
+- Should `text_historical` PCA fitting be tied to experiment train/test splits instead of a single configured cutoff date?
 - Is the dashboard better kept as a research cockpit, or should it be split into reusable backend modules plus Streamlit UI?
 - Are point-in-time guarantees sufficiently visible and testable?
 - Should experiment outputs be made immutable by code rather than convention?
@@ -1002,7 +1030,7 @@ These are the areas where reviewer feedback would be especially useful:
 - Should peer-evaluation inference account for clustering by ticker/date and overlapping forward windows?
 - Should Ledoit-Wolf use sklearn's implementation for auditability, with the local implementation retained only for learning/tests?
 - Should GMM/BIC themes be replaced or supplemented with more stable clustering methods for dashboard continuity?
-- Should the temporal-business view be trained on section-level MiniLM embeddings, aggregated monthly point-in-time, rather than the older hashed text features?
+- Should the temporal-business view use `text_historical` directly, or should it consume pre-PCA section/group embeddings and learn its own reduction?
 - Should text embeddings be cached by `(accession_no, section, parser_version, model_name, max_chars)` to make parser/model changes auditable?
 
 ## Reviewer Quickstart

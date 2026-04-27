@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+CLX,2026-04-22,CLOROX CO /DE/,Clorox,Consumer Staples,Household Products,3,Energy,7.180176728116744
+UHS,2026-04-22,UNIVERSAL HEALTH SERVICES INC,Universal Health Services,Health Care,Health Care Facilities,9,Consumer Discretionary,6.807208264813159
+ES,2026-04-22,EVERSOURCE ENERGY,Eversource Energy,Utilities,Electric Utilities,5,Materials,6.520394372124862
+YUM,2026-04-22,YUM BRANDS INC,Yum! Brands,Consumer Discretionary,Restaurants,7,Consumer Staples,6.0878386286759305
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",4,Information Technology,6.058186931513662
+NVR,2026-04-22,NVR INC,"NVR, Inc.",Consumer Discretionary,Homebuilding,5,Materials,6.052887323366297
+CTRA,2026-04-22,Coterra Energy Inc.,Coterra,Energy,Oil & Gas Exploration & Production,2,Financials,6.0247474514292625
+CASY,2026-04-22,CASEYS GENERAL STORES INC,Casey's,Consumer Staples,Food Retail,10,Real Estate,6.015849605505061
+CMG,2026-04-22,CHIPOTLE MEXICAN GRILL INC,Chipotle Mexican Grill,Consumer Discretionary,Restaurants,7,Consumer Staples,5.920964314534598
+CPRT,2026-04-22,COPART INC,Copart,Industrials,Diversified Support Services,6,Health Care,5.892761306562065
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,1,Industrials,5.8538149565693525
+LULU,2026-04-22,lululemon athletica inc.,Lululemon Athletica,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",7,Consumer Staples,5.751228755882592
+MLM,2026-04-22,MARTIN MARIETTA MATERIALS INC,Martin Marietta Materials,Materials,Construction Materials,3,Energy,5.664241054062694
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,3,Energy,5.640504444179349
+CINF,2026-04-22,CINCINNATI FINANCIAL CORP,Cincinnati Financial,Financials,Property & Casualty Insurance,0,Information Technology,5.625646822647252
+C,2026-04-22,CITIGROUP INC,Citigroup,Financials,Diversified Banks,5,Materials,5.587101438125955
+ROST,2026-04-22,"ROSS STORES, INC.",Ross Stores,Consumer Discretionary,Apparel Retail,7,Consumer Staples,5.583139314727472
+ABT,2026-04-22,ABBOTT LABORATORIES,Abbott Laboratories,Health Care,Health Care Equipment,1,Industrials,5.549893961675437
+WAB,2026-04-22,WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP,Wabtec,Industrials,Construction Machinery & Heavy Transportation Equipment,0,Information Technology,5.547833076615138
+SHW,2026-04-22,SHERWIN WILLIAMS CO,Sherwin-Williams,Materials,Specialty Chemicals,6,Health Care,5.501456000474001
+LYV,2026-04-22,"Live Nation Entertainment, Inc.",Live Nation Entertainment,Communication Services,Movies & Entertainment,7,Consumer Staples,5.449719539266433
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,2,Financials,5.442054263514969
+DHI,2026-04-22,HORTON D R INC /DE/,D. R. Horton,Consumer Discretionary,Homebuilding,10,Real Estate,5.34991766912056
+BRK-B,2026-04-22,BERKSHIRE HATHAWAY INC,Berkshire Hathaway,Financials,Multi-Sector Holdings,9,Consumer Discretionary,5.342484925470358
+LUV,2026-04-22,SOUTHWEST AIRLINES CO,Southwest Airlines,Industrials,Passenger Airlines,9,Consumer Discretionary,5.339562676393455
+T,2026-04-22,AT&T INC.,AT&T,Communication Services,Integrated Telecommunication Services,6,Health Care,5.234366108265771
+VMC,2026-04-22,Vulcan Materials CO,Vulcan Materials Company,Materials,Construction Materials,3,Energy,5.2152250246570855
+PHM,2026-04-22,PULTEGROUP INC/MI/,PulteGroup,Consumer Discretionary,Homebuilding,4,Information Technology,5.207119177986055
+EFX,2026-04-22,EQUIFAX INC,Equifax,Industrials,Research & Consulting Services,4,Information Technology,5.176629760602309
+EQR,2026-04-22,EQUITY RESIDENTIAL,Equity Residential,Real Estate,Multi-Family Residential REITs,5,Materials,5.135030429162859
+PYPL,2026-04-22,"PayPal Holdings, Inc.",PayPal,Financials,Transaction & Payment Processing Services,10,Real Estate,5.124486845425786
+AZO,2026-04-22,AUTOZONE INC,AutoZone,Consumer Discretionary,Automotive Retail,0,Information Technology,5.112457522385257
+DPZ,2026-04-22,DOMINOS PIZZA INC,Domino's,Consumer Discretionary,Restaurants,7,Consumer Staples,5.10800156248756
+UAL,2026-04-22,"United Airlines Holdings, Inc.",United Airlines Holdings,Industrials,Passenger Airlines,9,Consumer Discretionary,5.088840723317491
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",0,Information Technology,5.072973693263821
+GM,2026-04-22,General Motors Co,General Motors,Consumer Discretionary,Automobile Manufacturers,4,Information Technology,5.0712760669791725
+CTAS,2026-04-22,CINTAS CORP,Cintas,Industrials,Diversified Support Services,5,Materials,5.06824068739851
+DOW,2026-04-22,DOW INC.,Dow Inc.,Materials,Commodity Chemicals,4,Information Technology,5.009480976768483
+GL,2026-04-22,GLOBE LIFE INC.,Globe Life,Financials,Life & Health Insurance,9,Consumer Discretionary,4.961092948338375
+UNP,2026-04-22,UNION PACIFIC CORP,Union Pacific Corporation,Industrials,Rail Transportation,7,Consumer Staples,4.933395338869422
+ATO,2026-04-22,ATMOS ENERGY CORP,Atmos Energy,Utilities,Gas Utilities,2,Financials,4.916910256067363
+FDX,2026-04-22,FEDEX CORP,FedEx,Industrials,Air Freight & Logistics,10,Real Estate,4.913971814806186
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,7,Consumer Staples,4.900559209114284
+NEE,2026-04-22,NEXTERA ENERGY INC,NextEra Energy,Utilities,Multi-Utilities,5,Materials,4.897957004070898
+PKG,2026-04-22,PACKAGING CORP OF AMERICA,Packaging Corporation of America,Materials,Paper & Plastic Packaging Products & Materials,3,Energy,4.821573270566238
+NRG,2026-04-22,"NRG ENERGY, INC.",NRG Energy,Utilities,Independent Power Producers & Energy Traders,5,Materials,4.798204167381146
+FSLR,2026-04-22,"FIRST SOLAR, INC.",First Solar,Information Technology,Semiconductors,7,Consumer Staples,4.790782560306306
+BRO,2026-04-22,"BROWN & BROWN, INC.",Brown & Brown,Financials,Insurance Brokers,1,Industrials,4.750634026345668
+DIS,2026-04-22,Walt Disney Co,Walt Disney Company (The),Communication Services,Movies & Entertainment,9,Consumer Discretionary,4.742429756953683
+FCX,2026-04-22,FREEPORT-MCMORAN INC,Freeport-McMoRan,Materials,Copper,3,Energy,4.713541581584815

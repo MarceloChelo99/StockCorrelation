@@ -1,0 +1,37 @@
+{
+  "experiment_name": "temporal_business_view",
+  "features": {
+    "enabled": [
+      "text_historical"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "historical_text_business",
+    "required_feature_groups": [
+      "text_historical"
+    ]
+  },
+  "model": {
+    "name": "temporal_autoencoder",
+    "embedding_dim": 32,
+    "hidden_dims": [256, 128],
+    "dropout": 0.0,
+    "learning_rate": 0.001,
+    "epochs": 60,
+    "batch_size": 512,
+    "weight_decay": 0.00001,
+    "train_val_split": 0.85,
+    "early_stopping_patience": 8,
+    "fit_complete_cases_only": true,
+    "lambda_temp": 0.5,
+    "alpha": 1.0,
+    "max_pair_gap_days": 45
+  },
+  "evaluation": {
+    "enabled": [
+      "clustering",
+      "peers",
+      "relationships"
+    ]
+  }
+}

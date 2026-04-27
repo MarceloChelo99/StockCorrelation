@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import pandas as pd
 
 from src.config import deep_merge, load_config
 from src.utils.dates import as_of_merge, select_month_end_rows
+from scripts_compat import load_script
 
 
 class StockEmbeddingsScaffoldTests(unittest.TestCase):
@@ -52,6 +54,41 @@ class StockEmbeddingsScaffoldTests(unittest.TestCase):
         )
         merged = as_of_merge(left, right, by=["ticker"])
         self.assertEqual(merged["value"].tolist(), [1.0, 2.0])
+
+    def test_evaluation_metadata_coalesces_external_labels(self) -> None:
+        module = load_script("05_evaluate.py", "script_05_evaluate_for_test")
+        with TemporaryDirectory() as temp_dir:
+            metadata_path = Path(temp_dir) / "metadata.parquet"
+            pd.DataFrame(
+                {
+                    "ticker": ["AAA"],
+                    "gics_sector": ["Information Technology"],
+                    "gics_sub_industry": ["Software"],
+                }
+            ).to_parquet(metadata_path, index=False)
+            db = FakeMetadataDB(
+                pd.DataFrame(
+                    {
+                        "ticker": ["AAA"],
+                        "gics_sector": [None],
+                        "title": ["AAA Corp"],
+                    }
+                )
+            )
+            config = {"paths": {"metadata_path": str(metadata_path)}}
+
+            metadata = module.load_metadata(db, config)
+
+        self.assertEqual(metadata.loc[0, "gics_sector"], "Information Technology")
+        self.assertEqual(metadata.loc[0, "gics_sub_industry"], "Software")
+
+
+class FakeMetadataDB:
+    def __init__(self, tickers: pd.DataFrame) -> None:
+        self.tickers = tickers
+
+    def load_tickers(self) -> pd.DataFrame:
+        return self.tickers.copy()
 
 
 if __name__ == "__main__":

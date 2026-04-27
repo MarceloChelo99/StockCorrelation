@@ -1,35 +1,27 @@
+"""Compatibility wrapper for the stage 03 dataset assembly script."""
 from __future__ import annotations
 
 import sys
+
+import importlib.util
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from src.config import load_config
-from src.db import FilingsDB
-from src.features.assembly import assemble_dataset
-from src.utils.io import ensure_dir
-from src.utils.logging import log
-from src.utils.seed import set_seed
+def _load_wrapper_helper():
+    path = Path(__file__).resolve().parent / "_run_moved.py"
+    spec = importlib.util.spec_from_file_location("_stock_embeddings_run_moved", path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load wrapper helper from {path}.")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def main(config_name: str = "baseline") -> None:
-    config = load_config(config_name)
-    set_seed(int(config["random_seed"]))
+load = _load_wrapper_helper().load
 
-    db = FilingsDB.from_config(config)
-    dataset_dir = ensure_dir(config["paths"]["dataset_dir"])
-    dataset_path = dataset_dir / f"{config['assembly']['dataset_name']}.parquet"
-    frame = assemble_dataset(
-        db,
-        config,
-        feature_dir=config["paths"]["feature_dir"],
-        output_path=dataset_path,
-    )
-    log(f"Wrote assembled dataset with {len(frame)} rows to {dataset_path}.", tag="assembly")
+
+_impl = load("pipeline/stage_03_assembly/assemble_dataset.py", "script_assemble_dataset")
+main = _impl.main
 
 
 if __name__ == "__main__":

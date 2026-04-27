@@ -49,7 +49,8 @@ def load_sections_frame(config: dict) -> pd.DataFrame:
     path = Path(config["paths"]["sections_dir"]) / "ten_k_sections.parquet"
     if not path.exists():
         raise FileNotFoundError(
-            f"Parsed sections not found at {path}. Run scripts/01_parse_sections.py first."
+            "Parsed sections not found at "
+            f"{path}. Run scripts/pipeline/stage_01_ingest/parse_sections.py first."
         )
     frame = pd.read_parquet(path)
     if "filing_date" in frame.columns:

@@ -3,11 +3,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import cvxpy as cp
 
 from src.applications.multiview_covariance import estimate_multiview_covariance
+from src.applications.portfolio_optimization import minimum_variance_long_only
 from src.evaluation.base import Evaluator
 from src.evaluation.covariance import (
     covariance_metrics,
@@ -15,7 +14,6 @@ from src.evaluation.covariance import (
     covariance_estimates,
     covariance_window,
     ledoit_wolf_covariance,
-    minimum_variance_weights,
     portfolio_turnover,
     sample_covariance,
 )
@@ -77,7 +75,7 @@ class MultiviewCovarianceEvaluator(Evaluator):
 
             for method, covariance in estimates.items():
                 covariance = covariance.loc[window.tickers, window.tickers]
-                weights = cvxpy_minimum_variance_weights(covariance.to_numpy())
+                weights = minimum_variance_long_only(covariance.to_numpy())
                 ticker_weights = pd.Series(weights, index=window.tickers)
                 turnover = portfolio_turnover(previous_weights.get(method), ticker_weights)
                 previous_weights[method] = ticker_weights
@@ -115,24 +113,3 @@ def load_view_loadings(root: Path, config: dict) -> dict[str, pd.DataFrame]:
             raise FileNotFoundError(f"Missing view loadings: {path}")
         loadings[view_name] = pd.read_parquet(path)
     return loadings
-
-
-def cvxpy_minimum_variance_weights(covariance: np.ndarray) -> np.ndarray:
-    """Solve long-only minimum variance with cvxpy, falling back if needed."""
-    matrix = np.asarray(covariance, dtype=float)
-    matrix = (matrix + matrix.T) / 2.0
-    n_assets = len(matrix)
-    weights = cp.Variable(n_assets)
-    objective = cp.Minimize(cp.quad_form(weights, cp.psd_wrap(matrix)))
-    problem = cp.Problem(objective, [weights >= 0.0, cp.sum(weights) == 1.0])
-    for solver in ["CLARABEL", "OSQP", "SCS"]:
-        try:
-            problem.solve(solver=solver, verbose=False)
-        except cp.SolverError:
-            continue
-        if weights.value is not None and problem.status in {"optimal", "optimal_inaccurate"}:
-            result = np.asarray(weights.value, dtype=float)
-            result = np.clip(result, 0.0, None)
-            if result.sum() > 0.0:
-                return result / result.sum()
-    return minimum_variance_weights(matrix)

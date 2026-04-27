@@ -1,0 +1,35 @@
+{
+  "embedding_velocity_distribution": {
+    "max": 2.2783518826172355,
+    "p10": 0.0,
+    "p50": 0.0,
+    "p90": 0.5510618162585998
+  },
+  "high_velocity_firms": [
+    "VLTO",
+    "T",
+    "UHS",
+    "MSI",
+    "ZTS",
+    "LUV",
+    "ES",
+    "VICI",
+    "VRTX",
+    "MAS",
+    "CAH",
+    "TRGP",
+    "PNW",
+    "MGM",
+    "KKR",
+    "V",
+    "CHTR",
+    "VST",
+    "FIS",
+    "CAT"
+  ],
+  "n_observations_dropped_gap": 0,
+  "n_pairs_train": 71017,
+  "n_pairs_val": 12532,
+  "n_velocity_steps": 86780,
+  "within_firm_temporal_variance_ratio": 0.3989887759148224
+}

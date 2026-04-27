@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+PCAR,2026-04-22,PACCAR INC,Paccar,Industrials,Construction Machinery & Heavy Transportation Equipment,9,Information Technology,2.392364184076485
+CLX,2026-04-22,CLOROX CO /DE/,Clorox,Consumer Staples,Household Products,8,Industrials,2.292812592665449
+CSX,2026-04-22,CSX CORP,CSX Corporation,Industrials,Rail Transportation,5,Health Care,2.230018530775107
+CINF,2026-04-22,CINCINNATI FINANCIAL CORP,Cincinnati Financial,Financials,Property & Casualty Insurance,8,Industrials,2.1762446166518545
+NUE,2026-04-22,NUCOR CORP,Nucor,Materials,Steel,9,Information Technology,2.1536912126560277
+EIX,2026-04-22,EDISON INTERNATIONAL,Edison International,Utilities,Electric Utilities,3,Information Technology,2.094517531167065
+ROST,2026-04-22,"ROSS STORES, INC.",Ross Stores,Consumer Discretionary,Apparel Retail,9,Information Technology,2.0640281676002643
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,4,Energy,2.0635325251797205
+WYNN,2026-04-22,WYNN RESORTS LTD,Wynn Resorts,Consumer Discretionary,Casinos & Gaming,1,Industrials,2.057288074450305
+MLM,2026-04-22,MARTIN MARIETTA MATERIALS INC,Martin Marietta Materials,Materials,Construction Materials,1,Industrials,2.0548424520597193
+C,2026-04-22,CITIGROUP INC,Citigroup,Financials,Diversified Banks,2,Consumer Staples,2.0038764798091604
+LYV,2026-04-22,"Live Nation Entertainment, Inc.",Live Nation Entertainment,Communication Services,Movies & Entertainment,1,Industrials,1.9774563555662532
+LULU,2026-04-22,lululemon athletica inc.,Lululemon Athletica,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",1,Industrials,1.9770498827097238
+DHI,2026-04-22,HORTON D R INC /DE/,D. R. Horton,Consumer Discretionary,Homebuilding,7,Utilities,1.9433762047384429
+PPG,2026-04-22,PPG INDUSTRIES INC,PPG Industries,Materials,Specialty Chemicals,9,Information Technology,1.930820557664647
+NVR,2026-04-22,NVR INC,"NVR, Inc.",Consumer Discretionary,Homebuilding,5,Health Care,1.9279531117469355
+T,2026-04-22,AT&T INC.,AT&T,Communication Services,Integrated Telecommunication Services,5,Health Care,1.9274842777009489
+YUM,2026-04-22,YUM BRANDS INC,Yum! Brands,Consumer Discretionary,Restaurants,2,Consumer Staples,1.9240666802426554
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",9,Information Technology,1.9238451220520452
+PNW,2026-04-22,PINNACLE WEST CAPITAL CORP,Pinnacle West Capital,Utilities,Multi-Utilities,8,Industrials,1.9232817242645792
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",3,Information Technology,1.9067287407397688
+AEP,2026-04-22,AMERICAN ELECTRIC POWER CO INC,American Electric Power,Utilities,Electric Utilities,8,Industrials,1.90408183917707
+ESS,2026-04-22,"ESSEX PROPERTY TRUST, INC.",Essex Property Trust,Real Estate,Multi-Family Residential REITs,0,Financials,1.9013387543575446
+HIG,2026-04-22,"HARTFORD INSURANCE GROUP, INC.",Hartford (The),Financials,Property & Casualty Insurance,1,Industrials,1.8987427475093936
+GL,2026-04-22,GLOBE LIFE INC.,Globe Life,Financials,Life & Health Insurance,1,Industrials,1.8966934447022128
+CASY,2026-04-22,CASEYS GENERAL STORES INC,Casey's,Consumer Staples,Food Retail,0,Financials,1.8784632304819189
+GM,2026-04-22,General Motors Co,General Motors,Consumer Discretionary,Automobile Manufacturers,9,Information Technology,1.8648782959046253
+CPRT,2026-04-22,COPART INC,Copart,Industrials,Diversified Support Services,5,Health Care,1.8635935645585067
+IDXX,2026-04-22,IDEXX LABORATORIES INC /DE,Idexx Laboratories,Health Care,Health Care Equipment,8,Industrials,1.8587485572877183
+PKG,2026-04-22,PACKAGING CORP OF AMERICA,Packaging Corporation of America,Materials,Paper & Plastic Packaging Products & Materials,1,Industrials,1.8465741048391482
+WY,2026-04-22,WEYERHAEUSER CO,Weyerhaeuser,Real Estate,Timber REITs,0,Financials,1.8450860414300931
+SHW,2026-04-22,SHERWIN WILLIAMS CO,Sherwin-Williams,Materials,Specialty Chemicals,5,Health Care,1.8394252938991873
+F,2026-04-22,FORD MOTOR CO,Ford Motor Company,Consumer Discretionary,Automobile Manufacturers,9,Information Technology,1.8371698759347816
+CTAS,2026-04-22,CINTAS CORP,Cintas,Industrials,Diversified Support Services,5,Health Care,1.83594653344173
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,9,Information Technology,1.8349618191889518
+SYK,2026-04-22,STRYKER CORP,Stryker Corporation,Health Care,Health Care Equipment,9,Information Technology,1.831710327036725
+CMG,2026-04-22,CHIPOTLE MEXICAN GRILL INC,Chipotle Mexican Grill,Consumer Discretionary,Restaurants,2,Consumer Staples,1.8277585184857883
+GWW,2026-04-22,"W.W. GRAINGER, INC.",W. W. Grainger,Industrials,Industrial Machinery & Supplies & Components,2,Consumer Staples,1.8265419324150178
+MCD,2026-04-22,MCDONALDS CORP,McDonald's,Consumer Discretionary,Restaurants,2,Consumer Staples,1.8247491171536463
+HST,2026-04-22,"HOST HOTELS & RESORTS, INC.",Host Hotels & Resorts,Real Estate,Hotel & Resort REITs,1,Industrials,1.8116839424084827
+DPZ,2026-04-22,DOMINOS PIZZA INC,Domino's,Consumer Discretionary,Restaurants,2,Consumer Staples,1.8095621015278576
+WRB,2026-04-22,BERKLEY W R CORP,W. R. Berkley Corporation,Financials,Property & Casualty Insurance,1,Industrials,1.7956631420775941
+STLD,2026-04-22,STEEL DYNAMICS INC,Steel Dynamics,Materials,Steel,1,Industrials,1.7882694872734624
+INVH,2026-04-22,Invitation Homes Inc.,Invitation Homes,Real Estate,Single-Family Residential REITs,0,Financials,1.7804695649024616
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,1,Industrials,1.7778202052995233
+RCL,2026-04-22,ROYAL CARIBBEAN CRUISES LTD,Royal Caribbean Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",1,Industrials,1.775078164805016
+AME,2026-04-22,AMETEK INC/,Ametek,Industrials,Electrical Components & Equipment,9,Information Technology,1.7725225172551609
+DOW,2026-04-22,DOW INC.,Dow Inc.,Materials,Commodity Chemicals,3,Information Technology,1.769824159465539
+LIN,2026-04-22,LINDE PLC,Linde plc,Materials,Industrial Gases,9,Information Technology,1.7607227047808969
+AEE,2026-04-22,AMEREN CORP,Ameren,Utilities,Multi-Utilities,4,Energy,1.7601078328474886

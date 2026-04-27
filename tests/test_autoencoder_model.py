@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 import unittest
 from tempfile import TemporaryDirectory
 
 import numpy as np
+import pandas as pd
 
 from src.models._legacy_numpy_autoencoder import Autoencoder as LegacyNumpyAutoencoder
 from src.models.autoencoder import Autoencoder
+from src.models.train import train_embedding_model
 
 
 class AutoencoderModelTests(unittest.TestCase):
@@ -130,6 +134,49 @@ class AutoencoderModelTests(unittest.TestCase):
             loaded = Autoencoder.load(tmp_dir)
 
         self.assertTrue(np.allclose(legacy.encode(matrix), loaded.encode(matrix)))
+
+    def test_train_embedding_model_can_fit_complete_cases_only(self) -> None:
+        rng = np.random.default_rng(41)
+        dataset = pd.DataFrame(
+            {
+                "ticker": [f"T{i}" for i in range(10)],
+                "date": pd.date_range("2020-01-31", periods=10, freq="ME"),
+                "feature_0": rng.normal(size=10),
+                "feature_1": rng.normal(size=10),
+            }
+        )
+        dataset.loc[3, "feature_1"] = np.nan
+        config = {
+            "random_seed": 41,
+            "model": {
+                "name": "autoencoder",
+                "embedding_dim": 2,
+                "hidden_dims": [4],
+                "epochs": 3,
+                "batch_size": 4,
+                "learning_rate": 0.01,
+                "train_val_split": 0.8,
+                "early_stopping_patience": 3,
+                "fit_complete_cases_only": True,
+                "exclude_columns": [],
+            },
+        }
+
+        with TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            _, embeddings, history = train_embedding_model(
+                dataset,
+                config,
+                model_dir=root / "model",
+                embeddings_path=root / "embeddings.parquet",
+                history_path=root / "training_history.json",
+            )
+            saved_history = json.loads((root / "training_history.json").read_text())
+
+        self.assertEqual(len(embeddings), len(dataset))
+        self.assertEqual(history["n_rows_fit"], 9)
+        self.assertEqual(history["rows_excluded_from_fit_non_finite"], 1)
+        self.assertEqual(saved_history["non_finite_cells_replaced_with_zero"], 1)
 
 
 if __name__ == "__main__":

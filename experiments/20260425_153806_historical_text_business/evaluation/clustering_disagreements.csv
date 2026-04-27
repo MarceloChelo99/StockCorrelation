@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+EXPE,2026-04-22,"Expedia Group, Inc.",Expedia Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",4,Information Technology,6.069507964910799
+MOS,2026-04-22,MOSAIC CO,Mosaic Company (The),Materials,Fertilizers & Agricultural Chemicals,6,Consumer Staples,5.973173288301689
+PHM,2026-04-22,PULTEGROUP INC/MI/,PulteGroup,Consumer Discretionary,Homebuilding,4,Information Technology,5.739165523198801
+PNW,2026-04-22,PINNACLE WEST CAPITAL CORP,Pinnacle West Capital,Utilities,Multi-Utilities,2,Financials,5.724685264724064
+HAL,2026-04-22,HALLIBURTON CO,Halliburton,Energy,Oil & Gas Equipment & Services,0,Industrials,5.684411248590293
+NUE,2026-04-22,NUCOR CORP,Nucor,Materials,Steel,0,Industrials,5.594248876242318
+CHTR,2026-04-22,"CHARTER COMMUNICATIONS, INC. /MO/",Charter Communications,Communication Services,Cable & Satellite,0,Industrials,5.554671308545544
+NEE,2026-04-22,NEXTERA ENERGY INC,NextEra Energy,Utilities,Multi-Utilities,0,Industrials,5.547689486802359
+WMB,2026-04-22,"WILLIAMS COMPANIES, INC.",Williams Companies,Energy,Oil & Gas Storage & Transportation,6,Consumer Staples,5.4452023350263765
+PPG,2026-04-22,PPG INDUSTRIES INC,PPG Industries,Materials,Specialty Chemicals,0,Industrials,5.432776389007903
+PAYX,2026-04-22,PAYCHEX INC,Paychex,Industrials,Human Resource & Employment Services,4,Information Technology,5.39829092979843
+T,2026-04-22,AT&T INC.,AT&T,Communication Services,Integrated Telecommunication Services,1,Financials,5.361901594470013
+MLM,2026-04-22,MARTIN MARIETTA MATERIALS INC,Martin Marietta Materials,Materials,Construction Materials,6,Consumer Staples,5.347817043547251
+FSLR,2026-04-22,"FIRST SOLAR, INC.",First Solar,Information Technology,Semiconductors,0,Industrials,5.299905446145
+ROK,2026-04-22,"ROCKWELL AUTOMATION, INC",Rockwell Automation,Industrials,Electrical Components & Equipment,2,Financials,5.226212092708089
+UHS,2026-04-22,UNIVERSAL HEALTH SERVICES INC,Universal Health Services,Health Care,Health Care Facilities,8,Consumer Discretionary,5.199069810708041
+CSX,2026-04-22,CSX CORP,CSX Corporation,Industrials,Rail Transportation,3,Utilities,5.191824666078033
+NSC,2026-04-22,NORFOLK SOUTHERN CORP,Norfolk Southern,Industrials,Rail Transportation,3,Utilities,5.162931932615818
+LUV,2026-04-22,SOUTHWEST AIRLINES CO,Southwest Airlines,Industrials,Passenger Airlines,9,Health Care,5.13894729866285
+CAT,2026-04-22,CATERPILLAR INC,Caterpillar Inc.,Industrials,Construction Machinery & Heavy Transportation Equipment,4,Information Technology,5.134628905804604
+MCD,2026-04-22,MCDONALDS CORP,McDonald's,Consumer Discretionary,Restaurants,7,Consumer Staples,5.102072163617707
+GM,2026-04-22,General Motors Co,General Motors,Consumer Discretionary,Automobile Manufacturers,0,Industrials,5.056612651996317
+NVR,2026-04-22,NVR INC,"NVR, Inc.",Consumer Discretionary,Homebuilding,10,Real Estate,5.030287723802141
+FDX,2026-04-22,FEDEX CORP,FedEx,Industrials,Air Freight & Logistics,4,Information Technology,5.015504653430245
+IBM,2026-04-22,INTERNATIONAL BUSINESS MACHINES CORP,IBM,Information Technology,IT Consulting & Other Services,1,Financials,5.014867651633375
+CPRT,2026-04-22,COPART INC,Copart,Industrials,Diversified Support Services,3,Utilities,5.012010168317676
+F,2026-04-22,FORD MOTOR CO,Ford Motor Company,Consumer Discretionary,Automobile Manufacturers,4,Information Technology,4.995589642813444
+HIG,2026-04-22,"HARTFORD INSURANCE GROUP, INC.",Hartford (The),Financials,Property & Casualty Insurance,8,Consumer Discretionary,4.992132813962532
+CTAS,2026-04-22,CINTAS CORP,Cintas,Industrials,Diversified Support Services,6,Consumer Staples,4.970380228897632
+LRCX,2026-04-22,LAM RESEARCH CORP,Lam Research,Information Technology,Semiconductor Materials & Equipment,3,Utilities,4.9630328754745205
+GWW,2026-04-22,"W.W. GRAINGER, INC.",W. W. Grainger,Industrials,Industrial Machinery & Supplies & Components,6,Consumer Staples,4.952609125275173
+BEN,2026-04-22,FRANKLIN RESOURCES INC,Franklin Resources,Financials,Asset Management & Custody Banks,8,Consumer Discretionary,4.922672359802697
+ROST,2026-04-22,"ROSS STORES, INC.",Ross Stores,Consumer Discretionary,Apparel Retail,6,Consumer Staples,4.920345075427403
+GE,2026-04-22,GENERAL ELECTRIC CO,GE Aerospace,Industrials,Aerospace & Defense,4,Information Technology,4.915442477800306
+STLD,2026-04-22,STEEL DYNAMICS INC,Steel Dynamics,Materials,Steel,1,Financials,4.914689459542334
+HST,2026-04-22,"HOST HOTELS & RESORTS, INC.",Host Hotels & Resorts,Real Estate,Hotel & Resort REITs,8,Consumer Discretionary,4.904065137694006
+CTRA,2026-04-22,Coterra Energy Inc.,Coterra,Energy,Oil & Gas Exploration & Production,3,Utilities,4.902705819431986
+NKE,2026-04-22,"NIKE, Inc.","Nike, Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",6,Consumer Staples,4.902373363626849
+ETN,2026-04-22,Eaton Corp plc,Eaton Corporation,Industrials,Electrical Components & Equipment,6,Consumer Staples,4.861098143862002
+EOG,2026-04-22,EOG RESOURCES INC,EOG Resources,Energy,Oil & Gas Exploration & Production,6,Consumer Staples,4.8577390609174085
+RSG,2026-04-22,"REPUBLIC SERVICES, INC.",Republic Services,Industrials,Environmental & Facilities Services,6,Consumer Staples,4.85319198768652
+ICE,2026-04-22,"Intercontinental Exchange, Inc.",Intercontinental Exchange,Financials,Financial Exchanges & Data,4,Information Technology,4.777070795401554
+DOW,2026-04-22,DOW INC.,Dow Inc.,Materials,Commodity Chemicals,3,Utilities,4.7669287493330605
+ROL,2026-04-22,ROLLINS INC,"Rollins, Inc.",Industrials,Environmental & Facilities Services,6,Consumer Staples,4.745148923309039
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,0,Industrials,4.714968401826322
+ATO,2026-04-22,ATMOS ENERGY CORP,Atmos Energy,Utilities,Gas Utilities,4,Information Technology,4.712965388378538
+CF,2026-04-22,"CF Industries Holdings, Inc.",CF Industries,Materials,Fertilizers & Agricultural Chemicals,0,Industrials,4.698042063028345
+AOS,2026-04-22,SMITH A O CORP,A. O. Smith,Industrials,Building Products,8,Consumer Discretionary,4.695691514208494
+FANG,2026-04-22,"Diamondback Energy, Inc.",Diamondback Energy,Energy,Oil & Gas Exploration & Production,3,Utilities,4.680577363371543
+LIN,2026-04-22,LINDE PLC,Linde plc,Materials,Industrial Gases,0,Industrials,4.669593261942356
