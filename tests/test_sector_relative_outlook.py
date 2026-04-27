@@ -4,7 +4,12 @@ import unittest
 
 import pandas as pd
 
-from src.applications.sector_relative_outlook import sector_outlook_backtest
+from src.applications.sector_relative_outlook import (
+    completed_sector_predictions,
+    sector_backtest_by_date,
+    sector_outlook_backtest,
+    sector_prediction_audit,
+)
 
 
 class SectorRelativeOutlookTests(unittest.TestCase):
@@ -34,6 +39,42 @@ class SectorRelativeOutlookTests(unittest.TestCase):
         self.assertIn("mean_rank_ic", result.metrics)
         self.assertIn("valuation_sales_yield", result.panel.columns)
         self.assertEqual(set(result.latest["gics_sector"]), {"Alpha", "Beta", "Gamma"})
+        self.assertIn("is_horizon_complete", result.predictions.columns)
+        self.assertIn("training_latest_target_end_date", result.predictions.columns)
+
+        training_end = pd.to_datetime(result.predictions["training_latest_target_end_date"])
+        prediction_date = pd.to_datetime(result.predictions["date"])
+        self.assertTrue((training_end < prediction_date).all())
+
+    def test_sector_backtest_excludes_incomplete_forward_horizons(self) -> None:
+        prices = synthetic_prices().iloc[:-10].copy()
+        metadata = pd.DataFrame(
+            {
+                "ticker": ["AAA", "AAB", "BBB", "BBC", "CCC", "CCD"],
+                "gics_sector": ["Alpha", "Alpha", "Beta", "Beta", "Gamma", "Gamma"],
+            }
+        )
+
+        result = sector_outlook_backtest(
+            prices,
+            metadata,
+            valuation=synthetic_monthly_features(prices, metadata),
+            growth=None,
+            horizon_days=21,
+            min_train_months=3,
+            ridge_alpha=1.0,
+        )
+
+        completed = completed_sector_predictions(result.predictions)
+        dated = sector_backtest_by_date(result.predictions)
+        audit = sector_prediction_audit(result.predictions)
+
+        self.assertFalse(completed.empty)
+        self.assertTrue(completed["is_horizon_complete"].all())
+        self.assertTrue((completed["future_days_available"] >= 21).all())
+        self.assertLess(dated["date"].max(), result.predictions["date"].max())
+        self.assertGreater(audit["n_unrealized_rows"], 0)
+        self.assertEqual(audit["n_leakage_violations"], 0)
 
 
 def synthetic_prices() -> pd.DataFrame:

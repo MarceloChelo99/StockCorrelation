@@ -1,0 +1,959 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/re1w7mp0",
+    "id": "re1w7mp0",
+    "slide": 12,
+    "layoutId": "/ppt/slideLayouts/slideLayout2.xml",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout2.xml",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dg7adsji",
+      "id": "1",
+      "name": "slide-11-background",
+      "bbox": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "geometry": "rect",
+      "fillColor": "#F4ECD9",
+      "lineColor": "#F4ECD9",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6tovahoz",
+      "id": "2",
+      "name": "slide-11-eyebrow",
+      "bbox": [
+        82,
+        58,
+        620,
+        22
+      ],
+      "geometry": "rect",
+      "text": "DASHBOARD",
+      "textPreview": "DASHBOARD",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "DASHBOARD"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "DASHBOARD",
+          "runs": [
+            {
+              "index": 1,
+              "text": "DASHBOARD",
+              "fontSize": 22,
+              "color": "#2F6858",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vahoza1g",
+      "id": "3",
+      "name": "slide-11-title",
+      "bbox": [
+        82,
+        90,
+        1320,
+        124
+      ],
+      "geometry": "rect",
+      "text": "The dashboard has become the project’s discovery surface",
+      "textPreview": "The dashboard has become the project’s discovery surface",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The dashboard has become the project’s"
+          },
+          {
+            "index": 2,
+            "text": "discovery surface"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The dashboard has become the project’s discovery surface",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The dashboard has become the project’s discovery surface",
+              "fontSize": 62,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/onyd0z61",
+      "id": "4",
+      "name": "slide-11-subtitle",
+      "bbox": [
+        82,
+        224,
+        1320,
+        50
+      ],
+      "geometry": "rect",
+      "text": "The most useful productized piece is not a backtest result. It is the ability to watch filings, themes, maps, and sector signals evolve interactively.",
+      "textPreview": "The most useful productized piece is not a backtest result. It is the ability to watch filings, themes, maps, and sector signals evolve i...",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The most useful productized piece is not a backtest result. It is the ability to watch filings, themes, maps, and sector"
+          },
+          {
+            "index": 2,
+            "text": "signals evolve interactively."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The most useful productized piece is not a backtest result. It is the ability to watch filings, themes, maps, and sector signals evolve interactively.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The most useful productized piece is not a backtest result. It is the ability to watch filings, themes, maps, and sector signals evolve interactively.",
+              "fontSize": 25,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d8v6psfi",
+      "id": "5",
+      "name": "callout-mark-Filing B",
+      "bbox": [
+        80,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#2F6858",
+      "lineColor": "#2F6858",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6hcrmhk3",
+      "id": "6",
+      "bbox": [
+        110,
+        302,
+        546,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Filing Browser",
+      "textPreview": "Filing Browser",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Filing Browser"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Filing Browser",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Filing Browser",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/z25kb6xk",
+      "id": "7",
+      "bbox": [
+        110,
+        336,
+        546,
+        20
+      ],
+      "geometry": "rect",
+      "text": "browse parsed raw filing sections and source metadata",
+      "textPreview": "browse parsed raw filing sections and source metadata",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "browse parsed raw filing sections and source metadata"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "browse parsed raw filing sections and source metadata",
+          "runs": [
+            {
+              "index": 1,
+              "text": "browse parsed raw filing sections and source metadata",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/oj2t83it",
+      "id": "8",
+      "name": "callout-mark-Historic",
+      "bbox": [
+        672,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#346F9D",
+      "lineColor": "#346F9D",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d4vmtwra",
+      "id": "9",
+      "bbox": [
+        702,
+        302,
+        546,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Historical Text",
+      "textPreview": "Historical Text",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Historical Text"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Historical Text",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Historical Text",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h4byhgn2",
+      "id": "10",
+      "bbox": [
+        702,
+        336,
+        546,
+        40
+      ],
+      "geometry": "rect",
+      "text": "topic trends, semantic drift, company and sector language deltas",
+      "textPreview": "topic trends, semantic drift, company and sector language deltas",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "topic trends, semantic drift, company and sector language"
+          },
+          {
+            "index": 2,
+            "text": "deltas"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "topic trends, semantic drift, company and sector language deltas",
+          "runs": [
+            {
+              "index": 1,
+              "text": "topic trends, semantic drift, company and sector language deltas",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sji5snel",
+      "id": "11",
+      "name": "callout-mark-Similari",
+      "bbox": [
+        1264,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#E1A93E",
+      "lineColor": "#E1A93E",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3ylc7u54",
+      "id": "12",
+      "bbox": [
+        1292,
+        302,
+        546,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Similarity Shifts",
+      "textPreview": "Similarity Shifts",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Similarity Shifts"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Similarity Shifts",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Similarity Shifts",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/adsji5sn",
+      "id": "13",
+      "bbox": [
+        1292,
+        336,
+        546,
+        40
+      ],
+      "geometry": "rect",
+      "text": "theme loadings, dynamic labels, company movement over time",
+      "textPreview": "theme loadings, dynamic labels, company movement over time",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "theme loadings, dynamic labels, company movement over"
+          },
+          {
+            "index": 2,
+            "text": "time"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "theme loadings, dynamic labels, company movement over time",
+          "runs": [
+            {
+              "index": 1,
+              "text": "theme loadings, dynamic labels, company movement over time",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lszqtcj6",
+      "id": "14",
+      "name": "callout-mark-Market M",
+      "bbox": [
+        80,
+        608,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#C7653D",
+      "lineColor": "#C7653D",
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/s72x4nap",
+      "id": "15",
+      "bbox": [
+        110,
+        608,
+        546,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Market Map",
+      "textPreview": "Market Map",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Market Map"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Market Map",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Market Map",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3m94fu18",
+      "id": "16",
+      "bbox": [
+        110,
+        640,
+        546,
+        20
+      ],
+      "geometry": "rect",
+      "text": "stocks as 2D points with smooth step-through time controls",
+      "textPreview": "stocks as 2D points with smooth step-through time controls",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "stocks as 2D points with smooth step-through time controls"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "stocks as 2D points with smooth step-through time controls",
+          "runs": [
+            {
+              "index": 1,
+              "text": "stocks as 2D points with smooth step-through time controls",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/a5gbq1or",
+      "id": "17",
+      "name": "callout-mark-Sector O",
+      "bbox": [
+        672,
+        608,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#5B4B6F",
+      "lineColor": "#5B4B6F",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hoza1gvy",
+      "id": "18",
+      "bbox": [
+        702,
+        608,
+        546,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Sector Outlook",
+      "textPreview": "Sector Outlook",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Sector Outlook"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Sector Outlook",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Sector Outlook",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/s36hcrmh",
+      "id": "19",
+      "bbox": [
+        702,
+        640,
+        546,
+        40
+      ],
+      "geometry": "rect",
+      "text": "walk-forward sector excess-return model vs equal-weight S&P",
+      "textPreview": "walk-forward sector excess-return model vs equal-weight S&P",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "walk-forward sector excess-return model vs equal-weight"
+          },
+          {
+            "index": 2,
+            "text": "S&P"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "walk-forward sector excess-return model vs equal-weight S&P",
+          "runs": [
+            {
+              "index": 1,
+              "text": "walk-forward sector excess-return model vs equal-weight S&P",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4zidonyd",
+      "id": "20",
+      "bbox": [
+        1264.67,
+        607.5,
+        573.33,
+        190
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#101715",
+      "lineColor": "#101715",
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xkf6dcbu",
+      "id": "21",
+      "bbox": [
+        1286,
+        670,
+        530,
+        22
+      ],
+      "geometry": "rect",
+      "text": "Run it",
+      "textPreview": "Run it",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Run it"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Run it",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Run it",
+              "fontSize": 22,
+              "color": "#BEE8A6",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mtwra5gb",
+      "id": "22",
+      "bbox": [
+        1286,
+        702,
+        530,
+        34
+      ],
+      "geometry": "rect",
+      "text": ".venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port 8502",
+      "textPreview": ".venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port 8502",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": ".venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port"
+          },
+          {
+            "index": 2,
+            "text": "8502"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": ".venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port 8502",
+          "runs": [
+            {
+              "index": 1,
+              "text": ".venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port 8502",
+              "fontSize": 17,
+              "color": "#FFF8E8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fepkzupw",
+      "id": "23",
+      "name": "footer-rule",
+      "bbox": [
+        82,
+        1016,
+        1214,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#D2C4A5",
+      "lineColor": "#D2C4A5",
+      "lineWidth": 0
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4r65wjud",
+      "id": "24",
+      "name": "source-rail",
+      "bbox": [
+        1314,
+        1010,
+        524,
+        12
+      ],
+      "geometry": "rect",
+      "text": "Sources: apps/raw_filing_browser/app.py; report/current_implementation_and_results.md.",
+      "textPreview": "Sources: apps/raw_filing_browser/app.py; report/current_implementation_and_results.md.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Sources: apps/raw_filing_browser/app.py; report/current_implementation_and_results.md."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Sources: apps/raw_filing_browser/app.py; report/current_implementation_and_results.md.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Sources: apps/raw_filing_browser/app.py; report/current_implementation_and_results.md.",
+              "fontSize": 13,
+              "color": "#8C927F"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}

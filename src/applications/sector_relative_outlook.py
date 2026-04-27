@@ -146,13 +146,19 @@ def build_sector_feature_panel(
         history = excess.loc[excess.index <= date]
         future_sector = sector_returns.loc[sector_returns.index > date].head(int(horizon_days))
         future_market = market_returns.loc[market_returns.index > date].head(int(horizon_days))
-        target_end_date = future_sector.index.max() if len(future_sector) else pd.NaT
         for sector in sector_returns.columns:
+            future_value, future_days, target_end_date, is_complete = future_excess_return_summary(
+                future_sector.get(sector),
+                future_market,
+                int(horizon_days),
+            )
             row = {
                 "date": pd.Timestamp(date),
                 "gics_sector": sector,
                 "target_end_date": target_end_date,
-                "future_excess_return": future_excess_return(future_sector.get(sector), future_market),
+                "future_days_available": int(future_days),
+                "is_horizon_complete": bool(is_complete),
+                "future_excess_return": future_value,
             }
             for window in [21, 63, 126]:
                 row[f"sector_excess_momentum_{window}d"] = cumulative_return(history[sector].tail(window))
@@ -194,14 +200,34 @@ def attach_sector_fundamentals(
 
 def future_excess_return(sector_returns: pd.Series | None, market_returns: pd.Series) -> float:
     """Return future sector cumulative return minus market cumulative return."""
+    value, _, _, _ = future_excess_return_summary(sector_returns, market_returns, min_days=1)
+    return value
+
+
+def future_excess_return_summary(
+    sector_returns: pd.Series | None,
+    market_returns: pd.Series,
+    min_days: int,
+) -> tuple[float, int, pd.Timestamp | pd.NaT, bool]:
+    """Return future excess return plus completeness diagnostics.
+
+    Backtests should only score rows where the full forward horizon completed.
+    Current/latest rows may still receive model predictions, but their realized
+    future return is left blank until enough trading days are available.
+    """
     if sector_returns is None:
-        return float("nan")
+        return float("nan"), 0, pd.NaT, False
     frame = pd.concat([sector_returns.rename("sector"), market_returns.rename("market")], axis=1).dropna()
     if frame.empty:
-        return float("nan")
+        return float("nan"), 0, pd.NaT, False
+    days_available = int(len(frame))
+    target_end_date = pd.Timestamp(frame.index.max())
+    is_complete = days_available >= int(min_days)
+    if not is_complete:
+        return float("nan"), days_available, target_end_date, False
     sector_total = cumulative_return(frame["sector"])
     market_total = cumulative_return(frame["market"])
-    return float(sector_total - market_total)
+    return float(sector_total - market_total), days_available, target_end_date, True
 
 
 def cumulative_return(values: pd.Series) -> float:
@@ -243,7 +269,11 @@ def walk_forward_ridge_predictions(
     dates = sorted(panel["date"].dropna().unique())
     for date in dates:
         current_date = pd.Timestamp(date)
-        train = panel[(panel["target_end_date"] < current_date) & panel["future_excess_return"].notna()].copy()
+        train = panel[
+            panel["is_horizon_complete"].fillna(False)
+            & (panel["target_end_date"] < current_date)
+            & panel["future_excess_return"].notna()
+        ].copy()
         if train["date"].nunique() < int(min_train_months):
             continue
         current = panel[panel["date"] == current_date].copy()
@@ -252,6 +282,9 @@ def walk_forward_ridge_predictions(
         model, means, scales, fitted_columns = fit_ridge(train, feature_columns, ridge_alpha)
         current["predicted_excess_return"] = predict_with_standardization(current, fitted_columns, means, scales, model)
         current["prediction_rank"] = current["predicted_excess_return"].rank(ascending=False, method="first")
+        current["training_rows"] = int(len(train))
+        current["training_dates"] = int(train["date"].nunique())
+        current["training_latest_target_end_date"] = pd.Timestamp(train["target_end_date"].max())
         rows.append(current)
         for column, coefficient in zip(fitted_columns, model.coef_, strict=True):
             coefficient_rows.append(
@@ -259,6 +292,9 @@ def walk_forward_ridge_predictions(
                     "date": current_date,
                     "feature": column,
                     "coefficient": float(coefficient),
+                    "training_rows": int(len(train)),
+                    "training_dates": int(train["date"].nunique()),
+                    "training_latest_target_end_date": pd.Timestamp(train["target_end_date"].max()),
                 }
             )
 
@@ -278,7 +314,11 @@ def latest_sector_scores(
     if not feature_columns or panel.empty:
         return pd.DataFrame()
     latest_date = pd.Timestamp(panel["date"].max())
-    train = panel[(panel["target_end_date"] < latest_date) & panel["future_excess_return"].notna()].copy()
+    train = panel[
+        panel["is_horizon_complete"].fillna(False)
+        & (panel["target_end_date"] < latest_date)
+        & panel["future_excess_return"].notna()
+    ].copy()
     if train["date"].nunique() < int(min_train_months):
         return pd.DataFrame()
     latest = panel[panel["date"] == latest_date].copy()
@@ -286,6 +326,9 @@ def latest_sector_scores(
     latest["predicted_excess_return"] = predict_with_standardization(latest, fitted_columns, means, scales, model)
     latest["prediction_rank"] = latest["predicted_excess_return"].rank(ascending=False, method="first")
     latest["score_z"] = zscore(latest["predicted_excess_return"])
+    latest["training_rows"] = int(len(train))
+    latest["training_dates"] = int(train["date"].nunique())
+    latest["training_latest_target_end_date"] = pd.Timestamp(train["target_end_date"].max())
     return latest.sort_values("prediction_rank").reset_index(drop=True)
 
 
@@ -360,6 +403,8 @@ def sector_backtest_by_date(predictions: pd.DataFrame) -> pd.DataFrame:
     if predictions.empty:
         return pd.DataFrame()
     for date, group in predictions.groupby("date", sort=True):
+        if "is_horizon_complete" in group.columns:
+            group = group[group["is_horizon_complete"].fillna(False)]
         valid = group.dropna(subset=["predicted_excess_return", "future_excess_return"])
         if len(valid) < 3:
             continue
@@ -367,16 +412,76 @@ def sector_backtest_by_date(predictions: pd.DataFrame) -> pd.DataFrame:
         top = valid.nsmallest(3, "prediction_rank")["future_excess_return"].mean()
         bottom = valid.nlargest(3, "prediction_rank")["future_excess_return"].mean()
         best_sector = valid.sort_values("predicted_excess_return", ascending=False).iloc[0]
+        realized_best = valid.sort_values("future_excess_return", ascending=False).iloc[0]
         rows.append(
             {
                 "date": pd.Timestamp(date),
+                "target_end_date": pd.Timestamp(valid["target_end_date"].max()),
                 "rank_ic": float(rank_ic) if pd.notna(rank_ic) else np.nan,
                 "top_minus_bottom": float(top - bottom),
                 "top_bucket_excess": float(top),
                 "top_sector_hit": float(best_sector["future_excess_return"] > 0.0),
+                "predicted_top_sector": str(best_sector["gics_sector"]),
+                "predicted_top_realized_excess": float(best_sector["future_excess_return"]),
+                "realized_best_sector": str(realized_best["gics_sector"]),
+                "realized_best_excess": float(realized_best["future_excess_return"]),
+                "n_sectors": int(len(valid)),
             }
         )
     return pd.DataFrame(rows)
+
+
+def completed_sector_predictions(predictions: pd.DataFrame) -> pd.DataFrame:
+    """Return only historical prediction rows whose forward horizon is complete."""
+    if predictions.empty:
+        return predictions.copy()
+    frame = predictions.copy()
+    if "is_horizon_complete" in frame.columns:
+        frame = frame[frame["is_horizon_complete"].fillna(False)]
+    return frame.dropna(subset=["predicted_excess_return", "future_excess_return"]).reset_index(drop=True)
+
+
+def sector_prediction_audit(predictions: pd.DataFrame) -> dict[str, float | int | str | None]:
+    """Summarize whether walk-forward sector predictions are historical and leak-free."""
+    if predictions.empty:
+        return {
+            "n_prediction_rows": 0,
+            "n_completed_rows": 0,
+            "n_unrealized_rows": 0,
+            "n_leakage_violations": 0,
+        }
+    frame = predictions.copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    if "target_end_date" in frame.columns:
+        frame["target_end_date"] = pd.to_datetime(frame["target_end_date"])
+    if "is_horizon_complete" in frame.columns:
+        complete_mask = frame["is_horizon_complete"].fillna(False)
+    else:
+        complete_mask = pd.Series(True, index=frame.index)
+    complete_mask = (
+        complete_mask
+        & frame["predicted_excess_return"].notna()
+        & frame["future_excess_return"].notna()
+    )
+    complete = frame[complete_mask].copy()
+    violations = pd.DataFrame()
+    if "training_latest_target_end_date" in frame.columns:
+        training_end = pd.to_datetime(frame["training_latest_target_end_date"])
+        violations = frame[training_end >= frame["date"]]
+    dated = sector_backtest_by_date(frame)
+    return {
+        "n_prediction_rows": int(len(frame)),
+        "n_prediction_dates": int(frame["date"].nunique()),
+        "n_completed_rows": int(len(complete)),
+        "n_completed_dates": int(complete["date"].nunique()) if not complete.empty else 0,
+        "n_unrealized_rows": int(len(frame) - len(complete)),
+        "n_unrealized_dates": int(frame["date"].nunique() - complete["date"].nunique()) if not complete.empty else int(frame["date"].nunique()),
+        "n_leakage_violations": int(len(violations)),
+        "first_completed_date": None if complete.empty else complete["date"].min().strftime("%Y-%m-%d"),
+        "latest_completed_date": None if complete.empty else complete["date"].max().strftime("%Y-%m-%d"),
+        "latest_prediction_date": frame["date"].max().strftime("%Y-%m-%d"),
+        "latest_target_end_date": None if dated.empty else dated["target_end_date"].max().strftime("%Y-%m-%d"),
+    }
 
 
 def zscore(values: pd.Series) -> pd.Series:

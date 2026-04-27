@@ -19,7 +19,12 @@ if str(PACKAGE_SRC) not in sys.path:
     sys.path.insert(0, str(PACKAGE_SRC))
 
 from market_data_fetcher import DatabaseOperator
-from src.applications.sector_relative_outlook import sector_backtest_by_date, sector_outlook_backtest
+from src.applications.sector_relative_outlook import (
+    completed_sector_predictions,
+    sector_backtest_by_date,
+    sector_outlook_backtest,
+    sector_prediction_audit,
+)
 from src.config import load_config
 from src.db import FilingsDB
 
@@ -1269,6 +1274,8 @@ def optional_feature_frame(path: Path) -> pd.DataFrame:
 def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
     """Build current sector outlook bar chart."""
     frame = latest.copy()
+    frame["predicted_excess_return"] = pd.to_numeric(frame["predicted_excess_return"], errors="coerce")
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["predicted_excess_return"])
     frame["direction"] = np.where(frame["predicted_excess_return"] >= 0.0, "Positive", "Negative")
     return (
         alt.Chart(frame)
@@ -1291,7 +1298,10 @@ def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
 def sector_backtest_chart(dated: pd.DataFrame) -> alt.Chart:
     """Build date-level sector model backtest chart."""
     frame = dated.copy()
+    frame["top_minus_bottom"] = pd.to_numeric(frame["top_minus_bottom"], errors="coerce")
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["date", "top_minus_bottom"])
     frame["date_label"] = frame["date"].dt.strftime("%Y-%m-%d")
+    frame["target_end_label"] = frame["target_end_date"].dt.strftime("%Y-%m-%d")
     return (
         alt.Chart(frame)
         .mark_line(point=False)
@@ -1300,12 +1310,68 @@ def sector_backtest_chart(dated: pd.DataFrame) -> alt.Chart:
             y=alt.Y("top_minus_bottom:Q", title="Top 3 minus bottom 3 realized excess"),
             tooltip=[
                 alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip("target_end_label:N", title="Horizon ended"),
                 alt.Tooltip("top_minus_bottom:Q", title="Top-bottom", format=".2%"),
                 alt.Tooltip("rank_ic:Q", title="Rank IC", format=".3f"),
                 alt.Tooltip("top_bucket_excess:Q", title="Top bucket excess", format=".2%"),
+                alt.Tooltip("predicted_top_sector:N", title="Predicted top"),
+                alt.Tooltip("realized_best_sector:N", title="Realized best"),
             ],
         )
         .properties(height=260)
+    )
+
+
+def sector_rank_ic_chart(dated: pd.DataFrame) -> alt.Chart:
+    """Build date-level rank-correlation chart for historical sector predictions."""
+    frame = dated.copy()
+    frame["rank_ic"] = pd.to_numeric(frame["rank_ic"], errors="coerce")
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["date", "rank_ic"])
+    frame["date_label"] = frame["date"].dt.strftime("%Y-%m-%d")
+    return (
+        alt.Chart(frame)
+        .mark_line(point=False, color="#2f6f9d")
+        .encode(
+            x=alt.X("date:T", title="Prediction date"),
+            y=alt.Y("rank_ic:Q", title="Spearman rank IC", scale=alt.Scale(domain=[-1, 1])),
+            tooltip=[
+                alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip("rank_ic:Q", title="Rank IC", format=".3f"),
+                alt.Tooltip("predicted_top_sector:N", title="Predicted top"),
+                alt.Tooltip("realized_best_sector:N", title="Realized best"),
+            ],
+        )
+        .properties(height=260)
+    )
+
+
+def sector_prediction_scatter(frame: pd.DataFrame) -> alt.Chart:
+    """Build predicted-versus-realized scatter for one historical prediction date."""
+    plot = frame.copy()
+    plot["predicted_excess_return"] = pd.to_numeric(plot["predicted_excess_return"], errors="coerce")
+    plot["future_excess_return"] = pd.to_numeric(plot["future_excess_return"], errors="coerce")
+    plot = plot.replace([np.inf, -np.inf], np.nan).dropna(
+        subset=["predicted_excess_return", "future_excess_return"]
+    )
+    plot["date_label"] = plot["date"].dt.strftime("%Y-%m-%d")
+    plot["target_end_label"] = plot["target_end_date"].dt.strftime("%Y-%m-%d")
+    return (
+        alt.Chart(plot)
+        .mark_circle(size=130, opacity=0.85)
+        .encode(
+            x=alt.X("predicted_excess_return:Q", title="Predicted excess return", axis=alt.Axis(format="%")),
+            y=alt.Y("future_excess_return:Q", title="Realized excess return", axis=alt.Axis(format="%")),
+            color=alt.Color("gics_sector:N", legend=None),
+            tooltip=[
+                alt.Tooltip("gics_sector:N", title="Sector"),
+                alt.Tooltip("date_label:N", title="Prediction date"),
+                alt.Tooltip("target_end_label:N", title="Horizon ended"),
+                alt.Tooltip("prediction_rank:Q", title="Predicted rank", format=".0f"),
+                alt.Tooltip("predicted_excess_return:Q", title="Predicted", format=".2%"),
+                alt.Tooltip("future_excess_return:Q", title="Realized", format=".2%"),
+            ],
+        )
+        .properties(height=300)
     )
 
 
@@ -1320,17 +1386,22 @@ def latest_coefficient_table(coefficients: pd.DataFrame) -> pd.DataFrame:
 
 
 def render_sector_outlook() -> None:
-    st.subheader("Sector Relative Outlook")
+    st.subheader("Sector Outlook")
     st.caption(
-        "A walk-forward research signal for sector excess returns versus the equal-weight S&P 500 universe. "
-        "This is a transparent backtest tool, not a trading recommendation."
+        "Walk-forward sector excess-return predictions versus the equal-weight S&P 500 universe. "
+        "Current scores are separated from completed historical predictions."
     )
 
-    controls = st.columns([1.3, 1.0, 1.0, 1.0])
-    config_name = controls[0].text_input("Experiment config", value="decomposed_point_in_time")
-    horizon_days = controls[1].selectbox("Forward horizon", [21, 63, 126, 252], index=1)
-    min_train_months = controls[2].slider("Min training months", min_value=12, max_value=84, value=36, step=6)
-    ridge_alpha = controls[3].select_slider("Ridge regularization", options=[0.1, 1.0, 3.0, 10.0, 30.0, 100.0], value=10.0)
+    with st.expander("Model settings", expanded=False):
+        controls = st.columns([1.3, 1.0, 1.0, 1.0])
+        config_name = controls[0].text_input("Experiment config", value="decomposed_point_in_time")
+        horizon_days = controls[1].selectbox("Forward horizon", [21, 63, 126, 252], index=1)
+        min_train_months = controls[2].slider("Min training months", min_value=12, max_value=84, value=36, step=6)
+        ridge_alpha = controls[3].select_slider(
+            "Ridge regularization",
+            options=[0.1, 1.0, 3.0, 10.0, 30.0, 100.0],
+            value=10.0,
+        )
 
     try:
         panel, predictions, latest, metrics, coefficients = load_sector_outlook_artifacts(
@@ -1347,15 +1418,9 @@ def render_sector_outlook() -> None:
         st.warning("Not enough completed history to fit the sector outlook model with these settings.")
         return
 
-    metric_columns = st.columns(5)
-    metric_columns[0].metric("Prediction dates", f"{int(metrics.get('n_prediction_dates', 0)):,}")
-    metric_columns[1].metric("Mean rank IC", f"{float(metrics.get('mean_rank_ic', np.nan)):.3f}")
-    metric_columns[2].metric("Top-bottom avg", f"{float(metrics.get('mean_top_minus_bottom', np.nan)):.2%}")
-    metric_columns[3].metric("Top sector hit rate", f"{float(metrics.get('top_sector_hit_rate', np.nan)):.1%}")
-    metric_columns[4].metric("Latest date", latest["date"].max().strftime("%Y-%m-%d"))
-
-    st.markdown("**Current Sector Scores**")
-    st.altair_chart(sector_latest_score_chart(latest), width="stretch")
+    audit = sector_prediction_audit(predictions)
+    completed_predictions = completed_sector_predictions(predictions)
+    dated = sector_backtest_by_date(predictions)
 
     display_columns = [
         "prediction_rank",
@@ -1370,40 +1435,107 @@ def render_sector_outlook() -> None:
         "growth_revenue_yoy_1y",
         "growth_operating_margin",
     ]
-    st.dataframe(
-        safe_frame_subset(ensure_columns(latest, display_columns), display_columns),
-        width="stretch",
-        hide_index=True,
-    )
 
-    dated = sector_backtest_by_date(predictions)
-    if not dated.empty:
-        st.markdown("**Walk-Forward Backtest**")
-        st.altair_chart(sector_backtest_chart(dated), width="stretch")
-        st.dataframe(
-            dated.sort_values("date", ascending=False).head(24),
-            width="stretch",
-            hide_index=True,
+    metric_columns = st.columns(4)
+    metric_columns[0].metric("Completed dates", f"{int(audit.get('n_completed_dates', 0)):,}")
+    metric_columns[1].metric("Mean rank IC", f"{float(metrics.get('mean_rank_ic', np.nan)):.3f}")
+    metric_columns[2].metric("Top-bottom avg", f"{float(metrics.get('mean_top_minus_bottom', np.nan)):.2%}")
+    metric_columns[3].metric("Leakage flags", f"{int(audit.get('n_leakage_violations', 0)):,}")
+    if int(audit.get("n_leakage_violations", 0)) > 0:
+        st.error("Audit found prediction rows whose training outcomes ended on or after the prediction date.")
+    else:
+        st.caption(
+            f"Historical audit uses completed horizons only: {audit.get('first_completed_date')} to "
+            f"{audit.get('latest_completed_date')}. Current scores through "
+            f"{audit.get('latest_prediction_date')} remain separate until their forward horizon completes."
         )
 
-    coefficient_table = latest_coefficient_table(coefficients)
-    if not coefficient_table.empty:
-        with st.expander("Latest model feature weights"):
+    current_tab, historical_tab, weights_tab, notes_tab = st.tabs(
+        ["Current scores", "Historical walk-forward", "Feature weights", "How to read"]
+    )
+
+    with current_tab:
+        latest_date = latest["date"].max().strftime("%Y-%m-%d")
+        st.caption(
+            f"Current scores are as of {latest_date}. They are live/unrealized rows, not historical backtest results."
+        )
+        st.altair_chart(sector_latest_score_chart(latest), width="stretch")
+        with st.expander("Show current sector input table", expanded=False):
+            st.dataframe(
+                safe_frame_subset(ensure_columns(latest, display_columns), display_columns),
+                width="stretch",
+                hide_index=True,
+            )
+
+    with historical_tab:
+        if completed_predictions.empty or dated.empty:
+            st.warning("No completed historical prediction horizons are available for these settings yet.")
+        else:
+            chart_columns = st.columns(2)
+            chart_columns[0].altair_chart(sector_backtest_chart(dated), width="stretch")
+            chart_columns[1].altair_chart(sector_rank_ic_chart(dated), width="stretch")
+
+            completed_dates = sorted(completed_predictions["date"].dropna().unique())
+            selected_date = st.selectbox(
+                "Historical prediction date",
+                completed_dates,
+                index=len(completed_dates) - 1,
+                format_func=lambda value: pd.Timestamp(value).strftime("%Y-%m-%d"),
+            )
+            selected = completed_predictions[completed_predictions["date"].eq(pd.Timestamp(selected_date))].copy()
+            selected = selected.sort_values("prediction_rank")
+            st.caption(
+                "This table is what the walk-forward model had predicted on that historical date, "
+                "paired with the realized sector excess return after the forward horizon completed."
+            )
+            historical_columns = [
+                "prediction_rank",
+                "gics_sector",
+                "predicted_excess_return",
+                "future_excess_return",
+                "target_end_date",
+                "future_days_available",
+                "training_dates",
+                "training_latest_target_end_date",
+            ]
+            st.altair_chart(sector_prediction_scatter(selected), width="stretch")
+            st.dataframe(
+                safe_frame_subset(ensure_columns(selected, historical_columns), historical_columns),
+                width="stretch",
+                hide_index=True,
+            )
+            with st.expander("Show date-level historical diagnostics", expanded=False):
+                st.dataframe(
+                    dated.sort_values("date", ascending=False),
+                    width="stretch",
+                    hide_index=True,
+                )
+
+    with weights_tab:
+        coefficient_table = latest_coefficient_table(coefficients)
+        if coefficient_table.empty:
+            st.info("No coefficient history is available for the current settings.")
+        else:
+            st.caption("Latest fitted feature weights. Larger absolute values had more influence after standardization.")
             st.dataframe(
                 safe_frame_subset(coefficient_table, ["feature", "coefficient", "abs_coefficient"]),
                 width="stretch",
                 hide_index=True,
             )
 
-    with st.expander("How to read this"):
+    with notes_tab:
         st.write(
             "`Predicted excess return` is the model's estimate of future sector return minus the equal-weight S&P 500 "
             "return over the selected horizon. Positive means the sector is scored as likely to outperform the broad "
             "universe; negative means likely to lag."
         )
         st.write(
-            "The model is trained walk-forward. For each historical prediction date, it only trains on prior rows whose "
-            "forward horizon had already completed. That keeps this closer to point-in-time behavior."
+            "The historical tab only includes rows where the full forward horizon has completed. Rows near the latest "
+            "available price date are shown only as current/unrealized scores."
+        )
+        st.write(
+            "The walk-forward audit checks that every prediction date trains only on rows whose target end date is "
+            "strictly before that prediction date."
         )
         st.write(
             "The first version uses sector price momentum/volatility plus sector-mean growth and valuation features. "

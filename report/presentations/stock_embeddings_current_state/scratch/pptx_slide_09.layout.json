@@ -1,0 +1,658 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/qh0fepkz",
+    "id": "qh0fepkz",
+    "slide": 10,
+    "layoutId": "/ppt/slideLayouts/slideLayout2.xml",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout2.xml",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vahoza1g",
+      "id": "1",
+      "name": "slide-9-background",
+      "bbox": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "geometry": "rect",
+      "fillColor": "#F4ECD9",
+      "lineColor": "#F4ECD9",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ovahoza1",
+      "id": "2",
+      "name": "slide-9-eyebrow",
+      "bbox": [
+        82,
+        58,
+        620,
+        22
+      ],
+      "geometry": "rect",
+      "text": "COVARIANCE",
+      "textPreview": "COVARIANCE",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "COVARIANCE"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "COVARIANCE",
+          "runs": [
+            {
+              "index": 1,
+              "text": "COVARIANCE",
+              "fontSize": 22,
+              "color": "#2F6858",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dg7adsji",
+      "id": "3",
+      "name": "slide-9-title",
+      "bbox": [
+        82,
+        90,
+        1320,
+        124
+      ],
+      "geometry": "rect",
+      "text": "Ledoit-Wolf remains the full-universe benchmark",
+      "textPreview": "Ledoit-Wolf remains the full-universe benchmark",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ledoit-Wolf remains the full-universe"
+          },
+          {
+            "index": 2,
+            "text": "benchmark"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ledoit-Wolf remains the full-universe benchmark",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ledoit-Wolf remains the full-universe benchmark",
+              "fontSize": 62,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6hcrmhk3",
+      "id": "4",
+      "name": "slide-9-subtitle",
+      "bbox": [
+        82,
+        224,
+        1320,
+        50
+      ],
+      "geometry": "rect",
+      "text": "The direct multi-view factor covariance model is a clean negative result. That is useful: it tells us not to replace the statistical baseline wholesale.",
+      "textPreview": "The direct multi-view factor covariance model is a clean negative result. That is useful: it tells us not to replace the statistical base...",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The direct multi-view factor covariance model is a clean negative result. That is useful: it tells us not to replace the"
+          },
+          {
+            "index": 2,
+            "text": "statistical baseline wholesale."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The direct multi-view factor covariance model is a clean negative result. That is useful: it tells us not to replace the statistical baseline wholesale.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The direct multi-view factor covariance model is a clean negative result. That is useful: it tells us not to replace the statistical baseline wholesale.",
+              "fontSize": 25,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/z25kb6xk",
+      "id": "5",
+      "name": "covariance-chart-shell",
+      "bbox": [
+        82,
+        302,
+        1153,
+        539
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFF8E8",
+      "lineColor": "#D2C4A5",
+      "lineWidth": 1
+    },
+    {
+      "order": 6,
+      "kind": "chart",
+      "scope": "slide",
+      "aid": "ch/32lszqtc",
+      "id": "18",
+      "name": "covariance-chart",
+      "bbox": [
+        100,
+        318,
+        1117,
+        507
+      ],
+      "chartType": "bar"
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d8v6psfi",
+      "id": "7",
+      "name": "callout-mark-Full uni",
+      "bbox": [
+        1264,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#B94B48",
+      "lineColor": "#B94B48",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6dcbulwv",
+      "id": "8",
+      "bbox": [
+        1292,
+        302,
+        548,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Full universe",
+      "textPreview": "Full universe",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Full universe"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Full universe",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Full universe",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vy90je9c",
+      "id": "9",
+      "bbox": [
+        1292,
+        336,
+        548,
+        20
+      ],
+      "geometry": "rect",
+      "text": "Multi-view annual variance: 0.01522 vs Ledoit-Wolf 0.00963.",
+      "textPreview": "Multi-view annual variance: 0.01522 vs Ledoit-Wolf 0.00963.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Multi-view annual variance: 0.01522 vs Ledoit-Wolf 0.00963."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Multi-view annual variance: 0.01522 vs Ledoit-Wolf 0.00963.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Multi-view annual variance: 0.01522 vs Ledoit-Wolf 0.00963.",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/nuxc3ylc",
+      "id": "10",
+      "name": "callout-mark-Slice re",
+      "bbox": [
+        1264,
+        424,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#E1A93E",
+      "lineColor": "#E1A93E",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/y90je9cv",
+      "id": "11",
+      "bbox": [
+        1292,
+        424,
+        548,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Slice result",
+      "textPreview": "Slice result",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Slice result"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Slice result",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Slice result",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5wjudg7a",
+      "id": "12",
+      "bbox": [
+        1292,
+        458,
+        548,
+        40
+      ],
+      "geometry": "rect",
+      "text": "Single-view embedding prior won Health Care, mid-liquidity, and Consumer Discretionary slices.",
+      "textPreview": "Single-view embedding prior won Health Care, mid-liquidity, and Consumer Discretionary slices.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Single-view embedding prior won Health Care, mid-liquidity,"
+          },
+          {
+            "index": 2,
+            "text": "and Consumer Discretionary slices."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Single-view embedding prior won Health Care, mid-liquidity, and Consumer Discretionary slices.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Single-view embedding prior won Health Care, mid-liquidity, and Consumer Discretionary slices.",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gbq1oryt",
+      "id": "13",
+      "name": "callout-mark-Implicat",
+      "bbox": [
+        1264,
+        544,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#2F6858",
+      "lineColor": "#2F6858",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/n29gr2p8",
+      "id": "14",
+      "bbox": [
+        1292,
+        546,
+        548,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Implication",
+      "textPreview": "Implication",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Implication"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Implication",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Implication",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/yhgn29gr",
+      "id": "15",
+      "bbox": [
+        1292,
+        580,
+        548,
+        40
+      ],
+      "geometry": "rect",
+      "text": "Use Ledoit-Wolf as base; route or blend embedding signals only where they repeatedly help.",
+      "textPreview": "Use Ledoit-Wolf as base; route or blend embedding signals only where they repeatedly help.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Use Ledoit-Wolf as base; route or blend embedding signals"
+          },
+          {
+            "index": 2,
+            "text": "only where they repeatedly help."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Use Ledoit-Wolf as base; route or blend embedding signals only where they repeatedly help.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Use Ledoit-Wolf as base; route or blend embedding signals only where they repeatedly help.",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/58z25kb6",
+      "id": "16",
+      "name": "footer-rule",
+      "bbox": [
+        82,
+        1008,
+        1170,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#D2C4A5",
+      "lineColor": "#D2C4A5",
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gn29gr2p",
+      "id": "17",
+      "name": "source-rail",
+      "bbox": [
+        1270,
+        996,
+        568,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Sources: report/multiview_covariance_results.md; report/current_implementation_and_results.md.",
+      "textPreview": "Sources: report/multiview_covariance_results.md; report/current_implementation_and_results.md.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Sources: report/multiview_covariance_results.md; report/current_implementation_and_results.md."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Sources: report/multiview_covariance_results.md; report/current_implementation_and_results.md.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Sources: report/multiview_covariance_results.md; report/current_implementation_and_results.md.",
+              "fontSize": 13,
+              "color": "#8C927F"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}

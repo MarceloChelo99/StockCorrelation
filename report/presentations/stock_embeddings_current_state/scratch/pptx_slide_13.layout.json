@@ -1,0 +1,738 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/lwval87e",
+    "id": "lwval87e",
+    "slide": 14,
+    "layoutId": "/ppt/slideLayouts/slideLayout2.xml",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "/ppt/slideLayouts/slideLayout2.xml",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "/ppt/slideMasters/slideMaster1.xml",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "/ppt/slideMasters/slideMaster1.xml",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ed8bat47",
+      "id": "1",
+      "name": "slide-13-background",
+      "bbox": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "geometry": "rect",
+      "fillColor": "#F4ECD9",
+      "lineColor": "#F4ECD9",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l0rqd4vm",
+      "id": "2",
+      "name": "slide-13-eyebrow",
+      "bbox": [
+        82,
+        58,
+        620,
+        22
+      ],
+      "geometry": "rect",
+      "text": "NEXT",
+      "textPreview": "NEXT",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "NEXT"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "NEXT",
+          "runs": [
+            {
+              "index": 1,
+              "text": "NEXT",
+              "fontSize": 22,
+              "color": "#2F6858",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wfyxobm5",
+      "id": "3",
+      "name": "slide-13-title",
+      "bbox": [
+        82,
+        90,
+        1320,
+        124
+      ],
+      "geometry": "rect",
+      "text": "The right next step is data refresh, not model glitter",
+      "textPreview": "The right next step is data refresh, not model glitter",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The right next step is data refresh, not"
+          },
+          {
+            "index": 2,
+            "text": "model glitter"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The right next step is data refresh, not model glitter",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The right next step is data refresh, not model glitter",
+              "fontSize": 62,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/36hcrmhk",
+      "id": "4",
+      "name": "slide-13-subtitle",
+      "bbox": [
+        82,
+        224,
+        1320,
+        50
+      ],
+      "geometry": "rect",
+      "text": "The codebase is now ready for sharper inputs. The highest-value work is refreshing fundamentals, adding event-aware filing text, and making temporal movement validate around filing dates.",
+      "textPreview": "The codebase is now ready for sharper inputs. The highest-value work is refreshing fundamentals, adding event-aware filing text, and maki...",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The codebase is now ready for sharper inputs. The highest-value work is refreshing fundamentals, adding"
+          },
+          {
+            "index": 2,
+            "text": "event-aware filing text, and making temporal movement validate around filing dates."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The codebase is now ready for sharper inputs. The highest-value work is refreshing fundamentals, adding event-aware filing text, and making temporal movement validate around filing dates.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The codebase is now ready for sharper inputs. The highest-value work is refreshing fundamentals, adding event-aware filing text, and making temporal movement validate around filing dates.",
+              "fontSize": 25,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/eloj2t83",
+      "id": "5",
+      "name": "callout-mark-Refresh",
+      "bbox": [
+        80,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#E1A93E",
+      "lineColor": "#E1A93E",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lc7u54zi",
+      "id": "6",
+      "bbox": [
+        110,
+        302,
+        836,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Refresh fundamentals",
+      "textPreview": "Refresh fundamentals",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Refresh fundamentals"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Refresh fundamentals",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Refresh fundamentals",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wra5gbq1",
+      "id": "7",
+      "bbox": [
+        110,
+        336,
+        836,
+        40
+      ],
+      "geometry": "rect",
+      "text": "rerun XBRL companyfacts with cash flow and expanded share-count concepts so valuation features fill in",
+      "textPreview": "rerun XBRL companyfacts with cash flow and expanded share-count concepts so valuation features fill in",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "rerun XBRL companyfacts with cash flow and expanded share-count concepts so valuation"
+          },
+          {
+            "index": 2,
+            "text": "features fill in"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "rerun XBRL companyfacts with cash flow and expanded share-count concepts so valuation features fill in",
+          "runs": [
+            {
+              "index": 1,
+              "text": "rerun XBRL companyfacts with cash flow and expanded share-count concepts so valuation features fill in",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7adsji5s",
+      "id": "8",
+      "name": "callout-mark-Add 8-K",
+      "bbox": [
+        976,
+        304,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#C7653D",
+      "lineColor": "#C7653D",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/epkzupwb",
+      "id": "9",
+      "bbox": [
+        1002,
+        302,
+        836,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Add 8-K text to temporal input",
+      "textPreview": "Add 8-K text to temporal input",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Add 8-K text to temporal input"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Add 8-K text to temporal input",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Add 8-K text to temporal input",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8jqh0fep",
+      "id": "10",
+      "bbox": [
+        1002,
+        336,
+        836,
+        20
+      ],
+      "geometry": "rect",
+      "text": "Item 1.01, 2.01, 2.02, 7.01, 8.01 should capture events the 10-K/10-Q view misses",
+      "textPreview": "Item 1.01, 2.01, 2.02, 7.01, 8.01 should capture events the 10-K/10-Q view misses",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Item 1.01, 2.01, 2.02, 7.01, 8.01 should capture events the 10-K/10-Q view misses"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Item 1.01, 2.01, 2.02, 7.01, 8.01 should capture events the 10-K/10-Q view misses",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Item 1.01, 2.01, 2.02, 7.01, 8.01 should capture events the 10-K/10-Q view misses",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x4nap4r6",
+      "id": "11",
+      "name": "callout-mark-Validate",
+      "bbox": [
+        80,
+        648,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#346F9D",
+      "lineColor": "#346F9D",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qd4vmtwr",
+      "id": "12",
+      "bbox": [
+        110,
+        646,
+        836,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Validate around filings",
+      "textPreview": "Validate around filings",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Validate around filings"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Validate around filings",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Validate around filings",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fyxobm58",
+      "id": "13",
+      "bbox": [
+        110,
+        680,
+        836,
+        40
+      ],
+      "geometry": "rect",
+      "text": "measure velocity around filing dates, not only calendar events whose disclosure channel may differ",
+      "textPreview": "measure velocity around filing dates, not only calendar events whose disclosure channel may differ",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "measure velocity around filing dates, not only calendar events whose disclosure channel may"
+          },
+          {
+            "index": 2,
+            "text": "differ"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "measure velocity around filing dates, not only calendar events whose disclosure channel may differ",
+          "runs": [
+            {
+              "index": 1,
+              "text": "measure velocity around filing dates, not only calendar events whose disclosure channel may differ",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8v6psfil",
+      "id": "14",
+      "name": "callout-mark-Keep cov",
+      "bbox": [
+        976,
+        648,
+        10,
+        104
+      ],
+      "geometry": "rect",
+      "fillColor": "#2F6858",
+      "lineColor": "#2F6858",
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xczed8v6",
+      "id": "15",
+      "bbox": [
+        1002,
+        646,
+        836,
+        26
+      ],
+      "geometry": "rect",
+      "text": "Keep covariance conservative",
+      "textPreview": "Keep covariance conservative",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Keep covariance conservative"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Keep covariance conservative",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Keep covariance conservative",
+              "fontSize": 25,
+              "color": "#17201B",
+              "bold": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qpg3ex0n",
+      "id": "16",
+      "bbox": [
+        1002,
+        680,
+        836,
+        40
+      ],
+      "geometry": "rect",
+      "text": "Ledoit-Wolf remains the base; test embedding-informed routing only in slices where evidence repeats",
+      "textPreview": "Ledoit-Wolf remains the base; test embedding-informed routing only in slices where evidence repeats",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ledoit-Wolf remains the base; test embedding-informed routing only in slices where evidence"
+          },
+          {
+            "index": 2,
+            "text": "repeats"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ledoit-Wolf remains the base; test embedding-informed routing only in slices where evidence repeats",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ledoit-Wolf remains the base; test embedding-informed routing only in slices where evidence repeats",
+              "fontSize": 20,
+              "color": "#667166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fa9w3m94",
+      "id": "17",
+      "name": "footer-rule",
+      "bbox": [
+        82,
+        1008,
+        1162,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#D2C4A5",
+      "lineColor": "#D2C4A5",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8z25kb6x",
+      "id": "18",
+      "name": "source-rail",
+      "bbox": [
+        1262,
+        996,
+        576,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Sources: report/current_implementation_and_results.md; report/temporal_autoencoder_results.md.",
+      "textPreview": "Sources: report/current_implementation_and_results.md; report/temporal_autoencoder_results.md.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Sources: report/current_implementation_and_results.md; report/temporal_autoencoder_results.md."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Sources: report/current_implementation_and_results.md; report/temporal_autoencoder_results.md.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Sources: report/current_implementation_and_results.md; report/temporal_autoencoder_results.md.",
+              "fontSize": 13,
+              "color": "#8C927F"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}
