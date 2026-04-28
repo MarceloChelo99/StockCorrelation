@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import inspect
 import sys
 from pathlib import Path
 
@@ -19,20 +21,44 @@ if str(PACKAGE_SRC) not in sys.path:
     sys.path.insert(0, str(PACKAGE_SRC))
 
 from market_data_fetcher import DatabaseOperator
-from src.applications.sector_relative_outlook import (
-    completed_sector_predictions,
-    sector_backtest_by_date,
-    sector_outlook_backtest,
-    sector_prediction_audit,
-)
+from src.applications.cluster_model_comparison import cluster_cross_section, embedding_columns
+from src.applications import sector_relative_outlook as sector_outlook
 from src.config import load_config
 from src.db import FilingsDB
+
+
+sector_outlook = importlib.reload(sector_outlook)
+SECTOR_MODEL_LABELS = sector_outlook.SECTOR_MODEL_LABELS
+THEME_ASSIGNMENT_LABELS = getattr(
+    sector_outlook,
+    "THEME_ASSIGNMENT_LABELS",
+    {
+        "gics": "GICS sectors",
+        "soft": "Mixed soft loadings",
+        "hard_top1": "Hard top-1 theme",
+        "auto": "Auto by view",
+    },
+)
+completed_sector_predictions = sector_outlook.completed_sector_predictions
+rotation_simulation_metrics = sector_outlook.rotation_simulation_metrics
+sector_backtest_by_date = sector_outlook.sector_backtest_by_date
+sector_outlook_backtest = sector_outlook.sector_outlook_backtest
+sector_prediction_audit = sector_outlook.sector_prediction_audit
+simulate_group_rotation = sector_outlook.simulate_group_rotation
+
+
+def default_theme_assignment_strategy(view_name: str | None) -> str:
+    """Return the dashboard's view-specific theme assignment policy."""
+    if hasattr(sector_outlook, "default_theme_assignment_strategy"):
+        return sector_outlook.default_theme_assignment_strategy(view_name)
+    return "hard_top1" if str(view_name or "").strip().lower() == "behavioral" else "soft"
 
 
 DEFAULT_STORAGE_DIR = REPO_ROOT / "data" / "raw_filing_corpora"
 DEFAULT_IDENTITY = "StockCorrelation/0.1 castellanosmarcelo1@gmail.com"
 DEFAULT_HISTORICAL_TEXT_DIR = REPO_ROOT / "data" / "processed" / "historical_text_10k_10q"
 FALLBACK_HISTORICAL_TEXT_DIR = REPO_ROOT / "data" / "processed" / "historical_text"
+DEFAULT_SP500_BENCHMARK_PATH = REPO_ROOT / "data" / "processed" / "benchmarks" / "spy_benchmark.parquet"
 TOPIC_OPTIONS = {
     "AI": "topic_ai_score_per_10k_words",
     "Cloud / Compute": "topic_cloud_compute_score_per_10k_words",
@@ -55,6 +81,15 @@ FRAGMENT_LABEL_SECTIONS = [
     "q_mda",
     "q_risk_factors",
 ]
+DEFAULT_SECTOR_CONFIG = "decomposed_point_in_time"
+DEFAULT_SECTOR_MODEL = "ridge"
+DEFAULT_SECTOR_HORIZON_DAYS = 63
+DEFAULT_SECTOR_MIN_TRAIN_MONTHS = 36
+DEFAULT_RIDGE_ALPHA = 10.0
+DEFAULT_SHIFT_THEME_COUNT = 10
+DEFAULT_MARKET_COLOR_GROUPS = 12
+DEFAULT_MARKET_TRAIL_MONTHS = 18
+DEFAULT_SIMULATION_CAPITAL = 10_000.0
 
 
 st.set_page_config(page_title="Stock Embeddings Dashboard", layout="wide")
@@ -77,6 +112,42 @@ def load_loadings(path: str) -> pd.DataFrame:
     frame["ticker"] = frame["ticker"].astype(str).str.upper()
     frame["date"] = pd.to_datetime(frame["date"])
     return frame.sort_values(["ticker", "date"]).reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
+def load_embeddings(path: str) -> pd.DataFrame:
+    """Load view embeddings with normalized ticker/date columns."""
+    frame = pd.read_parquet(path)
+    frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    frame["date"] = pd.to_datetime(frame["date"])
+    return frame.sort_values(["ticker", "date"]).reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
+def load_projected_embeddings(path: str) -> pd.DataFrame:
+    """Project view embeddings into one stable 2D plane for model comparison."""
+    frame = load_embeddings(path)
+    columns = embedding_columns(frame)
+    if len(columns) < 2:
+        result = frame.loc[:, ["ticker", "date"]].copy()
+        result["x"] = 0.0
+        result["y"] = 0.0
+        return result
+    matrix = (
+        frame.loc[:, columns]
+        .astype(float)
+        .replace([np.inf, -np.inf], np.nan)
+        .fillna(0.0)
+        .to_numpy()
+    )
+    mean = matrix.mean(axis=0, keepdims=True)
+    std = matrix.std(axis=0, keepdims=True)
+    std = np.where(std == 0.0, 1.0, std)
+    projected = PCA(n_components=2, random_state=0).fit_transform((matrix - mean) / std)
+    result = frame.loc[:, ["ticker", "date"]].copy()
+    result["x"] = projected[:, 0]
+    result["y"] = projected[:, 1]
+    return result
 
 
 @st.cache_data(show_spinner=False)
@@ -234,7 +305,7 @@ def load_metadata() -> pd.DataFrame:
         gics["ticker"] = gics["ticker"].astype(str).str.upper()
         keep_columns = [
             column
-            for column in ["ticker", "company_name", "gics_sector", "gics_sub_industry"]
+            for column in ["ticker", "company_name", "gics_sector", "gics_sub_industry", "date_added"]
             if column in gics.columns
         ]
         frame = frame.merge(gics.loc[:, keep_columns], on="ticker", how="left")
@@ -242,6 +313,71 @@ def load_metadata() -> pd.DataFrame:
             frame["title"] = frame["title"].fillna(frame["company_name"])
     frame = coalesce_metadata_columns(frame)
     return frame.drop_duplicates("ticker").sort_values("ticker").reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
+def load_sp500_membership_history() -> pd.DataFrame:
+    """Load historical S&P 500 membership intervals when available."""
+    path = REPO_ROOT / "data" / "processed" / "metadata" / "sp500_membership_history.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    frame = pd.read_parquet(path)
+    frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    frame["start_date"] = pd.to_datetime(frame["start_date"], errors="coerce")
+    frame["end_date"] = pd.to_datetime(frame["end_date"], errors="coerce")
+    return frame.sort_values(["ticker", "start_date", "end_date"]).reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
+def load_sp500_historical_constituent_prices() -> pd.DataFrame:
+    """Load legacy sidecar prices for deleted S&P 500 constituents if present."""
+    path = REPO_ROOT / "data" / "processed" / "prices" / "sp500_deleted_constituents.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    frame = pd.read_parquet(path)
+    if "ticker" in frame.columns:
+        frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    if "date" in frame.columns:
+        frame["date"] = pd.to_datetime(frame["date"])
+    frame = frame.sort_values(["ticker", "date"]).reset_index(drop=True)
+    returns = frame.groupby("ticker")["adj_close"].pct_change()
+    bad_tickers = set(frame.loc[returns.abs() > 3.0, "ticker"])
+    if bad_tickers:
+        frame = frame[~frame["ticker"].isin(bad_tickers)].copy()
+    return frame.reset_index(drop=True)
+
+
+def append_missing_legacy_historical_prices(prices: pd.DataFrame) -> pd.DataFrame:
+    """Append legacy sidecar prices only for tickers absent from the DB group."""
+    sidecar = load_sp500_historical_constituent_prices()
+    if sidecar.empty:
+        return prices
+    existing_tickers = set(prices["ticker"].astype(str).str.upper())
+    sidecar = sidecar[~sidecar["ticker"].isin(existing_tickers)].copy()
+    if sidecar.empty:
+        return prices
+    combined = pd.concat([prices, sidecar], ignore_index=True, sort=False)
+    combined["ticker"] = combined["ticker"].astype(str).str.upper()
+    combined["date"] = pd.to_datetime(combined["date"])
+    return combined.sort_values(["ticker", "date"]).drop_duplicates(["ticker", "date"], keep="last")
+
+
+@st.cache_data(show_spinner=False)
+def load_sp500_benchmark_returns(path: str) -> pd.Series:
+    """Load regular S&P 500 benchmark returns from a local SPY proxy parquet."""
+    benchmark_path = Path(path)
+    if not benchmark_path.exists():
+        return pd.Series(dtype=float)
+    frame = pd.read_parquet(benchmark_path)
+    if "date" not in frame.columns or "adj_close" not in frame.columns:
+        return pd.Series(dtype=float)
+    frame = frame.loc[:, ["date", "adj_close"]].copy()
+    frame["date"] = pd.to_datetime(frame["date"], errors="coerce")
+    frame["adj_close"] = pd.to_numeric(frame["adj_close"], errors="coerce")
+    frame = frame.dropna(subset=["date", "adj_close"]).sort_values("date")
+    returns = frame.set_index("date")["adj_close"].pct_change().dropna()
+    returns.name = "sp500_benchmark_return"
+    return returns
 
 
 def coalesce_metadata_columns(frame: pd.DataFrame) -> pd.DataFrame:
@@ -275,20 +411,78 @@ def coalesce_metadata_columns(frame: pd.DataFrame) -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def auto_theme_label_lookup(loadings_path: str, metadata: pd.DataFrame, view_name: str) -> dict[str, str]:
-    """Create readable fallback labels from sector mix, without manual labels or ticker lists."""
+    """Create readable fallback labels from weighted sector/sub-industry mix."""
     loadings = load_loadings(loadings_path)
     latest = loadings.sort_values(["ticker", "date"]).groupby("ticker", as_index=False).tail(1)
     latest = latest.merge(metadata, on="ticker", how="left")
     lookup = {}
     for theme in theme_columns(latest):
-        top = latest.sort_values(theme, ascending=False).head(8)
-        if "gics_sector" in top.columns and top["gics_sector"].notna().any():
-            sector = str(top["gics_sector"].dropna().mode().iloc[0])
-            label = f"{sector} {view_label_noun(view_name)} mix"
-        else:
-            label = f"{view_label_noun(view_name).title()} mix"
-        lookup[theme] = label
+        lookup[theme] = composition_theme_label(latest, theme, view_name)
     return lookup
+
+
+def composition_theme_label(frame: pd.DataFrame, theme: str, view_name: str, top_n: int = 20) -> str:
+    """Return a dynamic label from the weighted composition of a theme."""
+    top = frame.sort_values(theme, ascending=False).head(int(top_n)).copy()
+    top = top.loc[pd.to_numeric(top[theme], errors="coerce") > 0.0]
+    noun = view_label_noun(view_name)
+    if top.empty:
+        return f"Mixed {noun}"
+
+    subindustry_label = dominant_weighted_label(top, theme, "gics_sub_industry", minimum_share=0.38)
+    if subindustry_label:
+        return f"{subindustry_label} {noun}"
+
+    sector_label = dominant_weighted_label(top, theme, "gics_sector", minimum_share=0.34)
+    if sector_label:
+        return f"{sector_label} {noun}"
+
+    blended = blended_weighted_label(top, theme, "gics_sector", k=2)
+    if blended:
+        return f"{blended} {noun}"
+    return f"Mixed {noun}"
+
+
+def dominant_weighted_label(frame: pd.DataFrame, weight_column: str, label_column: str, minimum_share: float) -> str:
+    """Return the dominant weighted label if it clears a minimum share."""
+    if label_column not in frame.columns:
+        return ""
+    values = weighted_label_shares(frame, weight_column, label_column)
+    if values.empty:
+        return ""
+    label = str(values.index[0])
+    share = float(values.iloc[0])
+    return label if share >= float(minimum_share) else ""
+
+
+def blended_weighted_label(frame: pd.DataFrame, weight_column: str, label_column: str, k: int = 2) -> str:
+    """Return a compact multi-label composition summary."""
+    if label_column not in frame.columns:
+        return ""
+    values = weighted_label_shares(frame, weight_column, label_column)
+    if values.empty:
+        return ""
+    labels = [str(label) for label in values.head(int(k)).index]
+    return " / ".join(labels)
+
+
+def weighted_label_shares(frame: pd.DataFrame, weight_column: str, label_column: str) -> pd.Series:
+    """Return normalized loading shares by metadata label."""
+    if label_column not in frame.columns or weight_column not in frame.columns:
+        return pd.Series(dtype=float)
+    clean = frame.loc[:, [weight_column, label_column]].dropna().copy()
+    if clean.empty:
+        return pd.Series(dtype=float)
+    clean[weight_column] = pd.to_numeric(clean[weight_column], errors="coerce")
+    clean = clean.dropna(subset=[weight_column])
+    clean = clean[clean[weight_column] > 0.0]
+    if clean.empty:
+        return pd.Series(dtype=float)
+    shares = clean.groupby(label_column)[weight_column].sum().sort_values(ascending=False)
+    total = float(shares.sum())
+    if total <= 0.0:
+        return pd.Series(dtype=float)
+    return shares / total
 
 
 @st.cache_data(show_spinner=False)
@@ -297,6 +491,7 @@ def fragment_theme_label_artifacts(
     historical_dir: str,
     view_name: str,
     as_of_date: str | None,
+    metadata: pd.DataFrame | None = None,
     top_tickers: int = 12,
     max_age_days: int = 730,
 ) -> tuple[dict[str, str], pd.DataFrame]:
@@ -381,7 +576,7 @@ def fragment_theme_label_artifacts(
         snippet_row = representative_snippet_row(snippet_lookup, representative)
         topic_label = fragment_topic_label(topic_row)
         section_label = short_section_label(str(representative.get("section_label", representative["section"])))
-        label_core = fragment_display_label(topic_label, section_label)
+        label_core = fragment_display_label(topic_label, section_label, top, theme, metadata)
         top_theme_tickers = ", ".join(top["ticker"].astype(str).head(4).tolist())
         label = label_core
         evidence = topic_evidence_summary(topic_row)
@@ -421,10 +616,36 @@ def view_label_noun(view_name: str) -> str:
     return names.get(view_name, "similarity")
 
 
-def fragment_display_label(topic_label: str, section_label: str) -> str:
+def fragment_display_label(
+    topic_label: str,
+    section_label: str,
+    top_loadings: pd.DataFrame | None = None,
+    theme: str | None = None,
+    metadata: pd.DataFrame | None = None,
+) -> str:
     """Return a compact semantic label for a representative filing fragment."""
+    composition = ""
+    if top_loadings is not None and theme is not None and metadata is not None and not metadata.empty:
+        enriched = top_loadings.merge(metadata, on="ticker", how="left")
+        composition = dominant_weighted_label(enriched, theme, "gics_sub_industry", minimum_share=0.38)
+        if not composition:
+            composition = dominant_weighted_label(enriched, theme, "gics_sector", minimum_share=0.34)
+
+    section_context = {
+        "Business": "business",
+        "Risk Factors": "risk",
+        "MD&A": "management discussion",
+        "Cybersecurity": "cybersecurity",
+        "Q MD&A": "quarterly management discussion",
+        "Q Risk Factors": "quarterly risk",
+    }.get(section_label, section_label.lower())
+
     if topic_label:
-        return f"{topic_label} language"
+        if composition:
+            return f"{composition} {topic_label} language"
+        return f"{topic_label} {section_context} language"
+    if composition:
+        return f"{composition} {section_context} language"
     section_labels = {
         "Business": "Business model language",
         "Risk Factors": "Risk language",
@@ -560,11 +781,17 @@ def short_section_label(label: str) -> str:
     """Shorten verbose filing-section names for compact theme labels."""
     replacements = {
         "10-K Item 1 Business": "Business",
+        "Item 1 Business": "Business",
         "10-K Item 1A Risk Factors": "Risk Factors",
+        "Item 1A Risk Factors": "Risk Factors",
         "10-K Item 7 MD&A": "MD&A",
+        "Item 7 MD&A": "MD&A",
         "10-K Item 1C Cybersecurity": "Cybersecurity",
+        "Item 1C Cybersecurity": "Cybersecurity",
         "10-Q Item 2 MD&A": "Q MD&A",
+        "Item 2 MD&A": "Q MD&A",
         "10-Q Part II Item 1A Risk Factors": "Q Risk Factors",
+        "Part II Item 1A Risk Factors": "Q Risk Factors",
     }
     return replacements.get(label, label.replace("10-K ", "").replace("10-Q ", ""))
 
@@ -583,6 +810,14 @@ def available_views(experiment_root: Path) -> list[str]:
     if not views_dir.exists():
         return []
     return sorted(path.name for path in views_dir.iterdir() if (path / "loadings.parquet").exists())
+
+
+def available_embedding_views(experiment_root: Path) -> list[str]:
+    """Return decomposed views with saved embeddings."""
+    views_dir = experiment_root / "views"
+    if not views_dir.exists():
+        return []
+    return sorted(path.name for path in views_dir.iterdir() if (path / "embeddings.parquet").exists())
 
 
 def parse_tickers(raw_value: str) -> list[str]:
@@ -894,6 +1129,68 @@ def market_map_chart(
         )
     )
     return (base + rings + labels).properties(height=620)
+
+
+def cluster_model_comparison_points(
+    assignments: pd.DataFrame,
+    projected: pd.DataFrame,
+    metadata: pd.DataFrame,
+    selected_date: pd.Timestamp,
+) -> pd.DataFrame:
+    """Attach 2D coordinates and metadata to clustering assignments."""
+    coordinates = projected[projected["date"].eq(pd.Timestamp(selected_date))].copy()
+    points = assignments.merge(coordinates, on=["ticker", "date"], how="left")
+    meta_columns = [
+        column for column in ["ticker", "title", "company_name", "gics_sector", "gics_sub_industry"] if column in metadata.columns
+    ]
+    if meta_columns:
+        meta = metadata.loc[:, meta_columns].drop_duplicates("ticker").copy()
+        points = points.merge(meta, on="ticker", how="left")
+    points["title"] = points.get("title", points["ticker"]).fillna(points["ticker"])
+    points["gics_sector"] = points.get("gics_sector", pd.Series(index=points.index, dtype=object)).fillna("Unknown")
+    points["cluster_label"] = np.where(points["is_noise"], "Noise / outlier", points["cluster_label"])
+    return points.dropna(subset=["x", "y"]).reset_index(drop=True)
+
+
+def cluster_model_comparison_chart(points: pd.DataFrame) -> alt.Chart:
+    """Show GMM, k-means, and DBSCAN assignments on the same embedding map."""
+    return (
+        alt.Chart(points)
+        .mark_circle(opacity=0.78, size=58)
+        .encode(
+            x=alt.X("x:Q", title="Embedding map X"),
+            y=alt.Y("y:Q", title="Embedding map Y"),
+            color=alt.Color("cluster_label:N", title="Cluster"),
+            tooltip=[
+                alt.Tooltip("ticker:N", title="Ticker"),
+                alt.Tooltip("title:N", title="Company"),
+                alt.Tooltip("model:N", title="Model"),
+                alt.Tooltip("cluster_label:N", title="Cluster"),
+                alt.Tooltip("gics_sector:N", title="GICS sector"),
+            ],
+        )
+        .properties(width=290, height=390)
+        .facet(column=alt.Column("model:N", title=None))
+        .resolve_scale(color="independent")
+    )
+
+
+def cluster_model_metric_table(metrics: pd.DataFrame) -> pd.DataFrame:
+    """Return model-comparison metrics in a stable teaching order."""
+    order = {"GMM": 0, "k-means": 1, "DBSCAN": 2}
+    frame = metrics.copy()
+    frame["_order"] = frame["model"].map(order).fillna(99)
+    display_columns = [
+        "model",
+        "clusters_found",
+        "noise_share",
+        "largest_cluster_share",
+        "silhouette",
+        "nmi_vs_gics",
+        "ari_vs_gics",
+        "interpretation",
+    ]
+    return frame.sort_values("_order").loc[:, display_columns].reset_index(drop=True)
 
 
 def market_trail_chart(
@@ -1239,6 +1536,14 @@ def load_sector_outlook_artifacts(
     horizon_days: int,
     min_train_months: int,
     ridge_alpha: float,
+    model_type: str,
+    group_mode: str,
+    group_view: str,
+    loadings_path: str,
+    embeddings_path: str,
+    membership_mode: str,
+    theme_assignment: str,
+    include_embedding_features: bool,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict, pd.DataFrame]:
     """Load inputs and compute sector-relative outlook artifacts."""
     config = load_config(config_name)
@@ -1247,15 +1552,30 @@ def load_sector_outlook_artifacts(
     metadata = load_metadata()
     valuation = optional_feature_frame(REPO_ROOT / "data" / "processed" / "features" / "valuation.parquet")
     growth = optional_feature_frame(REPO_ROOT / "data" / "processed" / "features" / "growth_lifecycle.parquet")
-    result = sector_outlook_backtest(
-        prices,
-        metadata,
-        valuation=valuation,
-        growth=growth,
-        horizon_days=int(horizon_days),
-        min_train_months=int(min_train_months),
-        ridge_alpha=float(ridge_alpha),
-    )
+    group_loadings = load_loadings(loadings_path) if group_mode == "theme" and loadings_path else None
+    group_embeddings = load_embeddings(embeddings_path) if include_embedding_features and embeddings_path else None
+    membership = load_sp500_membership_history() if membership_mode == "historical" else None
+    if membership_mode == "historical":
+        prices = append_missing_legacy_historical_prices(prices)
+    keyword_args = {
+        "valuation": valuation,
+        "growth": growth,
+        "group_loadings": group_loadings,
+        "group_embeddings": group_embeddings,
+        "membership": membership,
+        "group_mode": group_mode,
+        "group_view": group_view or None,
+        "horizon_days": int(horizon_days),
+        "min_train_months": int(min_train_months),
+        "ridge_alpha": float(ridge_alpha),
+        "model_type": model_type,
+        "membership_mode": membership_mode,
+        "theme_assignment": theme_assignment,
+        "include_embedding_features": include_embedding_features,
+    }
+    supported_args = set(inspect.signature(sector_outlook_backtest).parameters)
+    keyword_args = {key: value for key, value in keyword_args.items() if key in supported_args}
+    result = sector_outlook_backtest(prices, metadata, **keyword_args)
     return result.panel, result.predictions, result.latest, result.metrics, result.coefficients
 
 
@@ -1274,6 +1594,7 @@ def optional_feature_frame(path: Path) -> pd.DataFrame:
 def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
     """Build current sector outlook bar chart."""
     frame = latest.copy()
+    group_column = "group_label" if "group_label" in frame.columns else "gics_sector"
     frame["predicted_excess_return"] = pd.to_numeric(frame["predicted_excess_return"], errors="coerce")
     frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["predicted_excess_return"])
     frame["direction"] = np.where(frame["predicted_excess_return"] >= 0.0, "Positive", "Negative")
@@ -1281,11 +1602,11 @@ def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
         alt.Chart(frame)
         .mark_bar(cornerRadiusEnd=3)
         .encode(
-            y=alt.Y("gics_sector:N", sort="-x", title="Sector"),
+            y=alt.Y(f"{group_column}:N", sort="-x", title="Group"),
             x=alt.X("predicted_excess_return:Q", title="Predicted excess return vs S&P"),
             color=alt.Color("direction:N", scale=alt.Scale(range=["#1f7a4d", "#b8423f"]), legend=None),
             tooltip=[
-                alt.Tooltip("gics_sector:N", title="Sector"),
+                alt.Tooltip(f"{group_column}:N", title="Group"),
                 alt.Tooltip("predicted_excess_return:Q", title="Predicted excess", format=".2%"),
                 alt.Tooltip("score_z:Q", title="Score z", format=".2f"),
                 alt.Tooltip("prediction_rank:Q", title="Rank", format=".0f"),
@@ -1348,6 +1669,7 @@ def sector_rank_ic_chart(dated: pd.DataFrame) -> alt.Chart:
 def sector_prediction_scatter(frame: pd.DataFrame) -> alt.Chart:
     """Build predicted-versus-realized scatter for one historical prediction date."""
     plot = frame.copy()
+    group_column = "group_label" if "group_label" in plot.columns else "gics_sector"
     plot["predicted_excess_return"] = pd.to_numeric(plot["predicted_excess_return"], errors="coerce")
     plot["future_excess_return"] = pd.to_numeric(plot["future_excess_return"], errors="coerce")
     plot = plot.replace([np.inf, -np.inf], np.nan).dropna(
@@ -1361,9 +1683,9 @@ def sector_prediction_scatter(frame: pd.DataFrame) -> alt.Chart:
         .encode(
             x=alt.X("predicted_excess_return:Q", title="Predicted excess return", axis=alt.Axis(format="%")),
             y=alt.Y("future_excess_return:Q", title="Realized excess return", axis=alt.Axis(format="%")),
-            color=alt.Color("gics_sector:N", legend=None),
+            color=alt.Color(f"{group_column}:N", legend=None),
             tooltip=[
-                alt.Tooltip("gics_sector:N", title="Sector"),
+                alt.Tooltip(f"{group_column}:N", title="Group"),
                 alt.Tooltip("date_label:N", title="Prediction date"),
                 alt.Tooltip("target_end_label:N", title="Horizon ended"),
                 alt.Tooltip("prediction_rank:Q", title="Predicted rank", format=".0f"),
@@ -1373,6 +1695,167 @@ def sector_prediction_scatter(frame: pd.DataFrame) -> alt.Chart:
         )
         .properties(height=300)
     )
+
+
+def sector_rotation_equity_chart(simulation: pd.DataFrame) -> alt.Chart:
+    """Build a capital curve for the walk-forward rotation simulation."""
+    frame = simulation.copy()
+    if frame.empty:
+        return alt.Chart(pd.DataFrame({"step_point": [], "portfolio": [], "capital": []})).mark_line()
+    frame["date"] = pd.to_datetime(frame["date"])
+    frame["target_end_date"] = pd.to_datetime(frame["target_end_date"])
+    frame["date_label"] = frame["date"].dt.strftime("%Y-%m-%d")
+    frame["target_end_label"] = frame["target_end_date"].dt.strftime("%Y-%m-%d")
+    if "step" not in frame.columns:
+        frame["step"] = np.arange(1, len(frame) + 1)
+    if "start_capital" not in frame.columns:
+        frame["start_capital"] = frame["capital"] / (1.0 + frame["net_period_return"].replace(-1.0, np.nan))
+    if "start_market_capital" not in frame.columns:
+        frame["start_market_capital"] = frame["market_capital"] / (1.0 + frame["period_market_return"].replace(-1.0, np.nan))
+    has_benchmark = "benchmark_capital" in frame.columns and frame["benchmark_capital"].notna().any()
+    if has_benchmark and "start_benchmark_capital" not in frame.columns:
+        frame["start_benchmark_capital"] = frame["benchmark_capital"] / (
+            1.0 + frame["period_benchmark_return"].replace(-1.0, np.nan)
+        )
+
+    curve_rows = []
+    for _, row in frame.iterrows():
+        step = int(row["step"])
+        portfolio_specs = [
+            ("strategy", "Predicted-group rotation", "start_capital", "capital", "net_period_return"),
+            ("market", "Equal-weight S&P universe", "start_market_capital", "market_capital", "period_market_return"),
+        ]
+        if has_benchmark:
+            benchmark_label = str(row.get("benchmark_label", "S&P 500 benchmark"))
+            portfolio_specs.append(
+                (
+                    "benchmark",
+                    benchmark_label,
+                    "start_benchmark_capital",
+                    "benchmark_capital",
+                    "period_benchmark_return",
+                )
+            )
+        for portfolio_key, portfolio_label, start_column, end_column, return_column in portfolio_specs:
+            if pd.isna(row.get(start_column)) or pd.isna(row.get(end_column)):
+                continue
+            curve_rows.append(
+                {
+                    "step_point": step - 1,
+                    "step_label": f"Step {step - 1}",
+                    "portfolio_key": portfolio_key,
+                    "portfolio": portfolio_label,
+                    "date": row["date"],
+                    "date_label": row["date_label"],
+                    "target_end_label": row["target_end_label"],
+                    "selected_group_label": row["selected_group_label"],
+                    "portfolio_value": float(row[start_column]),
+                    "period_return": 0.0,
+                }
+            )
+            curve_rows.append(
+                {
+                    "step_point": step,
+                    "step_label": f"Step {step}",
+                    "portfolio_key": portfolio_key,
+                    "portfolio": portfolio_label,
+                    "date": row["target_end_date"],
+                    "date_label": row["date_label"],
+                    "target_end_label": row["target_end_label"],
+                    "selected_group_label": row["selected_group_label"],
+                    "portfolio_value": float(row[end_column]),
+                    "period_return": float(row[return_column]),
+                }
+            )
+    long = (
+        pd.DataFrame(curve_rows)
+        .sort_values(["portfolio_key", "step_point", "date"])
+        .drop_duplicates(["portfolio_key", "step_point"], keep="last")
+    )
+    return (
+        alt.Chart(long)
+        .mark_line(point=True, strokeWidth=3)
+        .encode(
+            x=alt.X("step_point:Q", title="Rebalance step", axis=alt.Axis(format="d", tickMinStep=1)),
+            y=alt.Y("portfolio_value:Q", title="Portfolio value", axis=alt.Axis(format="$,.0f")),
+            color=alt.Color("portfolio:N", title=None),
+            tooltip=[
+                alt.Tooltip("portfolio:N", title="Portfolio"),
+                alt.Tooltip("step_label:N", title="Step"),
+                alt.Tooltip("date:T", title="Capital date"),
+                alt.Tooltip("date_label:N", title="Entered on"),
+                alt.Tooltip("target_end_label:N", title="Exit date"),
+                alt.Tooltip("selected_group_label:N", title="Selected group"),
+                alt.Tooltip("portfolio_value:Q", title="Capital", format="$,.2f"),
+                alt.Tooltip("period_return:Q", title="Period return", format=".2%"),
+            ],
+        )
+        .properties(height=380)
+    )
+
+
+def sector_rotation_step_table(simulation: pd.DataFrame) -> pd.DataFrame:
+    """Return a readable ledger showing how capital changes at each step."""
+    frame = simulation.copy()
+    if frame.empty:
+        return frame
+    if "step" not in frame.columns:
+        frame["step"] = np.arange(1, len(frame) + 1)
+    if "start_capital" not in frame.columns:
+        frame["start_capital"] = frame["capital"] / (1.0 + frame["net_period_return"].replace(-1.0, np.nan))
+    if "capital_change" not in frame.columns:
+        frame["capital_change"] = frame["capital"] - frame["start_capital"]
+    if "start_market_capital" not in frame.columns:
+        frame["start_market_capital"] = frame["market_capital"] / (1.0 + frame["period_market_return"].replace(-1.0, np.nan))
+    if "market_capital_change" not in frame.columns:
+        frame["market_capital_change"] = frame["market_capital"] - frame["start_market_capital"]
+    columns = [
+        "step",
+        "date",
+        "target_end_date",
+        "selected_group_label",
+        "predicted_excess_return",
+        "start_capital",
+        "net_period_return",
+        "capital_change",
+        "capital",
+        "start_market_capital",
+        "period_market_return",
+        "market_capital_change",
+        "market_capital",
+    ]
+    has_benchmark = "benchmark_capital" in frame.columns and frame["benchmark_capital"].notna().any()
+    if has_benchmark:
+        columns.extend(
+            [
+                "start_benchmark_capital",
+                "period_benchmark_return",
+                "benchmark_capital_change",
+                "benchmark_capital",
+            ]
+        )
+    output = frame.loc[:, columns].copy()
+    output = output.rename(
+        columns={
+            "date": "entry_date",
+            "target_end_date": "exit_date",
+            "selected_group_label": "selected_group",
+            "predicted_excess_return": "predicted_excess",
+            "start_capital": "strategy_start",
+            "net_period_return": "strategy_return",
+            "capital_change": "strategy_dollar_change",
+            "capital": "strategy_end",
+            "start_market_capital": "market_start",
+            "period_market_return": "market_return",
+            "market_capital_change": "market_dollar_change",
+            "market_capital": "market_end",
+            "start_benchmark_capital": "sp500_start",
+            "period_benchmark_return": "sp500_return",
+            "benchmark_capital_change": "sp500_dollar_change",
+            "benchmark_capital": "sp500_end",
+        }
+    )
+    return output
 
 
 def latest_coefficient_table(coefficients: pd.DataFrame) -> pd.DataFrame:
@@ -1385,23 +1868,131 @@ def latest_coefficient_table(coefficients: pd.DataFrame) -> pd.DataFrame:
     return frame.sort_values("abs_coefficient", ascending=False).reset_index(drop=True)
 
 
+def apply_theme_group_labels(
+    frame: pd.DataFrame,
+    labels: dict[str, str],
+    *,
+    group_column: str = "gics_sector",
+) -> pd.DataFrame:
+    """Attach readable dynamic labels to learned-theme prediction groups."""
+    if frame.empty:
+        return frame
+    result = frame.copy()
+    if group_column in frame.columns:
+        result["group_label"] = [
+            display_theme_name(str(value), labels) if str(value).startswith("theme_") else str(value)
+            for value in result[group_column]
+        ]
+    for column in ["predicted_top_sector", "realized_best_sector"]:
+        if column in result.columns:
+            result[column] = [
+                display_theme_name(str(value), labels) if str(value).startswith("theme_") else str(value)
+                for value in result[column]
+            ]
+    return result
+
+
+def membership_mode_display(membership_mode: str) -> str:
+    """Return a readable dashboard label for the selected universe mode."""
+    labels = {
+        "historical": "historical constituents",
+        "date_added": "date-added current members",
+        "current": "current roster",
+    }
+    return labels.get(str(membership_mode), str(membership_mode))
+
+
 def render_sector_outlook() -> None:
-    st.subheader("Sector Outlook")
+    st.subheader("Group Outlook")
     st.caption(
-        "Walk-forward sector excess-return predictions versus the equal-weight S&P 500 universe. "
+        "Walk-forward group excess-return predictions versus the equal-weight S&P 500 universe. "
         "Current scores are separated from completed historical predictions."
     )
 
-    with st.expander("Model settings", expanded=False):
-        controls = st.columns([1.3, 1.0, 1.0, 1.0])
-        config_name = controls[0].text_input("Experiment config", value="decomposed_point_in_time")
-        horizon_days = controls[1].selectbox("Forward horizon", [21, 63, 126, 252], index=1)
-        min_train_months = controls[2].slider("Min training months", min_value=12, max_value=84, value=36, step=6)
-        ridge_alpha = controls[3].select_slider(
-            "Ridge regularization",
-            options=[0.1, 1.0, 3.0, 10.0, 30.0, 100.0],
-            value=10.0,
+    config_name = DEFAULT_SECTOR_CONFIG
+    model_type = DEFAULT_SECTOR_MODEL
+    horizon_days = DEFAULT_SECTOR_HORIZON_DAYS
+    min_train_months = DEFAULT_SECTOR_MIN_TRAIN_MONTHS
+    ridge_alpha = DEFAULT_RIDGE_ALPHA
+
+    controls = st.columns([1.05, 1.15])
+    group_choice = controls[0].selectbox("Prediction groups", ["GICS sectors", "Learned themes"])
+    membership_choice = controls[1].selectbox(
+        "Universe",
+        ["Historical constituents", "Date-added current members", "Current roster"],
+        help=(
+            "Historical mode uses add/remove intervals when available. It only includes deleted companies "
+            "if their prices and labels are present locally. Date-added mode is the safer fallback for the "
+            "current roster."
+        ),
+    )
+    membership_mode_lookup = {
+        "Historical constituents": "historical",
+        "Date-added current members": "date_added",
+        "Current roster": "current",
+    }
+    membership_mode = membership_mode_lookup[membership_choice]
+    if membership_mode == "historical":
+        membership = load_sp500_membership_history()
+        if membership.empty:
+            st.warning(
+                "Historical membership intervals were not found. Run "
+                "`python scripts/data_setup/fetch_sp500_membership_history.py` first."
+            )
+
+    with st.expander("Advanced model settings", expanded=False):
+        advanced = st.columns([1.25, 1.05, 1.0, 1.0, 1.0])
+        config_name = advanced[0].text_input("Experiment config", value=config_name)
+        model_type = advanced[1].selectbox(
+            "Predictor",
+            list(SECTOR_MODEL_LABELS.keys()),
+            index=list(SECTOR_MODEL_LABELS.keys()).index(DEFAULT_SECTOR_MODEL),
+            format_func=lambda key: SECTOR_MODEL_LABELS[key],
         )
+        horizon_days = advanced[2].selectbox("Forward horizon", [21, 63, 126, 252], index=1)
+        min_train_months = advanced[3].slider(
+            "Min training months",
+            min_value=12,
+            max_value=84,
+            value=DEFAULT_SECTOR_MIN_TRAIN_MONTHS,
+            step=6,
+        )
+        ridge_alpha = advanced[4].select_slider(
+            "Ridge/Huber alpha",
+            options=[0.1, 1.0, 3.0, 10.0, 30.0, 100.0],
+            value=DEFAULT_RIDGE_ALPHA,
+        )
+
+    group_mode = "theme" if group_choice == "Learned themes" else "gics"
+    theme_view = ""
+    theme_loadings_path = ""
+    theme_embeddings_path = ""
+    theme_assignment = "soft"
+    include_embedding_features = False
+    experiment_root = latest_decomposed_experiment()
+    if group_mode == "theme":
+        if experiment_root is None:
+            st.warning("No decomposed experiment with learned theme loadings was found.")
+        else:
+            views = available_views(experiment_root)
+            if views:
+                theme_view = st.selectbox(
+                    "Learned theme view",
+                    views,
+                    index=views.index("business") if "business" in views else 0,
+                )
+                theme_loadings_path = str(experiment_root / "views" / theme_view / "loadings.parquet")
+                candidate_embeddings_path = experiment_root / "views" / theme_view / "embeddings.parquet"
+                if candidate_embeddings_path.exists():
+                    theme_embeddings_path = str(candidate_embeddings_path)
+                    include_embedding_features = True
+                theme_assignment = default_theme_assignment_strategy(theme_view)
+                st.caption(
+                    "Theme assignment policy: "
+                    f"{THEME_ASSIGNMENT_LABELS.get(theme_assignment, theme_assignment)} "
+                    f"for the {theme_view} view. "
+                    f"Embedding predictor features: {'on' if include_embedding_features else 'off'}."
+                )
 
     try:
         panel, predictions, latest, metrics, coefficients = load_sector_outlook_artifacts(
@@ -1409,6 +2000,14 @@ def render_sector_outlook() -> None:
             int(horizon_days),
             int(min_train_months),
             float(ridge_alpha),
+            str(model_type),
+            group_mode,
+            theme_view,
+            theme_loadings_path,
+            theme_embeddings_path,
+            membership_mode,
+            theme_assignment,
+            include_embedding_features,
         )
     except Exception as exc:  # noqa: BLE001
         st.error(f"Sector outlook failed: {exc}")
@@ -1418,12 +2017,32 @@ def render_sector_outlook() -> None:
         st.warning("Not enough completed history to fit the sector outlook model with these settings.")
         return
 
+    if group_mode == "theme" and theme_loadings_path:
+        metadata = load_metadata()
+        label_lookup_for_view = auto_theme_label_lookup(theme_loadings_path, metadata, theme_view)
+        fragment_label_lookup, fragment_explanations = fragment_theme_label_artifacts(
+            theme_loadings_path,
+            str(default_historical_text_dir()),
+            theme_view,
+            as_of_date=str(latest["date"].max().date()),
+            metadata=metadata,
+        )
+        label_lookup_for_view.update(fragment_label_lookup)
+        label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, theme_columns(load_loadings(theme_loadings_path)))
+        latest = apply_theme_group_labels(latest, label_lookup_for_view)
+        predictions = apply_theme_group_labels(predictions, label_lookup_for_view)
+    else:
+        fragment_explanations = pd.DataFrame()
+
     audit = sector_prediction_audit(predictions)
     completed_predictions = completed_sector_predictions(predictions)
     dated = sector_backtest_by_date(predictions)
+    if group_mode == "theme" and theme_loadings_path:
+        dated = apply_theme_group_labels(dated, label_lookup_for_view)
 
     display_columns = [
         "prediction_rank",
+        "group_label",
         "gics_sector",
         "predicted_excess_return",
         "score_z",
@@ -1447,11 +2066,16 @@ def render_sector_outlook() -> None:
         st.caption(
             f"Historical audit uses completed horizons only: {audit.get('first_completed_date')} to "
             f"{audit.get('latest_completed_date')}. Current scores through "
-            f"{audit.get('latest_prediction_date')} remain separate until their forward horizon completes."
+            f"{audit.get('latest_prediction_date')} remain separate until their forward horizon completes. "
+            f"Predictor: {SECTOR_MODEL_LABELS.get(str(metrics.get('model_type')), str(metrics.get('model_type')))}. "
+            f"Groups: {'learned ' + theme_view + ' themes' if group_mode == 'theme' else 'GICS sectors'}. "
+            f"Assignment: {THEME_ASSIGNMENT_LABELS.get(str(metrics.get('theme_assignment')), str(metrics.get('theme_assignment')))}. "
+            f"Embedding features: {'on' if bool(metrics.get('include_embedding_features')) else 'off'}. "
+            f"Universe: {membership_mode_display(str(metrics.get('membership_mode')))}."
         )
 
-    current_tab, historical_tab, weights_tab, notes_tab = st.tabs(
-        ["Current scores", "Historical walk-forward", "Feature weights", "How to read"]
+    current_tab, historical_tab, simulation_tab, weights_tab, notes_tab = st.tabs(
+        ["Current scores", "Historical walk-forward", "Rotation simulation", "Feature weights", "How to read"]
     )
 
     with current_tab:
@@ -1490,6 +2114,7 @@ def render_sector_outlook() -> None:
             )
             historical_columns = [
                 "prediction_rank",
+                "group_label",
                 "gics_sector",
                 "predicted_excess_return",
                 "future_excess_return",
@@ -1511,22 +2136,131 @@ def render_sector_outlook() -> None:
                     hide_index=True,
                 )
 
+    with simulation_tab:
+        if completed_predictions.empty:
+            st.warning("No completed historical prediction horizons are available for simulation.")
+        else:
+            starting_capital = DEFAULT_SIMULATION_CAPITAL
+            top_n = 1
+            transaction_cost_bps = 0.0
+            st.caption(
+                "Simulation defaults: start with $10,000, rotate into the single best predicted group, "
+                "and assume zero transaction costs. This keeps the demo focused on the walk-forward signal."
+            )
+            benchmark_returns = load_sp500_benchmark_returns(str(DEFAULT_SP500_BENCHMARK_PATH))
+            if benchmark_returns.empty:
+                st.info(
+                    "Regular S&P benchmark prices were not found locally yet. Run "
+                    "`.venv/bin/python scripts/data_setup/fetch_sp500_benchmark.py` to add the SPY benchmark line."
+                )
+            simulation = simulate_group_rotation(
+                completed_predictions,
+                starting_capital=float(starting_capital),
+                top_n=int(top_n),
+                transaction_cost_bps=float(transaction_cost_bps),
+                benchmark_returns=benchmark_returns if not benchmark_returns.empty else None,
+                benchmark_label="Regular S&P 500 (SPY)",
+            )
+            if simulation.empty:
+                st.warning("The selected settings did not produce any non-overlapping completed holding periods.")
+            else:
+                sim_metrics = rotation_simulation_metrics(simulation, float(starting_capital))
+                sim_columns = st.columns(6)
+                sim_columns[0].metric("Ending capital", f"${float(sim_metrics['ending_capital']):,.0f}")
+                sim_columns[1].metric("Equal-weight S&P", f"${float(sim_metrics['market_ending_capital']):,.0f}")
+                if pd.notna(sim_metrics.get("benchmark_ending_capital")):
+                    sim_columns[2].metric(
+                        "Regular S&P",
+                        f"${float(sim_metrics['benchmark_ending_capital']):,.0f}",
+                    )
+                    sim_columns[4].metric(
+                        "Excess vs S&P",
+                        f"{float(sim_metrics['excess_total_return_vs_benchmark']):.1%}",
+                    )
+                else:
+                    sim_columns[2].metric("Regular S&P", "missing")
+                    sim_columns[4].metric("Excess vs S&P", "n/a")
+                sim_columns[3].metric("Strategy return", f"{float(sim_metrics['total_return']):.1%}")
+                sim_columns[5].metric("Max drawdown", f"{float(sim_metrics['max_drawdown']):.1%}")
+                st.caption(
+                    "This is a historical walk-forward simulation. At each rebalance date, the model chooses the "
+                    "best predicted group using only information available then, holds through the selected forward "
+                    "horizon, then waits for the next non-overlapping rebalance date."
+                )
+                st.altair_chart(sector_rotation_equity_chart(simulation), width="stretch")
+                st.markdown("**How the $10,000 changes at each step**")
+                st.dataframe(
+                    sector_rotation_step_table(simulation),
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "predicted_excess": st.column_config.NumberColumn("predicted_excess", format="percent"),
+                        "strategy_start": st.column_config.NumberColumn("strategy_start", format="$%.2f"),
+                        "strategy_return": st.column_config.NumberColumn("strategy_return", format="percent"),
+                        "strategy_dollar_change": st.column_config.NumberColumn(
+                            "strategy_dollar_change",
+                            format="$%.2f",
+                        ),
+                        "strategy_end": st.column_config.NumberColumn("strategy_end", format="$%.2f"),
+                        "market_start": st.column_config.NumberColumn("market_start", format="$%.2f"),
+                        "market_return": st.column_config.NumberColumn("market_return", format="percent"),
+                        "market_dollar_change": st.column_config.NumberColumn(
+                            "market_dollar_change",
+                            format="$%.2f",
+                        ),
+                        "market_end": st.column_config.NumberColumn("market_end", format="$%.2f"),
+                        "sp500_start": st.column_config.NumberColumn("sp500_start", format="$%.2f"),
+                        "sp500_return": st.column_config.NumberColumn("sp500_return", format="percent"),
+                        "sp500_dollar_change": st.column_config.NumberColumn(
+                            "sp500_dollar_change",
+                            format="$%.2f",
+                        ),
+                        "sp500_end": st.column_config.NumberColumn("sp500_end", format="$%.2f"),
+                    },
+                )
+                with st.expander("Show rotation log", expanded=False):
+                    rotation_columns = [
+                        "step",
+                        "date",
+                        "target_end_date",
+                        "selected_group_label",
+                        "predicted_excess_return",
+                        "start_capital",
+                        "period_group_return",
+                        "period_market_return",
+                        "period_excess_return",
+                        "transaction_cost",
+                        "capital_change",
+                        "capital",
+                        "market_capital",
+                        "period_benchmark_return",
+                        "benchmark_capital",
+                    ]
+                    st.dataframe(
+                        safe_frame_subset(ensure_columns(simulation, rotation_columns), rotation_columns),
+                        width="stretch",
+                        hide_index=True,
+                    )
+
     with weights_tab:
         coefficient_table = latest_coefficient_table(coefficients)
         if coefficient_table.empty:
             st.info("No coefficient history is available for the current settings.")
         else:
-            st.caption("Latest fitted feature weights. Larger absolute values had more influence after standardization.")
+            st.caption(
+                "Latest fitted feature weights. Linear models show signed coefficients; tree models show "
+                "nonnegative feature importances."
+            )
             st.dataframe(
-                safe_frame_subset(coefficient_table, ["feature", "coefficient", "abs_coefficient"]),
+                safe_frame_subset(coefficient_table, ["feature", "coefficient", "abs_coefficient", "weight_type"]),
                 width="stretch",
                 hide_index=True,
             )
 
     with notes_tab:
         st.write(
-            "`Predicted excess return` is the model's estimate of future sector return minus the equal-weight S&P 500 "
-            "return over the selected horizon. Positive means the sector is scored as likely to outperform the broad "
+            "`Predicted excess return` is the model's estimate of future group return minus the equal-weight S&P 500 "
+            "return over the selected horizon. Positive means the group is scored as likely to outperform the broad "
             "universe; negative means likely to lag."
         )
         st.write(
@@ -1538,9 +2272,34 @@ def render_sector_outlook() -> None:
             "strictly before that prediction date."
         )
         st.write(
-            "The first version uses sector price momentum/volatility plus sector-mean growth and valuation features. "
-            "Filing-language topic acceleration can be added next as another feature block."
+            "In GICS mode, groups are official sectors. In learned-theme mode, each group's returns and fundamentals "
+            "are loading-weighted averages from our soft GMM themes, so a company can contribute partially to multiple "
+            "groups. The dashboard now uses hard top-1 assignment for the behavioral view because that performed better "
+            "in the soft-vs-hard comparison, while business and growth stay mixed."
         )
+        st.write(
+            "When learned-theme mode has a matching view embeddings parquet, the predictor also receives direct "
+            "`group_embedding_*` features. These are loading-weighted averages of the company embedding coordinates, "
+            "so the return model can test whether the learned representation itself adds predictive information beyond "
+            "the hand-built momentum, valuation, and growth features."
+        )
+        st.write(
+            "The historical universe uses add/remove intervals when the membership file is present. The date-added "
+            "fallback only removes pre-entry rows for current constituents, so it is less complete than true historical "
+            "membership."
+        )
+        st.write(
+            "The rotation simulation is not a look-ahead oracle. It uses each historical prediction, buys the top-ranked "
+            "group or equal-weights the top few groups, holds through the selected forward horizon, and only rebalances "
+            "again after that holding window ends."
+        )
+        if group_mode == "theme" and theme_view == "business" and not fragment_explanations.empty:
+            with st.expander("Learned theme label evidence", expanded=False):
+                st.dataframe(
+                    theme_evidence_frame(fragment_explanations, set(latest["gics_sector"].astype(str))),
+                    width="stretch",
+                    hide_index=True,
+                )
 
 
 def render_historical_text() -> None:
@@ -1910,7 +2669,9 @@ def render_similarity_shifts() -> None:
 
     default_experiment = latest_decomposed_experiment()
     default_value = str(default_experiment) if default_experiment else ""
-    experiment_value = st.text_input("Decomposed experiment directory", value=default_value)
+    experiment_value = default_value
+    with st.expander("Data source", expanded=False):
+        experiment_value = st.text_input("Decomposed experiment directory", value=experiment_value)
     if not experiment_value:
         st.warning("No decomposed experiment with view loadings was found.")
         return
@@ -1926,7 +2687,7 @@ def render_similarity_shifts() -> None:
         return
 
     metadata = load_metadata()
-    controls = st.columns([1.2, 1.5, 1.0, 1.0])
+    controls = st.columns([1.2, 1.8])
     selected_view = controls[0].selectbox("Similarity view", views, index=views.index("business") if "business" in views else 0)
     loadings_path = experiment_root / "views" / selected_view / "loadings.parquet"
     loadings = load_loadings(str(loadings_path))
@@ -1948,36 +2709,32 @@ def render_similarity_shifts() -> None:
 
     all_theme_columns = theme_columns(company_history)
     max_themes = len(all_theme_columns)
-    preset = controls[2].selectbox("Granularity", ["Coarse", "Medium", "Fine", "Custom"], index=1)
-    default_k = {"Coarse": 5, "Medium": 10, "Fine": min(20, max_themes), "Custom": min(12, max_themes)}[preset]
-    selected_k = controls[3].slider("k groups", min_value=3, max_value=max_themes, value=min(default_k, max_themes), step=1)
-    ranking = st.radio(
-        "Which themes should be shown?",
-        ["Average loading", "Latest loading", "Biggest movement"],
-        horizontal=True,
-    )
-    selected_columns = selected_theme_columns(company_history, selected_k, ranking)
+    if max_themes == 0:
+        st.warning("This view has no theme-loading columns to display.")
+        return
+    selected_k = min(DEFAULT_SHIFT_THEME_COUNT, max_themes)
+    selected_columns = selected_theme_columns(company_history, selected_k, "Biggest movement")
 
     dates = company_history["date"].dt.strftime("%Y-%m-%d").tolist()
     date_state_key = f"company_shift_date_index_{selected_view}_{selected_ticker}"
     bounded_state_value(date_state_key, default=len(dates) - 1, minimum=0, maximum=len(dates) - 1)
-    step_controls = st.columns([0.9, 0.9, 0.9, 0.9, 1.0, 2.4])
-    shift_step = step_controls[0].slider("Step", min_value=1, max_value=24, value=3, step=1, key=f"{date_state_key}_step")
-    if step_controls[1].button("Back", width="stretch", key=f"{date_state_key}_back"):
-        move_state_value(date_state_key, -int(shift_step), 0, len(dates) - 1)
-    if step_controls[2].button("Forward", width="stretch", key=f"{date_state_key}_forward"):
-        move_state_value(date_state_key, int(shift_step), 0, len(dates) - 1)
-    if step_controls[3].button("Start", width="stretch", key=f"{date_state_key}_start"):
+    step_controls = st.columns([0.9, 0.9, 0.9, 0.9, 2.4])
+    if step_controls[0].button("Back", width="stretch", key=f"{date_state_key}_back"):
+        move_state_value(date_state_key, -1, 0, len(dates) - 1)
+    if step_controls[1].button("Forward", width="stretch", key=f"{date_state_key}_forward"):
+        move_state_value(date_state_key, 1, 0, len(dates) - 1)
+    if step_controls[2].button("Start", width="stretch", key=f"{date_state_key}_start"):
         st.session_state[date_state_key] = 0
-    if step_controls[4].button("Latest", width="stretch", key=f"{date_state_key}_latest"):
+    if step_controls[3].button("Latest", width="stretch", key=f"{date_state_key}_latest"):
         st.session_state[date_state_key] = len(dates) - 1
-    date_index = step_controls[5].slider(
-        "Simulation date",
+    date_index = step_controls[4].slider(
+        "Available filing/view date",
         min_value=0,
         max_value=len(dates) - 1,
         key=date_state_key,
         format="%d",
     )
+    st.caption("Back and Forward move one available company observation at a time.")
     selected_date = dates[date_index]
     label_lookup_for_view = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
     fragment_label_lookup, fragment_explanations = fragment_theme_label_artifacts(
@@ -1985,6 +2742,7 @@ def render_similarity_shifts() -> None:
         str(default_historical_text_dir()),
         selected_view,
         None,
+        metadata=metadata,
     )
     label_lookup_for_view.update(fragment_label_lookup)
     label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, all_theme_columns)
@@ -2070,7 +2828,7 @@ def render_similarity_shifts() -> None:
             "which is why the chart can show gradual shifts rather than one sudden label change."
         )
         st.write(
-            "Granularity controls how many themes are visible. Higher k shows more detail, but can get noisier. "
+            f"The chart shows the {DEFAULT_SHIFT_THEME_COUNT} themes with the largest movement for the selected company. "
             "The underlying GMM was already fit in the decomposed experiment; this dashboard is an exploratory viewer."
         )
 
@@ -2084,7 +2842,9 @@ def render_market_map() -> None:
 
     default_experiment = latest_decomposed_experiment()
     default_value = str(default_experiment) if default_experiment else ""
-    experiment_value = st.text_input("Market map experiment directory", value=default_value)
+    experiment_value = default_value
+    with st.expander("Data source", expanded=False):
+        experiment_value = st.text_input("Market map experiment directory", value=experiment_value)
     if not experiment_value:
         st.warning("No decomposed experiment with view loadings was found.")
         return
@@ -2100,7 +2860,7 @@ def render_market_map() -> None:
         return
 
     metadata = load_metadata()
-    controls = st.columns([1.0, 1.0, 1.0, 1.4])
+    controls = st.columns([1.0, 1.8])
     selected_view = controls[0].selectbox(
         "Map view",
         views,
@@ -2111,11 +2871,7 @@ def render_market_map() -> None:
     loadings = load_loadings(str(loadings_path))
     projected = load_projected_market_map(str(loadings_path))
 
-    hide_collapsed = st.checkbox(
-        "Hide collapsed / uninformative dates",
-        value=True,
-        help="Skips dates where nearly all stocks project to the same place because the view has little information yet.",
-    )
+    hide_collapsed = True
     available_dates = usable_market_dates(projected, hide_collapsed=hide_collapsed)
     if not available_dates:
         st.warning("No usable map dates are available for this view with the current filter.")
@@ -2127,14 +2883,17 @@ def render_market_map() -> None:
     st.session_state[date_state_key] = int(
         max(0, min(len(date_labels) - 1, st.session_state[date_state_key]))
     )
-    step_size = controls[1].slider("Step increment", min_value=1, max_value=24, value=3, step=1)
-    k_groups = controls[2].slider("Color groups", min_value=3, max_value=len(theme_columns(loadings)), value=12, step=1)
+    max_theme_groups = len(theme_columns(loadings))
+    if max_theme_groups == 0:
+        st.warning("This view has no theme-loading columns to display.")
+        return
+    k_groups = min(DEFAULT_MARKET_COLOR_GROUPS, max_theme_groups)
 
     step_columns = st.columns([0.9, 0.9, 1.0, 1.0, 2.0])
     if step_columns[0].button("Back", width="stretch"):
-        st.session_state[date_state_key] = max(0, st.session_state[date_state_key] - int(step_size))
+        st.session_state[date_state_key] = max(0, st.session_state[date_state_key] - 1)
     if step_columns[1].button("Forward", width="stretch"):
-        st.session_state[date_state_key] = min(len(date_labels) - 1, st.session_state[date_state_key] + int(step_size))
+        st.session_state[date_state_key] = min(len(date_labels) - 1, st.session_state[date_state_key] + 1)
     if step_columns[2].button("Start", width="stretch"):
         st.session_state[date_state_key] = 0
     if step_columns[3].button("Latest", width="stretch"):
@@ -2146,7 +2905,7 @@ def render_market_map() -> None:
         key=date_state_key,
         format="%d",
     )
-    st.caption(f"Selected map date: {date_labels[int(date_index)]}")
+    st.caption(f"Selected map date: {date_labels[int(date_index)]}. Back and Forward move one usable map date at a time.")
     selected_date = pd.Timestamp(available_dates[date_index])
     label_lookup_for_view = auto_theme_label_lookup(str(loadings_path), metadata, selected_view)
     fragment_label_lookup, fragment_explanations = fragment_theme_label_artifacts(
@@ -2154,14 +2913,15 @@ def render_market_map() -> None:
         str(default_historical_text_dir()),
         selected_view,
         None,
+        metadata=metadata,
     )
     label_lookup_for_view.update(fragment_label_lookup)
     label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, theme_columns(loadings))
 
     ticker_options = sorted(projected["ticker"].unique().tolist())
     default_highlights = [ticker for ticker in ["META", "AAPL", "MSFT", "XOM", "JPM", "SBUX"] if ticker in ticker_options]
-    highlighted = controls[3].multiselect("Highlight / trace tickers", ticker_options, default=default_highlights)
-    trail_months = st.slider("Movement trail length, in monthly steps", min_value=3, max_value=60, value=18, step=3)
+    highlighted = controls[1].multiselect("Highlight / trace tickers", ticker_options, default=default_highlights)
+    trail_months = DEFAULT_MARKET_TRAIL_MONTHS
 
     points = market_date_frame(projected, metadata, selected_date, label_lookup_for_view, k_groups)
     if points.empty:
@@ -2226,16 +2986,146 @@ def render_market_map() -> None:
             "their soft theme memberships are changing in similar ways."
         )
         st.write(
-            "Color is the stock's dominant soft theme on the selected date. The `Color groups` slider decides how many "
-            "of the biggest themes get their own colors; smaller themes are grouped into `Other themes`."
+            f"Color is the stock's dominant soft theme on the selected date. The {DEFAULT_MARKET_COLOR_GROUPS} biggest "
+            "themes get their own colors; smaller themes are grouped into `Other themes`."
         )
         st.write(
             "This uses PCA for speed and stability. It is an exploratory map, not a trading signal."
         )
 
 
-filing_tab, historical_tab, shifts_tab, map_tab, sector_tab = st.tabs(
-    ["Filing Browser", "Historical Text", "Similarity Shifts", "Market Map", "Sector Outlook"]
+def render_cluster_model_comparison() -> None:
+    st.subheader("Cluster Model Comparison")
+    st.caption(
+        "Same embeddings, same date, three clustering assumptions. This is the classroom exhibit for why we use GMM: "
+        "it supports mixed membership, while k-means is hard/spherical and DBSCAN is density/noise based."
+    )
+
+    default_experiment = latest_decomposed_experiment()
+    default_value = str(default_experiment) if default_experiment else ""
+    experiment_value = default_value
+    with st.expander("Data source", expanded=False):
+        experiment_value = st.text_input("Cluster comparison experiment directory", value=experiment_value)
+    if not experiment_value:
+        st.warning("No decomposed experiment with view embeddings was found.")
+        return
+
+    experiment_root = Path(experiment_value)
+    if not experiment_root.exists():
+        st.error(f"Experiment directory does not exist: {experiment_root}")
+        return
+
+    views = available_embedding_views(experiment_root)
+    if not views:
+        st.error(f"No view embeddings found under {experiment_root / 'views'}")
+        return
+
+    controls = st.columns([1.0, 1.0])
+    selected_view = controls[0].selectbox(
+        "Embedding view",
+        views,
+        index=views.index("business") if "business" in views else 0,
+        key="cluster_model_view",
+    )
+    target_groups = controls[1].select_slider(
+        "Target groups for GMM / k-means",
+        options=[5, 8, 10, 12, 15, 20],
+        value=10,
+    )
+
+    embeddings_path = experiment_root / "views" / selected_view / "embeddings.parquet"
+    embeddings = load_embeddings(str(embeddings_path))
+    projected = load_projected_embeddings(str(embeddings_path))
+
+    date_counts = projected.groupby("date")["ticker"].nunique().reset_index(name="n_tickers")
+    date_counts = date_counts[date_counts["n_tickers"] >= 50]
+    if date_counts.empty:
+        st.warning("No dates with enough firms are available for clustering comparison.")
+        return
+
+    dates = [pd.Timestamp(date) for date in sorted(date_counts["date"].tolist())]
+    date_labels = [date.strftime("%Y-%m-%d") for date in dates]
+    date_state_key = f"cluster_model_date_index_{selected_view}"
+    bounded_state_value(date_state_key, default=len(date_labels) - 1, minimum=0, maximum=len(date_labels) - 1)
+    step_columns = st.columns([0.9, 0.9, 1.0, 1.0, 2.0])
+    if step_columns[0].button("Back", width="stretch", key=f"{date_state_key}_back"):
+        move_state_value(date_state_key, -1, 0, len(date_labels) - 1)
+    if step_columns[1].button("Forward", width="stretch", key=f"{date_state_key}_forward"):
+        move_state_value(date_state_key, 1, 0, len(date_labels) - 1)
+    if step_columns[2].button("Start", width="stretch", key=f"{date_state_key}_start"):
+        st.session_state[date_state_key] = 0
+    if step_columns[3].button("Latest", width="stretch", key=f"{date_state_key}_latest"):
+        st.session_state[date_state_key] = len(date_labels) - 1
+    date_index = step_columns[4].slider(
+        "Comparison date",
+        min_value=0,
+        max_value=len(date_labels) - 1,
+        key=date_state_key,
+        format="%d",
+    )
+    selected_date = dates[int(date_index)]
+    st.caption(
+        f"Selected date: {selected_date.strftime('%Y-%m-%d')}. Back and Forward move one available embedding date."
+    )
+
+    metadata = load_metadata()
+    try:
+        assignments, metrics = cluster_cross_section(
+            embeddings,
+            metadata,
+            selected_date,
+            int(target_groups),
+            random_state=42,
+        )
+    except Exception as exc:  # noqa: BLE001
+        st.error(f"Cluster comparison failed: {exc}")
+        return
+
+    points = cluster_model_comparison_points(assignments, projected, metadata, selected_date)
+    if points.empty:
+        st.warning("No projected points are available for this date.")
+        return
+
+    metric_table = cluster_model_metric_table(metrics)
+    summary = st.columns(4)
+    summary[0].metric("Stocks compared", int(points["ticker"].nunique()))
+    summary[1].metric("View", selected_view)
+    summary[2].metric("Target k", int(target_groups))
+    summary[3].metric("Date", selected_date.strftime("%Y-%m-%d"))
+
+    st.altair_chart(cluster_model_comparison_chart(points), width="stretch")
+    st.dataframe(
+        metric_table,
+        width="stretch",
+        hide_index=True,
+        column_config={
+            "noise_share": st.column_config.NumberColumn("noise_share", format="percent"),
+            "largest_cluster_share": st.column_config.NumberColumn("largest_cluster_share", format="percent"),
+            "silhouette": st.column_config.NumberColumn("silhouette", format="%.3f"),
+            "nmi_vs_gics": st.column_config.NumberColumn("nmi_vs_gics", format="%.3f"),
+            "ari_vs_gics": st.column_config.NumberColumn("ari_vs_gics", format="%.3f"),
+        },
+    )
+
+    with st.expander("How to explain this in class", expanded=True):
+        st.write(
+            "GMM was chosen because company identity is naturally mixed: a firm can be partly software, partly ads, "
+            "partly cloud, and partly financial infrastructure. GMM gives probabilities across themes instead of one "
+            "forced label."
+        )
+        st.write(
+            "k-means is the clean baseline. It is easy to explain, but it assumes roughly spherical equal-strength "
+            "clusters and assigns every company to exactly one group."
+        )
+        st.write(
+            "DBSCAN is useful for finding dense islands and outliers without choosing k. In these embeddings it often "
+            "finds uneven clusters or marks many firms as noise, which is informative but less useful for our soft-theme "
+            "dashboard."
+        )
+
+
+filing_tab, historical_tab, shifts_tab, map_tab, cluster_tab, sector_tab = st.tabs(
+    ["Filing Browser", "Historical Text", "Similarity Shifts", "Market Map", "Cluster Models", "Sector Outlook"]
 )
 
 with filing_tab:
@@ -2249,6 +3139,9 @@ with shifts_tab:
 
 with map_tab:
     render_market_map()
+
+with cluster_tab:
+    render_cluster_model_comparison()
 
 with sector_tab:
     render_sector_outlook()

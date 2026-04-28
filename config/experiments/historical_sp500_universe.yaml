@@ -1,0 +1,8 @@
+{
+  "experiment_name": "historical_sp500_universe",
+  "data": {
+    "filings_group_name": "S&P 500 Historical 10-K/10-Q Filings Since 2010",
+    "prices_group_name": "S&P 500 Historical Prices Since 2010",
+    "membership_mode": "historical"
+  }
+}

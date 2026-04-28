@@ -4,6 +4,7 @@
   "paths": {
     "sqlite_path": "data/raw_filing_corpora/raw_filing_corpora.sqlite",
     "metadata_path": "data/processed/metadata/sp500_gics.parquet",
+    "sp500_membership_path": "data/processed/metadata/sp500_membership_history.parquet",
     "events_path": "data/processed/events/eight_k_events.parquet",
     "relationships_path": "data/processed/relationships/relationships.parquet",
     "fundamentals_path": "data/processed/features/fundamentals.parquet",
@@ -118,6 +119,11 @@
       "embedding_dim": 8,
       "hidden_dims": [32, 16]
     },
+    "financial": {
+      "feature_pattern": "^(price_|growth_|valuation_)",
+      "embedding_dim": 12,
+      "hidden_dims": [64, 32]
+    },
     "network": {
       "feature_pattern": "^net_",
       "embedding_dim": 8,
@@ -125,7 +131,7 @@
       "min_feature_abs_sum": 1e-12
     }
   },
-  "views_enabled": ["business", "behavioral", "growth", "network"],
+  "views_enabled": ["business", "behavioral", "growth", "financial", "network"],
   "pipeline": {
     "views": false,
     "gmm": false,

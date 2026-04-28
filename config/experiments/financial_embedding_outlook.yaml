@@ -1,0 +1,33 @@
+{
+  "experiment_name": "financial_embedding_outlook",
+  "features": {
+    "enabled": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_historical",
+      "growth_lifecycle",
+      "valuation",
+      "network_position"
+    ]
+  },
+  "assembly": {
+    "dataset_name": "decomposed_point_in_time",
+    "required_feature_groups": [
+      "price_volatility",
+      "price_momentum",
+      "price_liquidity",
+      "text_historical",
+      "growth_lifecycle",
+      "valuation",
+      "network_position"
+    ]
+  },
+  "views_enabled": ["financial"],
+  "pipeline": {
+    "views": true,
+    "gmm": true,
+    "multiview_eval": false,
+    "smoke_test": false
+  }
+}

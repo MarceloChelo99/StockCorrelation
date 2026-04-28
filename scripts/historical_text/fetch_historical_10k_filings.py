@@ -1,22 +1,28 @@
-"""Stream historical SEC 10-K raw filings for the current S&P 500 universe.
+"""Stream historical SEC raw filings for the point-in-time S&P 500 universe.
 
 The original market build intentionally downloaded only the latest 10-K/10-Q
 per company. That is enough for a current snapshot, but not enough to study
-business pivots through time. This script downloads all annual filings since a
-chosen date and writes raw filing text incrementally into parquet shards so the
-run does not need to hold thousands of full SEC submissions in memory.
+business pivots through time. This script downloads historical filings since a
+chosen date for S&P constituents with resolvable CIKs and writes raw filing text
+incrementally into parquet shards so the run does not need to hold thousands of
+full SEC submissions in memory.
 """
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from scripts import _bootstrap  # noqa: F401
 
 import argparse
 import json
 import sqlite3
-import sys
 from collections import defaultdict
 from datetime import datetime, timezone
-from pathlib import Path
 
 import pandas as pd
 
@@ -34,7 +40,8 @@ from market_data_fetcher import (  # noqa: E402
 from src.utils.logging import log  # noqa: E402
 
 
-DEFAULT_GROUP_NAME = "S&P 500 Historical 10-K Filings Since 2010 (2026-04-24 roster)"
+DEFAULT_GROUP_NAME = "S&P 500 Historical 10-K/10-Q Filings Since 2010"
+DEFAULT_METADATA_PATH = "data/processed/metadata/sp500_membership_history.parquet"
 RAW_FILING_INDEX_COLUMNS = (
     "ticker",
     "cik",
@@ -190,9 +197,9 @@ def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--since", default="2010-01-01", help="Earliest SEC filing date to include.")
-    parser.add_argument("--forms", default="10-K", help="Comma-separated annual forms to include.")
+    parser.add_argument("--forms", default="10-K,10-Q", help="Comma-separated forms to include.")
     parser.add_argument("--group-name", default=DEFAULT_GROUP_NAME, help="Stored corpus group name.")
-    parser.add_argument("--metadata-path", default="data/processed/metadata/sp500_gics.parquet")
+    parser.add_argument("--metadata-path", default=DEFAULT_METADATA_PATH)
     parser.add_argument("--storage-dir", default="data/raw_filing_corpora")
     parser.add_argument("--sqlite-path", default="data/raw_filing_corpora/raw_filing_corpora.sqlite")
     parser.add_argument("--identity", default="StockCorrelation research castellanosmarcelo1@gmail.com")
@@ -220,8 +227,15 @@ def load_metadata(path: str, limit: int | None) -> pd.DataFrame:
         raise ValueError(f"Metadata is missing required columns: {sorted(missing)}")
     frame = frame.copy()
     frame["ticker"] = frame["ticker"].astype(str).str.upper()
-    frame["cik_str"] = frame["cik_str"].astype(str).str.zfill(10)
-    frame = frame.drop_duplicates("ticker", keep="last").sort_values("ticker").reset_index(drop=True)
+    frame["cik_str"] = frame["cik_str"].where(frame["cik_str"].notna(), pd.NA)
+    frame["cik_str"] = frame["cik_str"].astype("string").str.replace(r"\.0$", "", regex=True).str.zfill(10)
+    frame.loc[frame["cik_str"].str.contains("nan", case=False, na=True), "cik_str"] = pd.NA
+    frame = frame.dropna(subset=["cik_str"])
+    sort_columns = ["ticker"]
+    if "start_date" in frame.columns:
+        frame["start_date"] = pd.to_datetime(frame["start_date"], errors="coerce")
+        sort_columns.append("start_date")
+    frame = frame.sort_values(sort_columns).drop_duplicates("ticker", keep="last").reset_index(drop=True)
     if limit is not None:
         frame = frame.head(limit).reset_index(drop=True)
     return frame
