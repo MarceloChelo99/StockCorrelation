@@ -104,6 +104,7 @@ def sector_outlook_backtest(
     membership_mode: str = "current",
     theme_assignment: str = "soft",
     include_embedding_features: bool = False,
+    min_theme_effective_members: float = 1.0,
 ) -> SectorOutlookResult:
     """Fit a walk-forward sector excess-return model and return diagnostics."""
     group_mode = normalized_group_mode(group_mode)
@@ -120,6 +121,7 @@ def sector_outlook_backtest(
         group_mode=group_mode,
         membership_mode=membership_mode,
         membership=membership,
+        min_theme_effective_members=min_theme_effective_members,
     )
     month_ends = observed_month_ends(group_returns)
     panel = build_sector_feature_panel(
@@ -157,8 +159,14 @@ def sector_outlook_backtest(
     metrics["model_type"] = model_type
     metrics["group_mode"] = group_mode
     metrics["membership_mode"] = membership_mode
+    metrics["backtest_validity"] = (
+        "diagnostic_current_roster"
+        if membership_mode == "current"
+        else "covered_historical_universe"
+    )
     metrics["theme_assignment"] = resolved_theme_assignment
     metrics["include_embedding_features"] = bool(include_embedding_features)
+    metrics["min_theme_effective_members"] = float(min_theme_effective_members)
     if group_view:
         metrics["group_view"] = str(group_view)
     return SectorOutlookResult(
@@ -230,6 +238,7 @@ def group_and_market_returns(
     group_mode: str,
     membership_mode: str = "current",
     membership: pd.DataFrame | None = None,
+    min_theme_effective_members: float = 1.0,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """Return daily return series for either GICS sectors or learned themes."""
     group_mode = normalized_group_mode(group_mode)
@@ -243,6 +252,7 @@ def group_and_market_returns(
         metadata=metadata,
         membership_mode=membership_mode,
         membership=membership,
+        min_effective_members=min_theme_effective_members,
     )
 
 
@@ -458,13 +468,16 @@ def theme_and_market_returns(
     metadata: pd.DataFrame | None = None,
     membership_mode: str = "current",
     membership: pd.DataFrame | None = None,
+    min_effective_members: float = 1.0,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """Return loading-weighted learned-theme returns and equal-weight market returns.
 
     Theme memberships may be soft GMM loadings or a hard top-1 transform. For
     each ticker-day return, we attach the latest available ticker theme loading
     as of that date, then compute each theme's return as a loading-weighted
-    average of stock returns.
+    average of stock returns. Thin themes are masked when their effective
+    member count is below ``min_effective_members`` so one-stock pseudo-themes
+    do not masquerade as diversified sector baskets.
     """
     theme_columns = [column for column in loadings.columns if column.startswith("theme_")]
     if not theme_columns:
@@ -479,8 +492,6 @@ def theme_and_market_returns(
         membership_mode=membership_mode,
         membership=membership,
     )
-    market = returns.groupby("date")["return"].mean().sort_index()
-
     loadings = loadings.loc[:, ["ticker", "date", *theme_columns]].copy()
     loadings["ticker"] = loadings["ticker"].astype(str).str.upper()
     loadings["date"] = pd.to_datetime(loadings["date"])
@@ -507,13 +518,21 @@ def theme_and_market_returns(
         raise ValueError("No price rows could be matched to learned-theme loadings.")
 
     merged_returns = pd.concat(pieces, ignore_index=True)
+    # Keep the benchmark universe aligned with stocks that actually have theme
+    # loadings. Otherwise learned-theme returns can be compared against a broader
+    # universe that the theme model could not have selected from.
+    market = merged_returns.groupby("date")["return"].mean().sort_index()
     weights = merged_returns.loc[:, theme_columns].astype(float)
     returns_vector = pd.to_numeric(merged_returns["return"], errors="coerce")
     weighted_returns = weights.mul(returns_vector, axis=0)
     valid_weights = weights.where(returns_vector.notna())
     numerator = weighted_returns.groupby(merged_returns["date"]).sum(min_count=1)
     denominator = valid_weights.groupby(merged_returns["date"]).sum(min_count=1).replace(0.0, np.nan)
+    weight_square_sum = valid_weights.pow(2).groupby(merged_returns["date"]).sum(min_count=1).replace(0.0, np.nan)
+    effective_members = denominator.pow(2) / weight_square_sum
     theme_returns = numerator / denominator
+    min_effective = max(1.0, float(min_effective_members))
+    theme_returns = theme_returns.where(effective_members >= min_effective)
     theme_returns = theme_returns.sort_index()
     return theme_returns, market
 

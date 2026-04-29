@@ -32,14 +32,22 @@ def main(
 def markdown_summary(relationships: pd.DataFrame, metrics: dict) -> str:
     """Format relationship extraction and evaluation results as markdown."""
     type_counts = relationships["relationship_type"].value_counts()
+    has_direction_columns = {"supplier_ticker", "customer_ticker"}.issubset(relationships.columns)
+    supply_chain = pd.DataFrame()
+    if has_direction_columns:
+        supply_chain = relationships[relationships["supplier_ticker"].fillna("").astype(str) != ""]
     lines = [
         "# Relationship Graph Summary",
         "",
         "The graph is extracted from parsed 10-K section text using conservative public-company name matching and rule-based context classification.",
+        "Customer/supplier rows are directional: `supplier_ticker` is the firm that provides the product/service, and `customer_ticker` is the firm that buys or depends on it.",
         "",
         f"- Relationship rows: `{len(relationships)}`",
         f"- Source tickers with at least one edge: `{relationships['source_ticker'].nunique()}`",
         f"- Target tickers mentioned: `{relationships['target_ticker'].nunique()}`",
+        f"- Directed supply-chain rows: `{len(supply_chain) if has_direction_columns else 0}`",
+        f"- Disclosed supplier tickers: `{supply_chain['supplier_ticker'].nunique() if has_direction_columns and not supply_chain.empty else 0}`",
+        f"- Disclosed customer tickers: `{supply_chain['customer_ticker'].nunique() if has_direction_columns and not supply_chain.empty else 0}`",
         "",
         "Relationship type counts:",
         "",
@@ -48,6 +56,49 @@ def markdown_summary(relationships: pd.DataFrame, metrics: dict) -> str:
     ]
     for relationship_type, count in type_counts.items():
         lines.append(f"| {relationship_type} | {int(count)} |")
+
+    if not supply_chain.empty:
+        lines.extend(
+            [
+                "",
+                "Top disclosed suppliers:",
+                "",
+                "| Supplier | Directed Edges |",
+                "| --- | ---: |",
+            ]
+        )
+        for ticker, count in supply_chain["supplier_ticker"].value_counts().head(15).items():
+            lines.append(f"| {ticker} | {int(count)} |")
+
+        lines.extend(
+            [
+                "",
+                "Top disclosed customers:",
+                "",
+                "| Customer | Directed Edges |",
+                "| --- | ---: |",
+            ]
+        )
+        for ticker, count in supply_chain["customer_ticker"].value_counts().head(15).items():
+            lines.append(f"| {ticker} | {int(count)} |")
+
+        examples = supply_chain.sort_values(["direction_confidence", "confidence"], ascending=False).head(12)
+        lines.extend(
+            [
+                "",
+                "High-confidence directed examples:",
+                "",
+                "| Supplier | Customer | Source Filing Company | Evidence |",
+                "| --- | --- | --- | --- |",
+            ]
+        )
+        for _, row in examples.iterrows():
+            evidence = str(row["context_snippet"]).replace("|", "\\|")
+            if len(evidence) > 160:
+                evidence = evidence[:157].rstrip() + "..."
+            lines.append(
+                f"| {row['supplier_ticker']} | {row['customer_ticker']} | {row['source_ticker']} | {evidence} |"
+            )
 
     if metrics:
         lines.extend(

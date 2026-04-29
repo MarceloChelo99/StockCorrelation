@@ -204,6 +204,61 @@ class DatabaseOperatorTests(unittest.TestCase):
             self.assertEqual(raw.iloc[0]["submission_text_length"], 17)
             self.assertTrue(str(raw.iloc[0]["raw_shard_path"]).endswith(".parquet"))
 
+    def test_sqlite_persistence_serializes_pandas_timestamps(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sqlite_path = Path(temp_dir) / "raw_filing_corpora.sqlite"
+            operator = DatabaseOperator(storage_dir=temp_dir, sqlite_path=sqlite_path)
+            corpus = RawFilingCorpus(
+                group_name="Timestamp Corpus",
+                tickers=["AAA"],
+                ticker_index=pd.DataFrame(
+                    [
+                        {
+                            "ticker": "AAA",
+                            "cik": "0000000001",
+                            "date_added": pd.Timestamp("2020-01-02"),
+                        }
+                    ]
+                ),
+                filings=pd.DataFrame(
+                    [
+                        {
+                            "ticker": "AAA",
+                            "cik": "0000000001",
+                            "accession_no": "0000000001-26-000001",
+                            "form": "10-K",
+                            "filing_date": pd.Timestamp("2026-01-31"),
+                            "period_end": pd.Timestamp("2025-12-31"),
+                        }
+                    ]
+                ),
+                raw_filings=pd.DataFrame(
+                    [
+                        {
+                            "ticker": "AAA",
+                            "cik": "0000000001",
+                            "accession_no": "0000000001-26-000001",
+                            "form": "10-K",
+                            "filing_date": pd.Timestamp("2026-01-31"),
+                            "period_end": pd.Timestamp("2025-12-31"),
+                            "submission_text": "aaa filing text",
+                            "submission_text_length": 15,
+                            "source_url": "https://sec.example/aaa.txt",
+                            "downloaded_at": pd.Timestamp("2026-04-28T20:37:32Z"),
+                            "raw_shard_path": "shards/aaa.parquet",
+                            "raw_shard_row_number": 0,
+                        }
+                    ]
+                ),
+            )
+
+            operator.persist_corpus_to_sqlite(corpus)
+            raw = operator.find_sqlite_raw_filings("Timestamp Corpus", ticker="AAA")
+
+            self.assertEqual(len(raw), 1)
+            self.assertIn("2026-01-31", str(raw.iloc[0]["filing_date"]))
+            self.assertIn("2026-04-28", str(raw.iloc[0]["downloaded_at"]))
+
     def test_persist_and_query_sqlite_prices(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             sqlite_path = Path(temp_dir) / "raw_filing_corpora.sqlite"

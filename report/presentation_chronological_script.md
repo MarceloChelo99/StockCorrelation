@@ -376,6 +376,20 @@ These are 63-day walk-forward GICS-sector prediction results under the current h
 
 Ridge is the default not because it wins every single number, but because it is transparent, stable, and appropriate for a small monthly sector panel. Huber and Gradient Boosting currently produce higher simulated ending capital, but those results need more robustness checks because capital curves can be sensitive to a small number of sector calls. Ridge gives us a cleaner baseline story for class: simple model, walk-forward validation, positive average ranking signal.
 
+**Optional sector-autoencoder ablation:**
+
+We also tested the idea of compressing all stocks inside each GICS sector into a learned sector-state embedding. This used an expanding autoencoder fit, so each month's embedding only used sector-state features available up to that month.
+
+| Feature set | Mean rank IC | Top-bottom excess | Ending capital | Excess vs SPY |
+| --- | ---: | ---: | ---: | ---: |
+| Raw sector features | 0.098 | 1.15% | `$68,674` | +139.7 pp |
+| Sector AE only | 0.036 | 0.09% | `$62,487` | +77.9 pp |
+| Raw + sector AE | 0.087 | 1.00% | `$68,094` | +133.9 pp |
+| Correlation-filtered sector AE only | 0.064 | 0.76% | `$69,521` | +148.2 pp |
+| Raw + filtered sector AE | 0.084 | 0.84% | `$73,836` | +191.3 pp |
+
+Interpretation: filtering weak embedding dimensions helps a lot. The most useful dimensions were usually `group_embedding_1`, `group_embedding_4`, `group_embedding_0`, and `group_embedding_2`. The filtered hybrid has the best capital curve, but raw sector features still have the best rank IC and top-bottom spread. I would present this as an exploratory numerical-embedding appendix, not as the main sector-prediction model.
+
 **Current result to present carefully:**
 
 Using the same historical-membership setup as the model-comparison table, the 63-day Ridge sector model has a positive average signal:

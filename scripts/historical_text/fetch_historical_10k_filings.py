@@ -64,12 +64,13 @@ def main() -> None:
     storage_dir = Path(args.storage_dir)
     dataset_dir = storage_dir / slugify(group_name)
 
-    if dataset_dir.exists() and not args.overwrite and not args.resume:
+    if dataset_dir.exists() and not args.overwrite and not args.resume and not args.register_only:
         raise FileExistsError(
-            f"{dataset_dir} already exists. Pass --resume to continue or --overwrite to replace it."
+            f"{dataset_dir} already exists. Pass --resume to continue, --register-only to update SQLite, "
+            "or --overwrite to replace it."
         )
-    if args.overwrite and args.resume:
-        raise ValueError("Choose only one of --overwrite or --resume.")
+    if sum(bool(value) for value in [args.overwrite, args.resume, args.register_only]) > 1:
+        raise ValueError("Choose only one of --overwrite, --resume, or --register-only.")
     if args.overwrite and dataset_dir.exists():
         import shutil
 
@@ -84,7 +85,35 @@ def main() -> None:
     ticker_index = metadata.loc[:, ["ticker", "cik_str", "company_name", "gics_sector", "gics_sub_industry"]].copy()
     ticker_index = ticker_index.rename(columns={"cik_str": "cik"})
 
-    existing = load_existing_state(dataset_dir, stem) if args.resume else ExistingState.empty()
+    existing = load_existing_state(dataset_dir, stem) if args.resume or args.register_only else ExistingState.empty()
+    if args.register_only:
+        if existing.raw_index.empty:
+            raise FileNotFoundError(
+                f"No raw filing index found under {dataset_dir}. Cannot register an empty corpus."
+            )
+        write_manifest(
+            dataset_dir,
+            stem,
+            group_name,
+            ticker_index,
+            existing.filings.to_dict("records"),
+            existing.raw_index.to_dict("records"),
+            existing.failures.to_dict("records"),
+        )
+        register_sqlite(
+            group_name=group_name,
+            storage_dir=storage_dir,
+            sqlite_path=Path(args.sqlite_path),
+            ticker_index=ticker_index,
+            filings=existing.filings.drop_duplicates("accession_no", keep="last"),
+            raw_index=existing.raw_index.drop_duplicates("accession_no", keep="last"),
+            failures=existing.failures,
+        )
+        log(
+            f"Registered existing historical corpus in SQLite: {len(existing.raw_index):,} raw filings.",
+            tag="historical-10k",
+        )
+        return
     existing_accessions = set(existing.raw_index["accession_no"].astype(str)) if not existing.raw_index.empty else set()
     next_shard_number = next_available_shard_number(shards_dir, stem)
 
@@ -215,6 +244,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-sec-requests-per-second", type=int, default=8)
     parser.add_argument("--overwrite", action="store_true", help="Delete and rebuild an existing corpus directory.")
     parser.add_argument("--resume", action="store_true", help="Skip already-downloaded accessions and append new shards.")
+    parser.add_argument(
+        "--register-only",
+        action="store_true",
+        help="Register an already-downloaded corpus in SQLite without making SEC requests.",
+    )
     return parser.parse_args()
 
 

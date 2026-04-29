@@ -14,6 +14,7 @@ from src.applications.sector_relative_outlook import (
     sector_outlook_backtest,
     sector_prediction_audit,
     simulate_group_rotation,
+    theme_and_market_returns,
 )
 
 
@@ -180,6 +181,60 @@ class SectorRelativeOutlookTests(unittest.TestCase):
         self.assertTrue(result.metrics["include_embedding_features"])
         self.assertIn("group_embedding_0", result.panel.columns)
         self.assertIn("group_embedding_0", result.coefficients["feature"].unique())
+
+    def test_learned_theme_returns_mask_one_stock_themes(self) -> None:
+        dates = pd.bdate_range("2024-01-01", periods=4)
+        prices = pd.DataFrame(
+            {
+                "ticker": [*["AAA"] * 4, *["BBB"] * 4, *["CCC"] * 4],
+                "date": [*dates, *dates, *dates],
+                "adj_close": [100.0, 200.0, 400.0, 800.0, 100.0, 101.0, 102.0, 103.0, 100.0, 101.0, 102.0, 103.0],
+            }
+        )
+        metadata = pd.DataFrame({"ticker": ["AAA", "BBB", "CCC"], "gics_sector": ["A", "B", "C"]})
+        loadings = pd.DataFrame(
+            {
+                "ticker": ["AAA", "BBB", "CCC"],
+                "date": [dates[0], dates[0], dates[0]],
+                "theme_0": [1.0, 0.0, 0.0],
+                "theme_1": [0.0, 1.0, 1.0],
+            }
+        )
+
+        theme_returns, market_returns = theme_and_market_returns(
+            prices,
+            loadings,
+            metadata=metadata,
+            min_effective_members=2.0,
+        )
+
+        self.assertTrue(theme_returns["theme_0"].isna().all())
+        self.assertTrue(theme_returns["theme_1"].notna().any())
+        self.assertAlmostEqual(float(market_returns.iloc[0]), (1.0 + 0.01 + 0.01) / 3.0)
+
+    def test_learned_theme_market_uses_only_tickers_with_loadings(self) -> None:
+        dates = pd.bdate_range("2024-01-01", periods=2)
+        prices = pd.DataFrame(
+            {
+                "ticker": ["AAA", "AAA", "BBB", "BBB", "NOLOAD", "NOLOAD"],
+                "date": [dates[0], dates[1], dates[0], dates[1], dates[0], dates[1]],
+                "adj_close": [100.0, 110.0, 100.0, 120.0, 100.0, 1000.0],
+            }
+        )
+        metadata = pd.DataFrame(
+            {"ticker": ["AAA", "BBB", "NOLOAD"], "gics_sector": ["A", "B", "C"]}
+        )
+        loadings = pd.DataFrame(
+            {
+                "ticker": ["AAA", "BBB"],
+                "date": [dates[0], dates[0]],
+                "theme_0": [1.0, 1.0],
+            }
+        )
+
+        _, market_returns = theme_and_market_returns(prices, loadings, metadata=metadata)
+
+        self.assertAlmostEqual(float(market_returns.loc[dates[1]]), 0.15)
 
     def test_date_added_membership_filter_excludes_pre_index_returns(self) -> None:
         dates = pd.bdate_range("2024-01-01", periods=5)
