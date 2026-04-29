@@ -64,6 +64,9 @@ SP500_MEMBERSHIP_PATH = REPO_ROOT / "data" / "processed" / "metadata" / "sp500_m
 SP500_DELETED_PRICES_PATH = REPO_ROOT / "data" / "processed" / "prices" / "sp500_deleted_constituents.parquet"
 VALUATION_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "valuation.parquet"
 GROWTH_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "growth_lifecycle.parquet"
+PRICE_VOLATILITY_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "price_volatility.parquet"
+PRICE_MOMENTUM_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "price_momentum.parquet"
+PRICE_LIQUIDITY_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "price_liquidity.parquet"
 RELATIONSHIPS_PATH = REPO_ROOT / "data" / "processed" / "relationships" / "relationships.parquet"
 DEFAULT_SP500_BENCHMARK_PATH = REPO_ROOT / "data" / "processed" / "benchmarks" / "spy_benchmark.parquet"
 TOPIC_OPTIONS = {
@@ -95,9 +98,12 @@ DEFAULT_MIN_THEME_EFFECTIVE_MEMBERS = 5.0
 DEFAULT_SHIFT_THEME_COUNT = 10
 DEFAULT_MARKET_TRAIL_MONTHS = 18
 DEFAULT_SIMULATION_CAPITAL = 10_000.0
-MAP_EXCLUDED_VIEWS = {"growth"}
-MAX_DYNAMIC_LABEL_WORDS = 8
-MAX_DYNAMIC_LABEL_CHARS = 68
+MAP_EXCLUDED_VIEWS = {"behavioral", "growth", "network"}
+MAX_DYNAMIC_LABEL_WORDS = 12
+MAX_DYNAMIC_LABEL_CHARS = 96
+MAX_CENTRAL_FRAGMENT_DESCRIPTION_WORDS = 30
+MAX_CENTRAL_FRAGMENT_DESCRIPTION_CHARS = 240
+MAX_CHART_TOPIC_WORDS = 5
 METADATA_CACHE_VERSION = 2
 
 
@@ -877,16 +883,16 @@ def model_decision_frame() -> pd.DataFrame:
                 "comparison_or_fallback": "k-means and DBSCAN are kept in the comparison tab as classroom baselines.",
             },
             {
-                "pipeline_step": "Behavioral theme returns",
-                "default_model": "Hard top-1 assignment",
-                "why_this_is_default": "Behavioral clusters behaved more like discrete return groups than blended semantic themes.",
-                "comparison_or_fallback": "Business and network views stay soft by default.",
+                "pipeline_step": "Behavioral price view",
+                "default_model": "Retired from main dashboard",
+                "why_this_is_default": "The price-only clusters were noisy and did not add enough classroom interpretability.",
+                "comparison_or_fallback": "Archived artifacts remain available for audit; business and network views carry the presentation.",
             },
             {
-                "pipeline_step": "2D dashboard map",
+                "pipeline_step": "Historical semantic map",
                 "default_model": "PCA projection",
-                "why_this_is_default": "Stable and fast enough for time navigation; UMAP is optional for local-neighborhood exploration.",
-                "comparison_or_fallback": "UMAP can be selected in the Similarity Explorer.",
+                "why_this_is_default": "Stable and fast enough for historical filing-language exploration.",
+                "comparison_or_fallback": "Similarity Explorer now uses tables and peer vectors instead of a 2D projection.",
             },
             {
                 "pipeline_step": "Group excess-return prediction",
@@ -1184,6 +1190,22 @@ def coalesce_metadata_columns(frame: pd.DataFrame) -> pd.DataFrame:
 @st.cache_data(show_spinner=False)
 def auto_theme_label_lookup(loadings_path: str, metadata: pd.DataFrame, view_name: str) -> dict[str, str]:
     """Create readable fallback labels from weighted sector/sub-industry mix."""
+    if view_name == "financial":
+        labels, _ = financial_theme_label_artifacts(
+            loadings_path,
+            metadata,
+            as_of_date=None,
+            artifact_version=artifact_signature(
+                VALUATION_FEATURE_PATH,
+                GROWTH_FEATURE_PATH,
+                PRICE_VOLATILITY_FEATURE_PATH,
+                PRICE_MOMENTUM_FEATURE_PATH,
+                PRICE_LIQUIDITY_FEATURE_PATH,
+            ),
+        )
+        if labels:
+            return labels
+
     loadings = load_loadings(loadings_path)
     latest = loadings.sort_values(["ticker", "date"]).groupby("ticker", as_index=False).tail(1)
     latest = latest.merge(metadata, on="ticker", how="left")
@@ -1272,7 +1294,8 @@ def fragment_theme_label_artifacts(
     For each soft theme, we take the firms with the highest loading as of the
     selected date, build a weighted centroid in section-embedding space, then
     find the filing section fragment closest to that centroid. The label uses
-    that representative fragment's strongest tracked topics.
+    a short phrase from the representative fragment; tracked topics are kept as
+    supporting evidence only.
     """
     if view_name != "business":
         return {}, pd.DataFrame()
@@ -1348,11 +1371,22 @@ def fragment_theme_label_artifacts(
         snippet_row = representative_snippet_row(snippet_lookup, representative)
         topic_label = fragment_topic_label(topic_row)
         section_label = short_section_label(str(representative.get("section_label", representative["section"])))
+        snippet_text = str(snippet_row.get("evidence_snippet", "")) if not snippet_row.empty else ""
+        snippet_terms = str(snippet_row.get("snippet_terms", "")) if not snippet_row.empty else ""
         label_phrase = snippet_label_phrase(
-            str(snippet_row.get("evidence_snippet", "")) if not snippet_row.empty else "",
-            str(snippet_row.get("snippet_terms", "")) if not snippet_row.empty else "",
+            snippet_text,
+            snippet_terms,
         )
-        label_core = fragment_display_label(topic_label, section_label, top, theme, metadata, label_phrase)
+        central_description = central_fragment_description(snippet_text, snippet_terms, section_label)
+        label_core = fragment_display_label(
+            topic_label,
+            section_label,
+            top,
+            theme,
+            metadata,
+            label_phrase,
+            snippet_terms,
+        )
         top_theme_tickers = ", ".join(top["ticker"].astype(str).head(4).tolist())
         label = label_core
         evidence = topic_evidence_summary(topic_row)
@@ -1368,12 +1402,15 @@ def fragment_theme_label_artifacts(
             "section_chars": int(representative.get("section_chars", 0)),
             "word_count": int(topic_row.get("word_count", 0)) if not topic_row.empty else None,
             "fragment_similarity": float(similarity[best_position]),
+            "chart_topic_label": label_core,
+            "central_filing_description": central_description,
+            "tracked_topic_signal": topic_label or "no tracked topic dominates",
             "fragment_topics": topic_label or "no tracked topic dominates",
             "label_phrase": label_phrase,
             "topic_evidence": evidence,
             "snippet_topic": str(snippet_row.get("snippet_topic", "")) if not snippet_row.empty else "",
-            "snippet_terms": str(snippet_row.get("snippet_terms", "")) if not snippet_row.empty else "",
-            "evidence_snippet": str(snippet_row.get("evidence_snippet", "")) if not snippet_row.empty else "",
+            "snippet_terms": snippet_terms,
+            "evidence_snippet": snippet_text,
             "top_theme_tickers": top_theme_tickers,
             "source_url": str(filing_row.get("source_url", "")) if not filing_row.empty else "",
         }
@@ -1387,6 +1424,7 @@ def view_label_noun(view_name: str) -> str:
     """Return the kind of similarity represented by a non-business view."""
     names = {
         "behavioral": "trading-behavior",
+        "financial": "financial profile",
         "growth": "growth/lifecycle",
         "network": "relationship-network",
     }
@@ -1400,6 +1438,7 @@ def fragment_display_label(
     theme: str | None = None,
     metadata: pd.DataFrame | None = None,
     label_phrase: str = "",
+    snippet_terms: str = "",
 ) -> str:
     """Return a compact semantic label for a representative filing fragment."""
     composition = ""
@@ -1418,16 +1457,13 @@ def fragment_display_label(
         "Q Risk Factors": "quarterly risk",
     }.get(section_label, section_label.lower())
 
+    chart_topic = chart_topic_from_fragment(snippet_terms, label_phrase)
+    if chart_topic:
+        if composition:
+            return f"{chart_topic} - {composition}"
+        return chart_topic
     if label_phrase:
-        if topic_label:
-            return f"{label_phrase} - {topic_label}"
-        if composition:
-            return f"{label_phrase} - {composition}"
         return label_phrase
-    if topic_label:
-        if composition:
-            return f"{composition} {topic_label} language"
-        return f"{topic_label} {section_context} language"
     if composition:
         return f"{composition} {section_context} language"
     section_labels = {
@@ -1489,6 +1525,132 @@ def snippet_label_phrase(snippet: str, terms: str, max_words: int = MAX_DYNAMIC_
     if not phrase or is_weak_dynamic_label_phrase(phrase):
         return ""
     return phrase[0].upper() + phrase[1:]
+
+
+def chart_topic_from_fragment(terms: str, phrase: str) -> str:
+    """Return a very short chart label from central-fragment language."""
+    term_values = [
+        compact_label_text(value)
+        for value in re.split(r"[,;/|]", str(terms))
+        if compact_label_text(value)
+    ]
+    if term_values:
+        return normalize_chart_topic(term_values[0])
+    return concise_phrase_topic(phrase)
+
+
+def normalize_chart_topic(value: str) -> str:
+    """Normalize a representative term into a readable chart label."""
+    cleaned = compact_label_text(value).strip(" .,:;")
+    if not cleaned:
+        return ""
+    acronym_map = {
+        "ai": "AI",
+        "gpu": "GPU",
+        "gpus": "GPUs",
+        "mda": "MD&A",
+    }
+    lower = cleaned.lower()
+    if lower in acronym_map:
+        return acronym_map[lower]
+    words = lower.split()
+    normalized_words = [acronym_map.get(word, word) for word in words[:MAX_CHART_TOPIC_WORDS]]
+    if not normalized_words:
+        return ""
+    label = " ".join(normalized_words)
+    return label[0].upper() + label[1:]
+
+
+def concise_phrase_topic(phrase: str) -> str:
+    """Compress a central phrase into a short label when no keyword term exists."""
+    cleaned = strip_label_lead_in(compact_label_text(phrase)).strip(" .,:;")
+    if not cleaned or is_weak_dynamic_label_phrase(cleaned):
+        return ""
+    stopwords = {
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "by",
+        "for",
+        "from",
+        "in",
+        "into",
+        "is",
+        "of",
+        "on",
+        "or",
+        "our",
+        "the",
+        "their",
+        "these",
+        "this",
+        "to",
+        "we",
+        "with",
+    }
+    words = [
+        word.strip(".,;:()[]{}\"'")
+        for word in cleaned.split()
+        if word.strip(".,;:()[]{}\"'").lower() not in stopwords
+    ]
+    words = [word for word in words if re.search(r"[A-Za-z]", word)]
+    if not words:
+        return ""
+    label = " ".join(words[:MAX_CHART_TOPIC_WORDS])
+    if len(label) > MAX_DYNAMIC_LABEL_CHARS:
+        label = label[:MAX_DYNAMIC_LABEL_CHARS].rsplit(" ", 1)[0].strip(" .,:;")
+    return label[0].upper() + label[1:]
+
+
+def central_fragment_description(
+    snippet: str,
+    terms: str,
+    section_label: str,
+    max_words: int = MAX_CENTRAL_FRAGMENT_DESCRIPTION_WORDS,
+) -> str:
+    """Return a fuller description from the representative filing fragment."""
+    text = compact_label_text(snippet)
+    if not text:
+        return ""
+
+    term_values = [
+        compact_label_text(value).lower()
+        for value in re.split(r"[,;/|]", str(terms))
+        if compact_label_text(value)
+    ]
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?;:])\s+", text) if part.strip()]
+    if not sentences:
+        sentences = [text]
+
+    chosen = ""
+    for candidate in sentences:
+        cleaned = strip_label_lead_in(compact_label_text(candidate))
+        lower = cleaned.lower()
+        if cleaned and not is_weak_dynamic_label_phrase(cleaned) and any(term and term in lower for term in term_values):
+            chosen = cleaned
+            break
+    if not chosen:
+        for candidate in sentences:
+            cleaned = strip_label_lead_in(compact_label_text(candidate))
+            if cleaned and not is_weak_dynamic_label_phrase(cleaned):
+                chosen = cleaned
+                break
+    if not chosen:
+        return ""
+
+    words = chosen.split()
+    description = " ".join(words[: int(max_words)]).strip(" .,:;")
+    if len(description) > MAX_CENTRAL_FRAGMENT_DESCRIPTION_CHARS:
+        description = description[:MAX_CENTRAL_FRAGMENT_DESCRIPTION_CHARS].rsplit(" ", 1)[0].strip(" .,:;")
+    if not description:
+        return ""
+    if description[-1] not in ".!?":
+        description = f"{description}."
+    section_context = f"{section_label}: " if section_label else ""
+    return section_context + description[0].upper() + description[1:]
 
 
 def is_weak_dynamic_label_phrase(phrase: str) -> bool:
@@ -1601,17 +1763,41 @@ def representative_snippet_row(snippet_lookup: pd.DataFrame, representative: pd.
             ),
             axis=1,
         )
-        usable = candidates[candidates["_label_phrase"].astype(str).ne("")]
-        topical = usable[~usable["snippet_topic"].astype(str).eq("section_start")]
-        if not topical.empty:
-            return topical.drop(columns=["_label_phrase"]).iloc[0]
-        if not usable.empty:
-            return usable.drop(columns=["_label_phrase"]).iloc[0]
-        non_start = candidates[~candidates["snippet_topic"].astype(str).eq("section_start")]
-        if not non_start.empty:
-            return non_start.drop(columns=["_label_phrase"]).iloc[0]
-        return candidates.drop(columns=["_label_phrase"]).iloc[0]
+        section_label = short_section_label(str(representative.get("section_label", representative["section"])))
+        candidates["_central_description"] = candidates.apply(
+            lambda item: central_fragment_description(
+                str(item.get("evidence_snippet", "") or ""),
+                str(item.get("snippet_terms", "") or ""),
+                section_label,
+            ),
+            axis=1,
+        )
+        candidates["_quality_score"] = candidates.apply(snippet_quality_score, axis=1)
+        ranked = candidates.sort_values(["_quality_score", "snippet_rank"], ascending=[False, True])
+        return ranked.drop(columns=["_label_phrase", "_central_description", "_quality_score"]).iloc[0]
     return row
+
+
+def snippet_quality_score(row: pd.Series) -> float:
+    """Score candidate snippets for dynamic labels and central-fragment descriptions."""
+    phrase = str(row.get("_label_phrase", "") or "")
+    description = str(row.get("_central_description", "") or "")
+    topic = str(row.get("snippet_topic", "") or "")
+    terms = str(row.get("snippet_terms", "") or "")
+    snippet = compact_label_text(str(row.get("evidence_snippet", "") or ""))
+
+    score = 0.0
+    if phrase:
+        score += 8.0
+    if description:
+        score += min(len(description.split()), 30) / 3.0
+    if terms:
+        score += 2.0
+    if topic and topic != "section_start":
+        score += 1.5
+    if is_weak_dynamic_label_phrase(snippet[:120]):
+        score -= 3.0
+    return score
 
 
 def fragment_topic_label(topic_row: pd.Series) -> str:
@@ -1843,10 +2029,11 @@ def theme_evidence_frame(fragment_explanations: pd.DataFrame, themes: list[str] 
         "representative_filing_date",
         "representative_form",
         "representative_section",
-        "fragment_similarity",
-        "label_phrase",
-        "topic_evidence",
+        "central_filing_description",
         "evidence_snippet",
+        "label_phrase",
+        "tracked_topic_signal",
+        "topic_evidence",
         "snippet_terms",
         "top_theme_tickers",
         "section_chars",
@@ -1958,6 +2145,47 @@ def movement_frame(
             }
         )
     return pd.DataFrame(rows).sort_values("loading", ascending=False)
+
+
+def theme_change_summary_frame(
+    company_history: pd.DataFrame,
+    columns: list[str],
+    date_index: int,
+    labels: dict[str, str],
+    max_rows: int = 10,
+) -> pd.DataFrame:
+    """Return one focused table answering which theme memberships changed."""
+    if company_history.empty or not columns:
+        return pd.DataFrame()
+
+    current = company_history.iloc[int(date_index)]
+    previous = company_history.iloc[max(0, int(date_index) - 1)]
+    first = company_history.iloc[0]
+
+    rows = []
+    for column in columns:
+        current_loading = float(current[column])
+        change_vs_previous = float(current[column] - previous[column])
+        change_since_first = float(current[column] - first[column])
+        rows.append(
+            {
+                "theme": display_theme_name(column, labels),
+                "current_loading": current_loading,
+                "change_vs_previous": change_vs_previous,
+                "change_since_first": change_since_first,
+                "focus_score": max(abs(change_vs_previous), abs(change_since_first)),
+            }
+        )
+
+    frame = pd.DataFrame(rows)
+    if frame.empty:
+        return frame
+    return (
+        frame.sort_values(["focus_score", "current_loading"], ascending=[False, False])
+        .drop(columns=["focus_score", "current_loading"])
+        .head(int(max_rows))
+        .reset_index(drop=True)
+    )
 
 
 def market_date_frame(
@@ -2151,12 +2379,12 @@ def focus_theme_loading_frame(
     """Return the selected company's strongest theme memberships."""
     columns = theme_columns(loadings)
     row = loadings[
-        loadings["date"].eq(pd.Timestamp(selected_date))
+        loadings["date"].le(pd.Timestamp(selected_date))
         & loadings["ticker"].eq(str(focus_ticker).upper())
-    ]
+    ].sort_values("date")
     if row.empty or not columns:
         return pd.DataFrame()
-    row = row.iloc[0]
+    row = row.iloc[-1]
     frame = pd.DataFrame(
         {
             "theme": [display_theme_name(column, labels) for column in columns],
@@ -2174,8 +2402,8 @@ def nearest_theme_loading_peers(
     labels: dict[str, str],
     top_n: int = 12,
 ) -> pd.DataFrame:
-    """Find nearest peers using the actual theme-loading vector, not the 2D map."""
-    date_frame = loadings[loadings["date"].eq(pd.Timestamp(selected_date))].copy()
+    """Find nearest peers using the actual point-in-time theme-loading vector."""
+    date_frame = loadings_as_of(loadings, str(pd.Timestamp(selected_date).date())).copy()
     columns = theme_columns(date_frame)
     focus_ticker = str(focus_ticker).upper()
     if date_frame.empty or focus_ticker not in set(date_frame["ticker"]) or not columns:
@@ -2280,6 +2508,347 @@ def compact_company_name(name: object, ticker: object, max_chars: int = 30) -> s
     if len(name_text) > max_chars:
         name_text = name_text[: max_chars - 1].rstrip() + "..."
     return f"{name_text} ({ticker_text})"
+
+
+@st.cache_data(show_spinner=False)
+def load_financial_label_features(
+    artifact_version: tuple[tuple[str, int, int], ...] | None = None,
+) -> pd.DataFrame:
+    """Load valuation, lifecycle, and price features used to explain financial themes."""
+    _ = artifact_version
+    paths = [
+        VALUATION_FEATURE_PATH,
+        GROWTH_FEATURE_PATH,
+        PRICE_VOLATILITY_FEATURE_PATH,
+        PRICE_MOMENTUM_FEATURE_PATH,
+        PRICE_LIQUIDITY_FEATURE_PATH,
+    ]
+    frames = []
+    for path in paths:
+        if not path.exists():
+            continue
+        frame = pd.read_parquet(path)
+        if {"ticker", "date"}.issubset(frame.columns):
+            frame["ticker"] = frame["ticker"].astype(str).str.upper()
+            frame["date"] = pd.to_datetime(frame["date"], errors="coerce")
+            frames.append(frame)
+    if not frames:
+        return pd.DataFrame()
+
+    result = frames[0]
+    for frame in frames[1:]:
+        result = result.merge(frame, on=["ticker", "date"], how="outer")
+    return result.sort_values(["ticker", "date"]).drop_duplicates(["ticker", "date"], keep="last").reset_index(drop=True)
+
+
+def features_as_of(features: pd.DataFrame, as_of_date: pd.Timestamp | None) -> pd.DataFrame:
+    """Return latest feature rows per ticker as of a date."""
+    if features.empty:
+        return pd.DataFrame()
+    frame = features.copy()
+    frame["date"] = pd.to_datetime(frame["date"], errors="coerce")
+    if as_of_date is not None:
+        frame = frame[frame["date"] <= pd.Timestamp(as_of_date)]
+    if frame.empty:
+        return frame
+    return frame.sort_values(["ticker", "date"]).groupby("ticker", as_index=False).tail(1).reset_index(drop=True)
+
+
+@st.cache_data(show_spinner=False)
+def financial_theme_label_artifacts(
+    loadings_path: str,
+    metadata: pd.DataFrame,
+    as_of_date: str | None,
+    top_tickers: int = 28,
+    artifact_version: tuple[tuple[str, int, int], ...] | None = None,
+) -> tuple[dict[str, str], pd.DataFrame]:
+    """Label financial themes from weighted valuation, growth, profitability, and price profiles."""
+    loadings = load_loadings(loadings_path)
+    columns = theme_columns(loadings)
+    if not columns:
+        return {}, pd.DataFrame()
+
+    as_of_loadings = loadings_as_of(loadings, as_of_date)
+    if as_of_loadings.empty:
+        return {}, pd.DataFrame()
+
+    feature_date = pd.Timestamp(as_of_date) if as_of_date else pd.Timestamp(as_of_loadings["date"].max())
+    features = load_financial_label_features(artifact_version)
+    feature_frame = features_as_of(features, feature_date)
+    if feature_frame.empty:
+        return {}, pd.DataFrame()
+
+    feature_columns = financial_profile_columns(feature_frame)
+    if not feature_columns:
+        return {}, pd.DataFrame()
+
+    enriched = as_of_loadings.merge(feature_frame.loc[:, ["ticker", *feature_columns]], on="ticker", how="left")
+    metadata_subset = ensure_columns(metadata, ["ticker", "title", "gics_sector", "gics_sub_industry"]).loc[
+        :, ["ticker", "title", "gics_sector", "gics_sub_industry"]
+    ]
+    enriched = enriched.merge(metadata_subset, on="ticker", how="left")
+    reference = feature_reference_frame(feature_frame, feature_columns)
+
+    labels: dict[str, str] = {}
+    rows = []
+    for theme in columns:
+        top = enriched.sort_values(theme, ascending=False).head(int(top_tickers)).copy()
+        top = top.loc[pd.to_numeric(top[theme], errors="coerce") > 0.0]
+        top = top.dropna(how="all", subset=feature_columns)
+        if top.empty:
+            continue
+
+        profile = weighted_feature_profile(top, theme, feature_columns)
+        signals = financial_profile_signals(profile, reference)
+        label = financial_profile_label(signals, top, theme)
+        labels[theme] = label
+        rows.append(
+            {
+                "theme": theme,
+                "dynamic_label": label,
+                "financial_profile": financial_profile_sentence(signals),
+                "high_signals": signal_summary(signals, "high"),
+                "low_signals": signal_summary(signals, "low"),
+                "representative_companies": representative_company_list(top, theme),
+                "sector_mix": ", ".join(weighted_label_shares(top, theme, "gics_sector").head(3).index.astype(str).tolist()),
+                "label_basis": "weighted financial feature profile of highest-loading companies",
+            }
+        )
+    return labels, pd.DataFrame(rows)
+
+
+def financial_profile_columns(frame: pd.DataFrame) -> list[str]:
+    """Return the interpretable numeric columns used to describe a financial theme."""
+    preferred = [
+        "growth_revenue_yoy_1y",
+        "growth_revenue_cagr_3y",
+        "growth_gross_margin",
+        "growth_operating_margin",
+        "growth_rd_intensity",
+        "growth_capex_intensity",
+        "growth_payout_total_yield",
+        "growth_asset_growth_1y",
+        "growth_leverage",
+        "growth_size_log_assets",
+        "valuation_market_cap_log",
+        "valuation_sales_yield",
+        "valuation_earnings_yield",
+        "valuation_operating_income_yield",
+        "valuation_gross_profit_yield",
+        "valuation_book_to_market",
+        "valuation_debt_to_market",
+        "valuation_free_cash_flow_yield",
+        "valuation_shareholder_yield",
+        "price_vol_63d",
+        "price_mom_63d",
+        "price_dollar_volume_63d",
+        "price_amihud_63d",
+    ]
+    return [column for column in preferred if column in frame.columns]
+
+
+def feature_reference_frame(feature_frame: pd.DataFrame, feature_columns: list[str]) -> dict[str, pd.Series]:
+    """Return cross-sectional references for percentile-based theme descriptions."""
+    return {
+        column: pd.to_numeric(feature_frame[column], errors="coerce").dropna()
+        for column in feature_columns
+        if column in feature_frame.columns
+    }
+
+
+def weighted_feature_profile(frame: pd.DataFrame, weight_column: str, feature_columns: list[str]) -> dict[str, float]:
+    """Return weighted average numeric features for one soft theme."""
+    weights = pd.to_numeric(frame[weight_column], errors="coerce").fillna(0.0).clip(lower=0.0)
+    profile: dict[str, float] = {}
+    for column in feature_columns:
+        values = pd.to_numeric(frame[column], errors="coerce")
+        valid = values.notna() & weights.gt(0.0)
+        if valid.any():
+            profile[column] = float(np.average(values[valid], weights=weights[valid]))
+    return profile
+
+
+def financial_profile_signals(profile: dict[str, float], reference: dict[str, pd.Series]) -> list[dict[str, object]]:
+    """Return high/low percentile signals that explain a financial theme."""
+    rows = []
+    for column, value in profile.items():
+        if column not in reference:
+            continue
+        percentile = empirical_percentile(value, reference[column])
+        if pd.isna(percentile):
+            continue
+        distance = abs(float(percentile) - 50.0)
+        if distance < 18.0:
+            continue
+        direction = "high" if percentile >= 50.0 else "low"
+        label = financial_signal_label(column, direction)
+        if not label:
+            continue
+        rows.append(
+            {
+                "column": column,
+                "label": label,
+                "direction": direction,
+                "percentile": float(percentile),
+                "distance": float(distance),
+            }
+        )
+    return sorted(rows, key=lambda row: float(row["distance"]), reverse=True)
+
+
+def empirical_percentile(value: float, reference: pd.Series) -> float:
+    """Return simple empirical percentile for a numeric value."""
+    clean = pd.to_numeric(reference, errors="coerce").dropna()
+    if clean.empty or pd.isna(value):
+        return float("nan")
+    return float((clean <= float(value)).mean() * 100.0)
+
+
+def financial_signal_label(column: str, direction: str) -> str:
+    """Translate one feature percentile into an economic phrase."""
+    high_labels = {
+        "growth_revenue_yoy_1y": "fast revenue growth",
+        "growth_revenue_cagr_3y": "sustained growth",
+        "growth_gross_margin": "high gross margins",
+        "growth_operating_margin": "high operating margins",
+        "growth_rd_intensity": "R&D intensive",
+        "growth_capex_intensity": "capital intensive",
+        "growth_payout_total_yield": "high payout",
+        "growth_asset_growth_1y": "expanding assets",
+        "growth_leverage": "levered balance sheet",
+        "growth_size_log_assets": "large asset base",
+        "valuation_market_cap_log": "large-cap",
+        "valuation_sales_yield": "cheap on sales",
+        "valuation_earnings_yield": "cheap on earnings",
+        "valuation_operating_income_yield": "cheap on operating income",
+        "valuation_gross_profit_yield": "cheap on gross profit",
+        "valuation_book_to_market": "value / book-heavy",
+        "valuation_debt_to_market": "debt-heavy",
+        "valuation_free_cash_flow_yield": "cash-flow yield",
+        "valuation_shareholder_yield": "shareholder yield",
+        "price_vol_63d": "high volatility",
+        "price_mom_63d": "positive momentum",
+        "price_dollar_volume_63d": "high liquidity",
+        "price_amihud_63d": "illiquid trading",
+    }
+    low_labels = {
+        "growth_revenue_yoy_1y": "slow revenue growth",
+        "growth_revenue_cagr_3y": "low sustained growth",
+        "growth_gross_margin": "low gross margins",
+        "growth_operating_margin": "low operating margins",
+        "growth_rd_intensity": "low R&D intensity",
+        "growth_capex_intensity": "asset-light",
+        "growth_payout_total_yield": "low payout",
+        "growth_asset_growth_1y": "shrinking assets",
+        "growth_leverage": "low leverage",
+        "growth_size_log_assets": "small asset base",
+        "valuation_market_cap_log": "smaller-cap",
+        "valuation_sales_yield": "premium valuation",
+        "valuation_earnings_yield": "low earnings yield",
+        "valuation_operating_income_yield": "low operating yield",
+        "valuation_gross_profit_yield": "low gross-profit yield",
+        "valuation_book_to_market": "low book-to-market",
+        "valuation_debt_to_market": "low debt-to-market",
+        "valuation_free_cash_flow_yield": "low cash-flow yield",
+        "valuation_shareholder_yield": "low shareholder yield",
+        "price_vol_63d": "low volatility",
+        "price_mom_63d": "negative momentum",
+        "price_dollar_volume_63d": "low liquidity",
+        "price_amihud_63d": "liquid trading",
+    }
+    return (high_labels if direction == "high" else low_labels).get(column, "")
+
+
+def financial_profile_label(signals: list[dict[str, object]], top: pd.DataFrame, theme: str) -> str:
+    """Return a compact financial theme label."""
+    if signals:
+        chosen = []
+        seen_families: set[str] = set()
+        for signal in signals:
+            family = financial_signal_family(str(signal["column"]))
+            if family in seen_families and len(chosen) >= 2:
+                continue
+            chosen.append(str(signal["label"]))
+            seen_families.add(family)
+            if len(chosen) == 3:
+                break
+        if chosen:
+            return " / ".join(label[0].upper() + label[1:] for label in chosen)
+
+    subindustry_label = dominant_weighted_label(top, theme, "gics_sub_industry", minimum_share=0.38)
+    if subindustry_label:
+        return f"{subindustry_label} financial profile"
+    sector_label = dominant_weighted_label(top, theme, "gics_sector", minimum_share=0.34)
+    if sector_label:
+        return f"{sector_label} financial profile"
+    return "Mixed financial profile"
+
+
+def financial_signal_family(column: str) -> str:
+    """Group financial signals so labels do not repeat the same idea."""
+    if column.startswith("growth_revenue"):
+        return "growth"
+    if "margin" in column or "yield" in column or "profit" in column:
+        return "profitability_value"
+    if "leverage" in column or "debt" in column:
+        return "leverage"
+    if "vol" in column or "mom" in column or "liquidity" in column or "amihud" in column:
+        return "trading"
+    if "capex" in column or "rd" in column or "asset" in column:
+        return "investment"
+    return column
+
+
+def signal_summary(signals: list[dict[str, object]], direction: str, max_items: int = 4) -> str:
+    """Return readable high/low signal evidence."""
+    parts = []
+    for signal in signals:
+        if signal["direction"] != direction:
+            continue
+        parts.append(f"{signal['label']} ({float(signal['percentile']):.0f}th pct)")
+        if len(parts) == int(max_items):
+            break
+    return "; ".join(parts)
+
+
+def financial_profile_sentence(signals: list[dict[str, object]]) -> str:
+    """Return one sentence explaining a financial theme profile."""
+    high = signal_summary(signals, "high", max_items=3)
+    low = signal_summary(signals, "low", max_items=3)
+    parts = []
+    if high:
+        parts.append(f"High relative features: {high}")
+    if low:
+        parts.append(f"Low relative features: {low}")
+    return ". ".join(parts) + ("." if parts else "No strong cross-sectional financial signals.")
+
+
+def representative_company_list(frame: pd.DataFrame, weight_column: str, max_items: int = 6) -> str:
+    """Return readable highest-loading company examples."""
+    top = frame.sort_values(weight_column, ascending=False).head(int(max_items))
+    labels = []
+    for _, row in top.iterrows():
+        labels.append(compact_company_name(row.get("title", ""), row.get("ticker", ""), max_chars=28))
+    return ", ".join(labels)
+
+
+def financial_theme_evidence_frame(financial_explanations: pd.DataFrame, themes: list[str] | set[str]) -> pd.DataFrame:
+    """Return financial-profile evidence rows for the selected chart themes."""
+    if financial_explanations.empty:
+        return financial_explanations
+    theme_set = {str(theme) for theme in themes}
+    frame = financial_explanations[financial_explanations["theme"].astype(str).isin(theme_set)].copy()
+    columns = [
+        "theme",
+        "dynamic_label",
+        "financial_profile",
+        "high_signals",
+        "low_signals",
+        "representative_companies",
+        "sector_mix",
+        "label_basis",
+    ]
+    return safe_frame_subset(ensure_columns(frame, columns), columns).sort_values("theme").reset_index(drop=True)
 
 
 def relationship_strength(row: pd.Series) -> float:
@@ -2712,10 +3281,12 @@ def focus_dominant_theme_members(points: pd.DataFrame, focus_ticker: str, max_ro
     theme = str(focus.iloc[0]["theme_label"])
     members = points[points["theme_label"].eq(theme)].copy()
     columns = ["ticker", "title", "gics_sector", "gics_sub_industry", "dominant_loading"]
+    output_columns = ["ticker", "title", "gics_sector", "gics_sub_industry"]
     return (
         safe_frame_subset(ensure_columns(members, columns), columns)
         .sort_values("dominant_loading", ascending=False)
         .head(int(max_rows))
+        .loc[:, output_columns]
         .reset_index(drop=True)
     )
 
@@ -3053,14 +3624,14 @@ def company_language_shift_chart(story: pd.DataFrame) -> alt.Chart:
         .mark_bar(cornerRadiusEnd=6)
         .encode(
             x=alt.X("change:Q", title="Recent score minus baseline score"),
-            y=alt.Y("topic:N", sort="-x", title="Topic"),
+            y=alt.Y("topic:N", sort="-x", title="Tracked topic"),
             color=alt.Color(
                 "direction:N",
                 scale=alt.Scale(domain=["Increased", "Decreased"], range=["#4f7cff", "#a8afc4"]),
                 legend=None,
             ),
             tooltip=[
-                "topic:N",
+                alt.Tooltip("topic:N", title="Tracked topic"),
                 alt.Tooltip("early_score:Q", title="Baseline", format=".3f"),
                 alt.Tooltip("recent_score:Q", title="Recent", format=".3f"),
                 alt.Tooltip("change:Q", title="Change", format=".3f"),
@@ -3311,12 +3882,12 @@ def emerging_trends_chart(emerging: pd.DataFrame, max_rows: int = 20) -> alt.Cha
         .encode(
             x=alt.X("change:Q", title="Recent score minus baseline score"),
             y=alt.Y("company_label:N", title="", sort="-x"),
-            color=alt.Color("topic:N", title="Theme"),
+            color=alt.Color("topic:N", title="Tracked topic"),
             tooltip=[
                 alt.Tooltip("ticker:N", title="Ticker"),
                 alt.Tooltip("company_name:N", title="Company"),
                 alt.Tooltip("gics_sector:N", title="Sector"),
-                alt.Tooltip("topic:N", title="Theme"),
+                alt.Tooltip("topic:N", title="Tracked topic"),
                 alt.Tooltip("change:Q", title="Change", format=".3f"),
                 alt.Tooltip("late_score:Q", title="Recent score", format=".3f"),
                 alt.Tooltip("snippet_terms:N", title="Evidence terms"),
@@ -4134,7 +4705,7 @@ def render_sector_outlook() -> None:
         if experiment_root is None:
             st.warning("No decomposed experiment with learned theme loadings was found.")
         else:
-            views = available_views(experiment_root)
+            views = [view for view in available_views(experiment_root) if view != "behavioral"]
             if views:
                 theme_view = st.selectbox(
                     "Learned theme view",
@@ -4458,8 +5029,8 @@ def render_sector_outlook() -> None:
         st.write(
             "In GICS mode, groups are official sectors. In learned-theme mode, each group's returns and fundamentals "
             "are loading-weighted averages from our soft GMM themes, so a company can contribute partially to multiple "
-            "groups. The dashboard now uses hard top-1 assignment for the behavioral view because that performed better "
-            "in the soft-vs-hard comparison, while business and growth stay mixed."
+            "groups. The noisy behavioral price view is hidden from the dashboard selector, while retained views remain "
+            "available for comparison."
         )
         st.write(
             "Learned-theme returns require a minimum effective member count and compare against the same covered "
@@ -4495,7 +5066,8 @@ def render_historical_text() -> None:
     st.subheader("Historical Filing Language")
     st.caption(
         "A compact workflow for asking: what changed in a company's filings, who else is changing, "
-        "and whether the language moved semantically."
+        "and whether the language moved semantically. The trend cards below are fixed tracked filing topics; "
+        "learned business-theme labels come from central filing fragments in the Similarity Explorer."
     )
 
     artifact_dirs = available_historical_text_dirs()
@@ -4567,7 +5139,7 @@ def render_historical_text() -> None:
     selected_label = st.selectbox("Company story", label_options, index=label_options.index(default_label))
     selected_ticker = label_lookup[selected_label]
 
-    story_tab, market_tab, map_tab = st.tabs(["Company Story", "Emerging Trends", "Semantic Map"])
+    story_tab, market_tab, map_tab = st.tabs(["Company Story", "Tracked Filing Topics", "Semantic Map"])
 
     with story_tab:
         story = company_language_story_frame(
@@ -4584,7 +5156,7 @@ def render_historical_text() -> None:
         else:
             strongest = story.iloc[0]
             metric_columns = st.columns(4)
-            metric_columns[0].metric("Largest topic increase", str(strongest["topic"]))
+            metric_columns[0].metric("Largest tracked-topic increase", str(strongest["topic"]))
             metric_columns[1].metric("Change", f"{float(strongest['change']):+.3f}")
             metric_columns[2].metric("Recent mentions", f"{int(strongest['recent_mentions']):,}")
             metric_columns[3].metric("Evidence date", pd.Timestamp(strongest["evidence_date"]).strftime("%Y-%m-%d"))
@@ -4667,10 +5239,11 @@ def render_historical_text() -> None:
             late_years,
             companies_per_topic=8,
         )
-        st.markdown("**Emerging Themes Across Filings**")
+        st.markdown("**Emerging Tracked Filing Topics**")
         st.caption(
-            "This scans all tracked themes across the interpretable filing sections and ranks the strongest "
-            "company-level language increases. Use the evidence table to see what the filings actually said."
+            "This scans a small, human-chosen vocabulary of tracked filing topics across interpretable sections "
+            "and ranks the strongest company-level language increases. These are not learned cluster labels; "
+            "use the evidence table to see what the filings actually said."
         )
         if emerging.empty:
             st.info("No emerging language trends were found for the selected baseline and recent windows.")
@@ -4703,13 +5276,13 @@ def render_historical_text() -> None:
                     },
                 )
 
-        with st.expander("Deep dive into one theme", expanded=False):
+        with st.expander("Deep dive into one tracked topic", expanded=False):
             st.caption(
-                "Use this diagnostic section when you want to focus on one specific theme after spotting it "
+                "Use this diagnostic section when you want to focus on one specific tracked topic after spotting it "
                 "in the emerging-trends table."
             )
             topic_name = st.selectbox(
-                "Deep-dive theme",
+                "Tracked topic",
                 list(TOPIC_OPTIONS.keys()),
                 index=0,
                 key="historical_text_deep_dive_theme",
@@ -5005,7 +5578,7 @@ def render_similarity_shifts() -> None:
         st.error(f"Experiment directory does not exist: {experiment_root}")
         return
 
-    views = available_views(experiment_root)
+    views = map_visible_views(available_views(experiment_root))
     if not views:
         st.error(f"No view loadings found under {experiment_root / 'views'}")
         return
@@ -5130,13 +5703,15 @@ def render_similarity_shifts() -> None:
                 hide_index=True,
                 column_config={
                     "source_url": st.column_config.LinkColumn("SEC source filing"),
-                    "fragment_similarity": st.column_config.NumberColumn("fragment_similarity", format="%.3f"),
+                    "dynamic_label": st.column_config.TextColumn("chart label", width="medium"),
+                    "central_filing_description": st.column_config.TextColumn("central filing phrase", width="large"),
+                    "evidence_snippet": st.column_config.TextColumn("full context snippet", width="large"),
                 },
             )
             st.caption(
                 "The representative fragment is chosen by cosine similarity in MiniLM section-embedding space. "
-                "Compact snippets appear when `historical_section_snippets.parquet` has been generated; older artifacts "
-                "show topic counts and SEC source links only."
+                "Chart labels are intentionally compact; the central filing phrase and full context snippet are the "
+                "interpretability layer underneath each label."
             )
         elif selected_view != "business":
             st.info("Fragment-derived dynamic labels are currently available for the business view only.")
@@ -5160,7 +5735,7 @@ def render_similarity_shifts() -> None:
 def render_similarity_explorer() -> None:
     st.subheader("Similarity Explorer")
     st.caption(
-        "Pick a company and read its learned identity: strongest themes, closest peers, and optional market context."
+        "Pick a company and read its learned identity: strongest themes, closest peers, and filing-backed labels."
     )
 
     default_experiment = latest_decomposed_experiment()
@@ -5180,12 +5755,12 @@ def render_similarity_explorer() -> None:
     all_views = available_views(experiment_root)
     views = map_visible_views(all_views)
     if not views:
-        st.error(f"No map-suitable view loadings found under {experiment_root / 'views'}")
+        st.error(f"No similarity view loadings found under {experiment_root / 'views'}")
         return
     hidden_views = sorted(set(all_views).difference(views))
     if hidden_views:
         st.caption(
-            "Hidden from this explorer because they are better used as prediction features than visual clusters: "
+            "Hidden from this explorer because they were noisy or hard to interpret as presentation clusters: "
             + ", ".join(hidden_views)
         )
 
@@ -5194,33 +5769,27 @@ def render_similarity_explorer() -> None:
         "Similarity view",
         views,
         index=views.index("business") if "business" in views else 0,
-        key="market_map_view",
+        key="similarity_explorer_view",
     )
-    projection_method = "PCA"
     loadings_path = experiment_root / "views" / selected_view / "loadings.parquet"
     loadings = load_loadings(str(loadings_path))
-    try:
-        projected = load_projected_market_map(str(loadings_path), projection_method)
-    except RuntimeError as exc:
-        st.warning(f"{exc} Falling back to PCA.")
-        projection_method = "PCA"
-        projected = load_projected_market_map(str(loadings_path), projection_method)
+    all_theme_columns = theme_columns(loadings)
+    if not all_theme_columns:
+        st.warning("This view has no theme-loading columns to display.")
+        return
 
-    hide_collapsed = True
-    available_dates = usable_market_dates(projected, hide_collapsed=hide_collapsed)
+    loadings["date"] = pd.to_datetime(loadings["date"])
+    available_dates = [pd.Timestamp(date) for date in sorted(loadings["date"].dropna().unique().tolist())]
     if not available_dates:
-        st.warning("No usable map dates are available for this view with the current filter.")
+        st.warning("No usable dates are available for this view.")
         return
     date_labels = [date.strftime("%Y-%m-%d") for date in available_dates]
-    date_state_key = f"market_map_date_index_{selected_view}_{int(hide_collapsed)}"
+    date_state_key = f"similarity_explorer_date_index_{selected_view}"
     if date_state_key not in st.session_state:
         st.session_state[date_state_key] = len(date_labels) - 1
     st.session_state[date_state_key] = int(
         max(0, min(len(date_labels) - 1, st.session_state[date_state_key]))
     )
-    if not theme_columns(loadings):
-        st.warning("This view has no theme-loading columns to display.")
-        return
 
     with st.expander("Time controls", expanded=False):
         st.caption("Default is the latest usable date. Open this only when you want to step through history.")
@@ -5234,15 +5803,15 @@ def render_similarity_explorer() -> None:
         if step_columns[3].button("Latest", width="stretch"):
             st.session_state[date_state_key] = len(date_labels) - 1
         date_index = step_columns[4].slider(
-            "Map date",
+            "View date",
             min_value=0,
             max_value=len(date_labels) - 1,
             key=date_state_key,
             format="%d",
         )
         st.caption(
-            f"Selected map date: {date_labels[int(date_index)]}. "
-            "Back and Forward move one usable map date at a time."
+            f"Selected view date: {date_labels[int(date_index)]}. "
+            "Back and Forward move one available view date at a time."
         )
     date_index = int(st.session_state[date_state_key])
     selected_date = pd.Timestamp(available_dates[date_index])
@@ -5254,13 +5823,42 @@ def render_similarity_explorer() -> None:
         str(selected_date.date()),
         metadata=metadata,
     )
+    financial_label_lookup, financial_explanations = financial_theme_label_artifacts(
+        str(loadings_path),
+        metadata,
+        str(selected_date.date()),
+        artifact_version=artifact_signature(
+            VALUATION_FEATURE_PATH,
+            GROWTH_FEATURE_PATH,
+            PRICE_VOLATILITY_FEATURE_PATH,
+            PRICE_MOMENTUM_FEATURE_PATH,
+            PRICE_LIQUIDITY_FEATURE_PATH,
+        ),
+    ) if selected_view == "financial" else ({}, pd.DataFrame())
     label_lookup_for_view.update(fragment_label_lookup)
-    label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, theme_columns(loadings))
-    trail_months = DEFAULT_MARKET_TRAIL_MONTHS
+    label_lookup_for_view.update(financial_label_lookup)
+    label_lookup_for_view = unique_theme_label_lookup(label_lookup_for_view, all_theme_columns)
 
-    points = market_date_frame(projected, metadata, selected_date, label_lookup_for_view)
+    points = loadings_as_of(loadings, str(selected_date.date())).copy()
+    if not points.empty:
+        loading_matrix = points.loc[:, all_theme_columns].astype(float)
+        points["dominant_theme"] = loading_matrix.idxmax(axis=1)
+        points["dominant_loading"] = loading_matrix.max(axis=1)
+        points["theme_label"] = [
+            display_theme_name(theme, label_lookup_for_view)
+            for theme in points["dominant_theme"].astype(str)
+        ]
+        metadata_subset = ensure_columns(
+            metadata,
+            ["ticker", "title", "search_label", "gics_sector", "gics_sub_industry"],
+        ).loc[:, ["ticker", "title", "search_label", "gics_sector", "gics_sub_industry"]].copy()
+        points = points.merge(metadata_subset, on="ticker", how="left")
+        points["title"] = points["title"].fillna(points["ticker"])
+        points["search_label"] = points["search_label"].fillna(points["ticker"])
+        points["gics_sector"] = points["gics_sector"].fillna("Unknown")
+        points["gics_sub_industry"] = points["gics_sub_industry"].fillna("Unknown")
     if points.empty:
-        st.warning(f"No map points found for {selected_date.strftime('%Y-%m-%d')}.")
+        st.warning(f"No company loadings found for {selected_date.strftime('%Y-%m-%d')}.")
         return
 
     point_options = points.sort_values("ticker")["search_label"].astype(str).tolist()
@@ -5273,7 +5871,7 @@ def render_similarity_explorer() -> None:
         "Focus company",
         point_options,
         index=point_options.index(default_focus),
-        help="The map will highlight this company and its nearest theme-loading peers.",
+        help="The explorer will show this company's theme mix and nearest theme-loading peers.",
     )
     focus_ticker = str(focus_lookup[focus_label]).upper()
     company_history = loadings[loadings["ticker"].eq(focus_ticker)].copy()
@@ -5302,7 +5900,6 @@ def render_similarity_explorer() -> None:
         .index.tolist()
     )
 
-    relationships = load_relationships(artifact_signature(RELATIONSHIPS_PATH))
     peer_frame = nearest_theme_loading_peers(
         loadings,
         metadata,
@@ -5311,7 +5908,6 @@ def render_similarity_explorer() -> None:
         label_lookup_for_view,
         top_n=12,
     )
-    highlighted = [focus_ticker, *peer_frame["ticker"].head(8).astype(str).tolist()] if not peer_frame.empty else [focus_ticker]
 
     metrics = st.columns(4)
     metrics[0].metric("Stocks shown", int(points["ticker"].nunique()))
@@ -5320,7 +5916,7 @@ def render_similarity_explorer() -> None:
     metrics[3].metric("Focus", focus_ticker)
     st.info(
         "Read this tab from top to bottom: the bar chart explains the selected company's theme mix, "
-        "the peer table shows the closest companies in the full embedding space, and the 2D map is optional context."
+        "and the peer table shows the closest companies from the full theme-membership profile."
     )
 
     snapshot_columns = st.columns([1.0, 1.25])
@@ -5337,7 +5933,7 @@ def render_similarity_explorer() -> None:
     with snapshot_columns[1]:
         st.markdown("**Closest Peers**")
         st.caption(
-            "Computed in the full theme-loading vector, not from the 2D map. Use this table as the trusted peer view."
+            "Computed behind the scenes from the full theme-membership profile. Use this table as the trusted peer view."
         )
         st.dataframe(
             safe_frame_subset(
@@ -5347,144 +5943,53 @@ def render_similarity_explorer() -> None:
                         "ticker",
                         "title",
                         "gics_sector",
+                        "gics_sub_industry",
                         "dominant_theme",
-                        "loading_similarity",
-                        "loading_distance",
                     ],
                 ),
                 [
                     "ticker",
                     "title",
                     "gics_sector",
+                    "gics_sub_industry",
                     "dominant_theme",
-                    "loading_similarity",
-                    "loading_distance",
                 ],
             ).head(10),
             width="stretch",
             hide_index=True,
-            column_config={
-                "loading_similarity": st.column_config.NumberColumn("similarity", format="%.3f"),
-                "loading_distance": st.column_config.NumberColumn("distance", format="%.3f"),
-            },
         )
 
-    with st.expander(f"{focus_ticker} theme details and recent movement", expanded=False):
-        detail_columns = st.columns(2)
-        with detail_columns[0]:
-            st.markdown("Current theme memberships")
-            st.dataframe(
-                focus_theme_loading_frame(loadings, selected_date, focus_ticker, label_lookup_for_view),
-                width="stretch",
-                hide_index=True,
-                column_config={
-                    "loading": st.column_config.NumberColumn("loading", format="%.3f"),
-                },
-            )
-        with detail_columns[1]:
-            st.markdown("Movement at this date")
-            st.dataframe(
-                movement_frame(company_history, selected_columns, company_date_index, label_lookup_for_view),
-                width="stretch",
-                hide_index=True,
-                column_config={
-                    "loading": st.column_config.NumberColumn("loading", format="%.3f"),
-                },
-            )
-
-    with st.expander(f"{focus_ticker} biggest full-period theme shifts", expanded=False):
+    with st.expander(f"{focus_ticker} theme movement summary", expanded=False):
         st.caption(
-            "The old all-themes-over-time chart was too noisy, so this table keeps the useful part: "
-            "which theme memberships changed most from the first available observation to the latest."
+            "Use this one table when asking what changed. The bar chart above already shows the current mix; "
+            "`change_since_first` is the full-history shift when the selected date is latest. "
+            "Current loading magnitude stays in the bar chart above."
         )
-        movement = []
-        first = company_history.iloc[0]
-        last = company_history.iloc[-1]
-        for column in all_theme_columns:
-            movement.append(
-                {
-                    "theme": display_theme_name(column, label_lookup_for_view),
-                    "start_loading": float(first[column]),
-                    "latest_loading": float(last[column]),
-                    "change": float(last[column] - first[column]),
-                    "absolute_change": abs(float(last[column] - first[column])),
-                }
-            )
         st.dataframe(
-            pd.DataFrame(movement).sort_values("absolute_change", ascending=False).head(12),
+            theme_change_summary_frame(
+                company_history,
+                all_theme_columns,
+                company_date_index,
+                label_lookup_for_view,
+            ),
             width="stretch",
             hide_index=True,
             column_config={
-                "start_loading": st.column_config.NumberColumn("start", format="%.3f"),
-                "latest_loading": st.column_config.NumberColumn("latest", format="%.3f"),
-                "change": st.column_config.NumberColumn("change", format="%.3f"),
-                "absolute_change": st.column_config.NumberColumn("absolute_change", format="%.3f"),
+                "change_vs_previous": st.column_config.NumberColumn("since previous", format="%+.3f"),
+                "change_since_first": st.column_config.NumberColumn("since first", format="%+.3f"),
             },
         )
-
-    x_domain, y_domain = map_axis_domains(projected)
-    with st.expander("Optional 2D market map", expanded=False):
-        st.caption(
-            f"S&P 500 similarity map on {selected_date.strftime('%Y-%m-%d')}. "
-            f"Highlighted points are {focus_ticker} and its nearest peers from the full loading vector. "
-            "Use this for spatial intuition only; trust the peer table above for exact similarity."
-        )
-        st.altair_chart(market_map_chart(points, highlighted, x_domain, y_domain), width="stretch")
 
     with st.expander(f"Companies sharing {focus_ticker}'s dominant theme", expanded=False):
         st.dataframe(
             focus_dominant_theme_members(points, focus_ticker),
             width="stretch",
             hide_index=True,
-            column_config={
-                "dominant_loading": st.column_config.NumberColumn("dominant_loading", format="%.3f"),
-            },
         )
-
-    with st.expander("All visible group summaries", expanded=False):
-        st.caption(
-            "This is a diagnostic overview of the whole map. Use the focused peer table above for company-specific evidence."
-        )
-        interpretation = theme_interpretation_frame(points, relationships, max_rows=12)
-        st.dataframe(
-            interpretation,
-            width="stretch",
-            hide_index=True,
-            column_config={
-                "median_loading": st.column_config.NumberColumn("median_loading", format="%.3f"),
-            },
-        )
-
-    if highlighted:
-        with st.expander("Optional highlighted ticker trails", expanded=False):
-            st.caption(
-                "This is useful for exploration, but it is intentionally hidden by default because trajectory charts "
-                "can look noisy in a 2D projection."
-            )
-            st.altair_chart(
-                market_trail_chart(projected, selected_date, highlighted, trail_months, label_lookup_for_view),
-                width="stretch",
-            )
-
-    with st.expander("General map diagnostics", expanded=False):
-        table_columns = st.columns(2)
-        with table_columns[0]:
-            st.markdown("**Dominant Theme Counts**")
-            counts = points.groupby("theme_label").size().reset_index(name="stock_count")
-            st.dataframe(counts.sort_values("stock_count", ascending=False), width="stretch", hide_index=True)
-        with table_columns[1]:
-            st.markdown("**Largest Dominant Loadings**")
-            st.dataframe(
-                points.sort_values("dominant_loading", ascending=False)
-                .loc[:, ["ticker", "title", "theme_label", "dominant_loading"]]
-                .head(20),
-                width="stretch",
-                hide_index=True,
-            )
 
     if selected_view == "business" and not fragment_explanations.empty:
         with st.expander("Dynamic Labels: Representative Filing Fragments"):
-            shown_themes = set(points["dominant_theme"].astype(str).unique())
+            shown_themes = set(current_theme_columns)
             shown = theme_evidence_frame(fragment_explanations, shown_themes)
             st.dataframe(
                 shown,
@@ -5492,32 +5997,48 @@ def render_similarity_explorer() -> None:
                 hide_index=True,
                 column_config={
                     "source_url": st.column_config.LinkColumn("SEC source filing"),
-                    "fragment_similarity": st.column_config.NumberColumn("fragment_similarity", format="%.3f"),
+                    "dynamic_label": st.column_config.TextColumn("chart label", width="medium"),
+                    "central_filing_description": st.column_config.TextColumn("central filing phrase", width="large"),
+                    "evidence_snippet": st.column_config.TextColumn("full context snippet", width="large"),
                 },
             )
             st.caption(
                 "Stable labels are generated by comparing candidate filing-section fragments to each theme centroid "
-                "in MiniLM embedding space, then using the nearest fragment's strongest tracked topics. "
-                "Compact snippets appear when the snippet artifact has been generated; otherwise use the source filing "
-                "link for the underlying text."
+                "in MiniLM embedding space. The charts use compact labels; the evidence table keeps the fuller "
+                "central phrase and context snippet so the label can be audited against actual filing language."
             )
 
-    with st.expander("How to read this map"):
+    if selected_view == "financial" and not financial_explanations.empty:
+        with st.expander("Dynamic Labels: Financial Feature Profiles", expanded=True):
+            shown_themes = set(current_theme_columns)
+            shown = financial_theme_evidence_frame(financial_explanations, shown_themes)
+            st.dataframe(
+                shown,
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "dynamic_label": st.column_config.TextColumn("chart label", width="medium"),
+                    "financial_profile": st.column_config.TextColumn("profile summary", width="large"),
+                    "representative_companies": st.column_config.TextColumn("top companies", width="large"),
+                },
+            )
+            st.caption(
+                "Financial labels are generated from the weighted feature profile of each theme's highest-loading "
+                "companies. The evidence table shows which valuation, growth, profitability, size, liquidity, and "
+                "momentum features are unusually high or low versus the cross-section."
+            )
+
+    with st.expander("How to read this explorer"):
         st.write(
-            "Distance means similarity inside the selected view. If two stocks move in the same direction over time, "
-            "their soft theme memberships are changing in similar ways."
+            "The theme-mix chart shows how strongly the selected company belongs to each learned category. "
+            "Because these are soft GMM memberships, one company can partly belong to several themes."
         )
         st.write(
-            "The focus tables and trajectory use the same theme-loading data as the market map. The map is a 2D projection "
-            "for context; the nearest-peer table uses the full loading vector."
+            "The peer table compares companies in the full theme-membership profile instead of flattening them into a plot. "
+            "The movement tables show which memberships changed most through time."
         )
         st.write(
-            "Color is the stock's actual dominant soft theme on the selected date. "
-            "The map no longer pools small groups into `Other themes`, because that fake bucket can become visually dominant."
-        )
-        st.write(
-            "PCA is the default for speed and stability; UMAP is optional for local-neighborhood exploration. "
-            "Either projection is an exploratory map, not a trading signal."
+            "For business themes, the label evidence table links each compact chart label back to a central SEC filing fragment."
         )
 
 
@@ -5729,9 +6250,10 @@ def render_model_comparison() -> None:
             metric_cols[2].metric("Embedding vs LW variance", f"{diff:+.5f}", str(row["experiment_name"]))
         metric_cols[3].metric("Experiments compared", f"{len(experiments):,}")
         st.write(
-            "Headline reading: text embeddings gave the clearest business structure, while price/risk embeddings were "
-            "better for behavioral similarity. The full-universe peer and covariance tests did not beat the strongest "
-            "benchmarks, which became part of the project's thesis: different similarity views answer different questions."
+            "Headline reading: text embeddings gave the clearest business structure, while the price-only behavioral "
+            "view was too noisy for the main dashboard. The full-universe peer and covariance tests did not beat the "
+            "strongest benchmarks, which became part of the project's thesis: different similarity views answer "
+            "different questions, and some views are better used as diagnostics than presentation features."
         )
         st.dataframe(
             experiments.head(8),
@@ -5879,22 +6401,16 @@ def render_model_comparison() -> None:
             },
             {
                 "topic": "Theme labels",
-                "caveat": "Theme labels are generated dynamically from representative filing fragments; they are aids for interpretation, not supervised truth.",
+                "caveat": "Theme labels are generated dynamically from representative filing fragments or financial feature profiles; they are aids for interpretation, not supervised truth.",
             },
         ]
     )
     st.dataframe(caveats, width="stretch", hide_index=True)
 
 
-filing_tab, historical_tab, similarity_tab, network_tab, sector_tab, comparison_tab = st.tabs(
-    ["Filing Browser", "Historical Text", "Similarity Explorer", "Network", "Sector Outlook", "Model Comparison"]
+similarity_tab, network_tab, sector_tab, comparison_tab = st.tabs(
+    ["Similarity Explorer", "Network", "Sector Outlook", "Model Comparison"]
 )
-
-with filing_tab:
-    render_filing_browser()
-
-with historical_tab:
-    render_historical_text()
 
 with similarity_tab:
     render_similarity_explorer()

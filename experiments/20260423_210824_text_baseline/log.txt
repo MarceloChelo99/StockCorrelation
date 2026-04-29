@@ -1,1 +1,0 @@
-[2026-04-23 21:08:25] [train] Training history: {'explained_variance_ratio': 0.5751693239377313}.

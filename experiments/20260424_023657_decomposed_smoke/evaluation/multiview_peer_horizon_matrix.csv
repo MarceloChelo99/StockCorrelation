@@ -1,3 +1,0 @@
-view,forward_days,mean_embedding_peer_corr,mean_benchmark_peer_corr,mean_corr_diff,median_corr_diff,t_stat,p_value_normal_approx,diff_std,k,benchmark_column,n_observations,n_unique_tickers,n_dates
-behavioral,21,0.63567437161617,0.6282783036033959,0.007396068012774165,-0.011081716507920447,0.544618254968452,0.5860160968979089,0.27564956401999485,2,gics_sub_industry,412,412,1
-network,21,0.2807095479410284,0.5978943904754774,-0.3171848425344489,-0.2893181866669696,-19.541480868354498,0.0,0.3298602466129032,2,gics_sub_industry,413,413,1
