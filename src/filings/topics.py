@@ -87,7 +87,102 @@ def topic_counts_for_text(text: str) -> dict[str, int | float]:
     return counts
 
 
+def topic_evidence_snippets(
+    text: str,
+    *,
+    max_snippets: int = 2,
+    window_chars: int = 420,
+) -> list[dict[str, object]]:
+    """Return compact keyword-centered snippets without storing the full section.
+
+    Snippets are centered around the strongest tracked topic terms. If no topic
+    term appears, one section-start snippet is returned so labels still have a
+    small evidence trail.
+    """
+    compact = compact_text(text)
+    if not compact:
+        return []
+
+    candidates = []
+    for topic, terms in TOPICS.items():
+        for phrase, weight in terms.items():
+            for match in phrase_matches(compact, phrase):
+                candidates.append(
+                    {
+                        "topic": topic,
+                        "phrase": phrase,
+                        "weight": float(weight),
+                        "start": int(match.start()),
+                        "end": int(match.end()),
+                    }
+                )
+
+    if not candidates:
+        return [
+            {
+                "snippet_rank": 1,
+                "snippet_topic": "section_start",
+                "snippet_terms": "",
+                "evidence_snippet": trim_text(compact, window_chars),
+            }
+        ]
+
+    rows = []
+    seen_snippets: set[str] = set()
+    candidates = sorted(candidates, key=lambda item: (-float(item["weight"]), int(item["start"])))
+    for candidate in candidates:
+        snippet = centered_snippet(compact, int(candidate["start"]), int(candidate["end"]), window_chars)
+        if snippet in seen_snippets:
+            continue
+        seen_snippets.add(snippet)
+        rows.append(
+            {
+                "snippet_rank": len(rows) + 1,
+                "snippet_topic": str(candidate["topic"]),
+                "snippet_terms": str(candidate["phrase"]),
+                "evidence_snippet": snippet,
+            }
+        )
+        if len(rows) >= max(1, int(max_snippets)):
+            break
+    return rows
+
+
 def phrase_count(text: str, phrase: str) -> int:
     """Count phrase occurrences with simple word boundaries."""
     escaped = re.escape(phrase.lower()).replace(r"\ ", r"\s+")
     return len(re.findall(rf"(?<![A-Za-z]){escaped}(?![A-Za-z])", text))
+
+
+def phrase_matches(text: str, phrase: str) -> list[re.Match[str]]:
+    """Return phrase matches with simple word boundaries."""
+    escaped = re.escape(phrase.lower()).replace(r"\ ", r"\s+")
+    return list(re.finditer(rf"(?<![A-Za-z]){escaped}(?![A-Za-z])", text, flags=re.IGNORECASE))
+
+
+def compact_text(text: str) -> str:
+    """Collapse whitespace for compact snippet storage."""
+    return re.sub(r"\s+", " ", str(text or "")).strip()
+
+
+def centered_snippet(text: str, start: int, end: int, window_chars: int) -> str:
+    """Return a snippet centered around a match."""
+    window = max(80, int(window_chars))
+    center = int((start + end) / 2)
+    left = max(0, center - window // 2)
+    right = min(len(text), left + window)
+    left = max(0, right - window)
+    snippet = text[left:right].strip()
+    if left > 0:
+        snippet = "..." + snippet
+    if right < len(text):
+        snippet = snippet + "..."
+    return snippet
+
+
+def trim_text(text: str, max_chars: int) -> str:
+    """Trim text to a compact length."""
+    limit = max(80, int(max_chars))
+    if len(text) <= limit:
+        return text
+    return text[: limit - 3].rstrip() + "..."

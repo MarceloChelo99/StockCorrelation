@@ -1,0 +1,51 @@
+ticker,date,title,company_name,gics_sector,gics_sub_industry,cluster,cluster_majority_label,cluster_distance
+TSLA,2026-04-22,"Tesla, Inc.","Tesla, Inc.",Consumer Discretionary,Automobile Manufacturers,3,Information Technology,5.841243332597573
+BKNG,2026-04-22,Booking Holdings Inc.,Booking Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",9,Financials,5.571697099021146
+WMT,2026-04-22,Walmart Inc.,Walmart,Consumer Staples,Consumer Staples Merchandise Retail,9,Financials,4.675340956508527
+GOOGL,2026-04-22,Alphabet Inc.,Alphabet Inc. (Class A),Communication Services,Interactive Media & Services,3,Information Technology,4.298598182477033
+WM,2026-04-22,WASTE MANAGEMENT INC,Waste Management,Industrials,Environmental & Facilities Services,9,Financials,4.250737354038346
+MPWR,2026-04-22,MONOLITHIC POWER SYSTEMS INC,Monolithic Power Systems,Information Technology,Semiconductors,1,Industrials,4.092934678702623
+BAC,2026-04-22,BANK OF AMERICA CORP /DE/,Bank of America,Financials,Diversified Banks,1,Industrials,3.9507546228713966
+META,2026-04-22,"Meta Platforms, Inc.",Meta Platforms,Communication Services,Interactive Media & Services,6,Consumer Discretionary,3.9496119468338975
+MSFT,2026-04-22,MICROSOFT CORP,Microsoft,Information Technology,Systems Software,7,Consumer Discretionary,3.942117894976818
+SOLV,2026-04-22,Solventum Corp,Solventum,Health Care,Health Care Technology,10,Information Technology,3.834792584976424
+CAT,2026-04-22,CATERPILLAR INC,Caterpillar Inc.,Industrials,Construction Machinery & Heavy Transportation Equipment,8,Information Technology,3.7466718674578923
+WAT,2026-04-22,WATERS CORP /DE/,Waters Corporation,Health Care,Life Sciences Tools & Services,9,Financials,3.710322874321908
+COHR,2026-04-22,COHERENT CORP.,Coherent Corp.,Information Technology,Electronic Components,1,Industrials,3.629488952072874
+STX,2026-04-22,Seagate Technology Holdings plc,Seagate Technology,Information Technology,"Technology Hardware, Storage & Peripherals",0,Industrials,3.6211734807181473
+V,2026-04-22,VISA INC.,Visa Inc.,Financials,Transaction & Payment Processing Services,10,Information Technology,3.616551748550538
+SYF,2026-04-22,Synchrony Financial,Synchrony Financial,Financials,Consumer Finance,10,Information Technology,3.5565070033280946
+MDT,2026-04-22,Medtronic plc,Medtronic,Health Care,Health Care Equipment,1,Industrials,3.5237778667197786
+OXY,2026-04-22,OCCIDENTAL PETROLEUM CORP /DE/,Occidental Petroleum,Energy,Oil & Gas Exploration & Production,8,Information Technology,3.441024305917898
+INCY,2026-04-22,INCYTE CORP,Incyte,Health Care,Biotechnology,2,Financials,3.3708167804038385
+RCL,2026-04-22,ROYAL CARIBBEAN CRUISES LTD,Royal Caribbean Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",8,Information Technology,3.3311395458776194
+VZ,2026-04-22,VERIZON COMMUNICATIONS INC,Verizon,Communication Services,Integrated Telecommunication Services,1,Industrials,3.312344236405927
+BRK-B,2026-04-22,BERKSHIRE HATHAWAY INC,Berkshire Hathaway,Financials,Multi-Sector Holdings,1,Industrials,3.3111955613662407
+AEP,2026-04-22,AMERICAN ELECTRIC POWER CO INC,American Electric Power,Utilities,Electric Utilities,2,Financials,3.2067263069994545
+SO,2026-04-22,SOUTHERN CO,Southern Company,Utilities,Electric Utilities,9,Financials,3.191119853357033
+CRL,2026-04-22,"CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",Charles River Laboratories,Health Care,Life Sciences Tools & Services,2,Financials,3.153652771683098
+AAPL,2026-04-22,Apple Inc.,Apple Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",0,Industrials,3.141706923985791
+GD,2026-04-22,GENERAL DYNAMICS CORP,General Dynamics,Industrials,Aerospace & Defense,4,Information Technology,3.1077973790177755
+VST,2026-04-22,Vistra Corp.,Vistra Corp.,Utilities,Electric Utilities,8,Information Technology,3.088303459845368
+NFLX,2026-04-22,NETFLIX INC,Netflix,Communication Services,Movies & Entertainment,1,Industrials,3.065414789684375
+CVX,2026-04-22,CHEVRON CORP,Chevron Corporation,Energy,Integrated Oil & Gas,0,Industrials,3.049648525244032
+CNP,2026-04-22,CENTERPOINT ENERGY INC,CenterPoint Energy,Utilities,Multi-Utilities,6,Consumer Discretionary,3.0134992493784813
+COR,2026-04-22,"Cencora, Inc.",Cencora,Health Care,Health Care Distributors,4,Information Technology,3.001721500888023
+AXP,2026-04-22,AMERICAN EXPRESS CO,American Express,Financials,Consumer Finance,10,Information Technology,2.9897863253362567
+FOXA,2026-04-22,Fox Corp,Fox Corporation (Class A),Communication Services,Broadcasting,4,Information Technology,2.988194799716765
+ES,2026-04-22,EVERSOURCE ENERGY,Eversource Energy,Utilities,Electric Utilities,0,Industrials,2.973590747607788
+SPG,2026-04-22,SIMON PROPERTY GROUP INC.,Simon Property Group,Real Estate,Retail REITs,4,Information Technology,2.969017853998409
+TER,2026-04-22,"TERADYNE, INC",Teradyne,Information Technology,Semiconductor Materials & Equipment,0,Industrials,2.9550908458045715
+COF,2026-04-22,CAPITAL ONE FINANCIAL CORP,Capital One,Financials,Consumer Finance,4,Information Technology,2.9342331319118373
+CTVA,2026-04-22,"Corteva, Inc.",Corteva,Materials,Fertilizers & Agricultural Chemicals,4,Information Technology,2.9175594263050737
+CHTR,2026-04-22,"CHARTER COMMUNICATIONS, INC. /MO/",Charter Communications,Communication Services,Cable & Satellite,8,Information Technology,2.917525655390454
+BLDR,2026-04-22,"Builders FirstSource, Inc.",Builders FirstSource,Industrials,Building Products,2,Financials,2.9060849309867676
+CAH,2026-04-22,CARDINAL HEALTH INC,Cardinal Health,Health Care,Health Care Distributors,8,Information Technology,2.8557321532312403
+FSLR,2026-04-22,"FIRST SOLAR, INC.",First Solar,Information Technology,Semiconductors,6,Consumer Discretionary,2.8458089659293435
+EOG,2026-04-22,EOG RESOURCES INC,EOG Resources,Energy,Oil & Gas Exploration & Production,6,Consumer Discretionary,2.8276982077523196
+KDP,2026-04-22,Keurig Dr Pepper Inc.,Keurig Dr Pepper,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,8,Information Technology,2.7878519618641584
+CCL,2026-04-22,CARNIVAL CORP,Carnival,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",8,Information Technology,2.78298004181502
+PSA,2026-04-22,Public Storage,Public Storage,Real Estate,Self-Storage REITs,2,Financials,2.7703892059491535
+PLTR,2026-04-22,Palantir Technologies Inc.,Palantir Technologies,Information Technology,Application Software,0,Industrials,2.760726004590201
+PLD,2026-04-22,"Prologis, Inc.",Prologis,Real Estate,Industrial REITs,2,Financials,2.7551073376307214
+PEP,2026-04-22,PEPSICO INC,PepsiCo,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,1,Industrials,2.7463637598220108

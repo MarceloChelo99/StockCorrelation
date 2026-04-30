@@ -1,0 +1,31 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='800' height='260'>
+<rect width='800' height='260' fill='#faf7ef'/>
+<text x='24' y='30' font-family='serif' font-size='18'>Embedding displacement histogram</text>
+<rect x='60' y='220' width='29' height='0' fill='#2f6f73' opacity='0.78'/>
+<rect x='120' y='220' width='29' height='0' fill='#2f6f73' opacity='0.78'/>
+<rect x='180' y='160' width='29' height='60' fill='#2f6f73' opacity='0.78'/>
+<rect x='240' y='100' width='29' height='120' fill='#2f6f73' opacity='0.78'/>
+<rect x='300' y='100' width='29' height='120' fill='#2f6f73' opacity='0.78'/>
+<rect x='360' y='40' width='29' height='180' fill='#2f6f73' opacity='0.78'/>
+<rect x='420' y='160' width='29' height='60' fill='#2f6f73' opacity='0.78'/>
+<rect x='480' y='220' width='29' height='0' fill='#2f6f73' opacity='0.78'/>
+<rect x='540' y='220' width='29' height='0' fill='#2f6f73' opacity='0.78'/>
+<rect x='600' y='220' width='29' height='0' fill='#2f6f73' opacity='0.78'/>
+<rect x='660' y='160' width='29' height='60' fill='#2f6f73' opacity='0.78'/>
+<rect x='620' y='42' width='12' height='12' fill='#2f6f73'/>
+<text x='638' y='52' font-family='sans-serif' font-size='12'>ai_mover</text>
+<rect x='90' y='160' width='29' height='60' fill='#c46a3a' opacity='0.78'/>
+<rect x='150' y='40' width='29' height='180' fill='#c46a3a' opacity='0.78'/>
+<rect x='210' y='160' width='29' height='60' fill='#c46a3a' opacity='0.78'/>
+<rect x='270' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='330' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='390' y='40' width='29' height='180' fill='#c46a3a' opacity='0.78'/>
+<rect x='450' y='100' width='29' height='120' fill='#c46a3a' opacity='0.78'/>
+<rect x='510' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='570' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='630' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='690' y='220' width='29' height='0' fill='#c46a3a' opacity='0.78'/>
+<rect x='620' y='60' width='12' height='12' fill='#c46a3a'/>
+<text x='638' y='70' font-family='sans-serif' font-size='12'>control</text>
+<line x1='50' y1='220' x2='760' y2='220' stroke='#333'/>
+</svg>

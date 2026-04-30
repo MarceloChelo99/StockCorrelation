@@ -6,10 +6,11 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import pandas as pd
 
+from src.applications.portfolio_optimization import minimum_variance_long_only
 from src.evaluation.covariance import (
     CovarianceEvaluator,
     embedding_similarity_prior,
-    minimum_variance_weights,
+    ledoit_wolf_covariance,
     shrink_covariance_to_prior,
 )
 
@@ -32,7 +33,7 @@ class CovarianceEvaluatorTests(unittest.TestCase):
             ]
         )
 
-        weights = minimum_variance_weights(covariance)
+        weights = minimum_variance_long_only(covariance)
 
         self.assertAlmostEqual(float(weights.sum()), 1.0)
         self.assertTrue(np.all(weights >= 0.0))
@@ -53,6 +54,21 @@ class CovarianceEvaluatorTests(unittest.TestCase):
         shrunk = shrink_covariance_to_prior(sample, prior_corr, alpha=0.5)
 
         self.assertTrue(np.allclose(np.diag(shrunk), np.diag(sample), atol=1e-8))
+
+    def test_ledoit_wolf_covariance_tracks_population_covariance(self) -> None:
+        rng = np.random.default_rng(37)
+        population = np.array(
+            [
+                [0.040, 0.012, 0.004],
+                [0.012, 0.090, 0.010],
+                [0.004, 0.010, 0.025],
+            ]
+        )
+        samples = rng.multivariate_normal(np.zeros(3), population, size=5000)
+
+        estimate = ledoit_wolf_covariance(samples)
+
+        self.assertTrue(np.allclose(estimate, population, rtol=0.12, atol=0.006))
 
     def test_evaluator_runs_on_tiny_panel(self) -> None:
         dates = pd.date_range("2024-01-01", periods=90, freq="B")
@@ -98,6 +114,8 @@ class CovarianceEvaluatorTests(unittest.TestCase):
             )
 
         self.assertIn("methods", metrics)
+        self.assertIn("ledoit_wolf", metrics["methods"])
+        self.assertIn("legacy_constant_variance", metrics["methods"])
         self.assertIn("embedding_prior", metrics["methods"])
         self.assertGreater(metrics["n_rebalance_dates"], 0)
 

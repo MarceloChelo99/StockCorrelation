@@ -83,6 +83,10 @@ def annual_fundamental_panel(fundamentals: pd.DataFrame) -> pd.DataFrame:
     frame["fiscal_year"] = pd.to_numeric(frame["fiscal_year"], errors="coerce")
     frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
     frame = frame.dropna(subset=["ticker", "concept", "value", "filing_date", "fiscal_year"])
+    # SEC companyfacts occasionally contains amended or malformed observations
+    # whose period end is after the public filing date. Those rows cannot be
+    # point-in-time safe, so exclude them before canonical concept selection.
+    frame = frame[~(frame["end_date"].notna() & (frame["end_date"] > frame["filing_date"]))]
     frame = frame[frame["form"].isin(["10-K", "10-K/A", "20-F", "40-F"])]
     frame = frame[frame["fiscal_period"].isin(["FY", "CY"]) | frame["fiscal_period"].isna()]
 

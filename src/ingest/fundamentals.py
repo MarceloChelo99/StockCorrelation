@@ -26,11 +26,22 @@ CONCEPT_GROUPS = {
     "assets": ["Assets"],
     "stockholders_equity": ["StockholdersEquity"],
     "long_term_debt": ["LongTermDebt"],
+    "cash_and_equivalents": [
+        "CashAndCashEquivalentsAtCarryingValue",
+        "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+    ],
+    "operating_cash_flow": ["NetCashProvidedByUsedInOperatingActivities"],
     "rd_expense": ["ResearchAndDevelopmentExpense"],
     "capex": ["PaymentsToAcquirePropertyPlantAndEquipment"],
     "buybacks": ["PaymentsForRepurchaseOfCommonStock"],
     "dividends": ["PaymentsOfDividends"],
-    "shares_outstanding": ["CommonStockSharesOutstanding"],
+    "shares_outstanding": [
+        "CommonStockSharesOutstanding",
+        "EntityCommonStockSharesOutstanding",
+        "WeightedAverageNumberOfSharesOutstandingBasic",
+        "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "WeightedAverageNumberOfShareOutstandingBasicAndDiluted",
+    ],
 }
 
 
@@ -133,36 +144,39 @@ def fetch_companyfacts(cik: str, *, user_agent: str, max_retries: int) -> dict:
 
 
 def extract_companyfacts_rows(payload: dict, *, ticker: str, cik: str) -> list[dict[str, object]]:
-    """Extract configured US-GAAP concepts from one companyfacts payload."""
-    facts = payload.get("facts", {}).get("us-gaap", {})
+    """Extract configured companyfacts concepts across SEC taxonomies."""
     rows: list[dict[str, object]] = []
     wanted_concepts = {concept for concepts in CONCEPT_GROUPS.values() for concept in concepts}
-    for concept, concept_payload in facts.items():
-        if concept not in wanted_concepts:
+    facts_by_taxonomy = payload.get("facts", {})
+    for facts in facts_by_taxonomy.values():
+        if not isinstance(facts, dict):
             continue
-        units = concept_payload.get("units", {})
-        for unit, observations in units.items():
-            for observation in observations:
-                value = observation.get("val")
-                filing_date = observation.get("filed")
-                end_date = observation.get("end")
-                if value is None or filing_date is None or end_date is None:
-                    continue
-                rows.append(
-                    {
-                        "ticker": ticker,
-                        "cik": cik,
-                        "concept": concept,
-                        "unit": unit,
-                        "value": value,
-                        "start_date": observation.get("start"),
-                        "end_date": end_date,
-                        "filing_date": filing_date,
-                        "form": observation.get("form"),
-                        "fiscal_period": observation.get("fp"),
-                        "fiscal_year": observation.get("fy"),
-                    }
-                )
+        for concept, concept_payload in facts.items():
+            if concept not in wanted_concepts:
+                continue
+            units = concept_payload.get("units", {})
+            for unit, observations in units.items():
+                for observation in observations:
+                    value = observation.get("val")
+                    filing_date = observation.get("filed")
+                    end_date = observation.get("end")
+                    if value is None or filing_date is None or end_date is None:
+                        continue
+                    rows.append(
+                        {
+                            "ticker": ticker,
+                            "cik": cik,
+                            "concept": concept,
+                            "unit": unit,
+                            "value": value,
+                            "start_date": observation.get("start"),
+                            "end_date": end_date,
+                            "filing_date": filing_date,
+                            "form": observation.get("form"),
+                            "fiscal_period": observation.get("fp"),
+                            "fiscal_year": observation.get("fy"),
+                        }
+                    )
     return rows
 
 

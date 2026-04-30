@@ -5,9 +5,9 @@
       "price_volatility",
       "price_momentum",
       "price_liquidity",
-      "text_business",
-      "text_risk",
+      "text_historical",
       "growth_lifecycle",
+      "valuation",
       "network_position"
     ],
     "text": {
@@ -22,9 +22,9 @@
       "price_volatility",
       "price_momentum",
       "price_liquidity",
-      "text_business",
-      "text_risk",
+      "text_historical",
       "growth_lifecycle",
+      "valuation",
       "network_position"
     ],
     "metadata_columns": [

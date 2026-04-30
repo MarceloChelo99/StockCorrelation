@@ -1,56 +1,94 @@
 # Stock Embeddings Dashboard
 
-Minimal Streamlit app for:
+Streamlit dashboard for exploring the project outputs: learned company themes, relationship evidence, and walk-forward group return predictions.
 
-- fetching a small SEC raw filing corpus with `DatabaseOperator`
-- browsing stored corpora on disk
-- previewing structured filing rows and raw submission text
-- exploring historical 10-K language trends and embedding movement
-- exploring how company soft similarity-category memberships change over time
+## Run
 
-Run it from the repo root:
+From the repository root:
 
 ```bash
-.venv/bin/streamlit run apps/raw_filing_browser/app.py
+poetry run streamlit run apps/raw_filing_browser/app.py --server.port 8510
 ```
 
-The `Similarity Shifts` tab reads the latest decomposed experiment with per-view GMM loadings, such as:
-
-```text
-experiments/20260424_144322_decomposed_point_in_time
-```
-
-Use the `Similarity Shifts` controls to pick a company, similarity view, granularity, number of visible groups, and a simulation date. The `Back` / `Forward` buttons move through time by the selected step size.
-
-Use the `Market Map` tab to view the whole S&P 500 as a moving 2D similarity map. Each point is one stock, colors represent dominant soft themes, highlighted tickers show labels and movement trails, and the `Back` / `Forward` controls move through time by the selected step increment.
-
-Use the `Historical Text` tab to analyze the compact historical 10-K artifacts in:
-
-```text
-data/processed/historical_text
-```
-
-It shows market-wide topic trends, company timelines, largest topic increases, sector-year heatmaps, and a 2D semantic trail map from historical section embeddings. This is the tab to use for questions like whether a company is increasingly describing itself through AI, cloud, cybersecurity, supply-chain, or electrification language.
-
-The compact historical stream supports more than 10-K annual sections. For example:
+Or with the local virtual environment:
 
 ```bash
-.venv/bin/python scripts/24_stream_historical_text_features.py \
+.venv/bin/streamlit run apps/raw_filing_browser/app.py --server.port 8510
+```
+
+Open:
+
+```text
+http://localhost:8510
+```
+
+## Expected Local Artifacts
+
+The app is designed around the current retained artifacts:
+
+```text
+data/processed/
+experiments/20260425_192352_decomposed_point_in_time/
+experiments/20260425_165422_temporal_business_view/
+experiments/20260428_financial_embedding_outlook/
+report/experiment_comparison.csv
+report/feature_ablation_summary.csv
+report/sector_autoencoder_outlook.csv
+```
+
+If one of these is missing, the relevant tab may show a warning or reduced output.
+
+## Tabs
+
+### Similarity Explorer
+
+Pick a company and inspect:
+
+- Current business-language or financial theme mix
+- Closest peers in the full theme-loading space
+- Filing-backed dynamic labels for business themes and feature-profile labels for financial themes
+
+The peer table is the trusted similarity evidence. The UI intentionally avoids the older 2D market map because it was harder to interpret than the direct theme and peer tables.
+The network view is intentionally kept in the separate Network tab, where the relationship evidence is easier to read.
+
+### Network
+
+Current-state relationship evidence from SEC filings. The tab focuses on readable supplier/customer/competitor/partner evidence rather than historical network animation.
+It also includes a supply-chain disruption simulation that walks upstream to suppliers or downstream to customers using the extracted supplier -> customer graph.
+
+### Sector Outlook
+
+Walk-forward group excess-return predictions. Current scores are separated from completed historical predictions. Treat the simulation as a research backtest, not a trading recommendation.
+
+Model-comparison notes are kept in the written report and presentation materials rather than the dashboard, so the app stays focused on company exploration and the historical sector backtest.
+
+## Theme Labels
+
+Theme names are generated dynamically. The dashboard does not depend on manually curated labels.
+
+For the business view, labels come from representative filing fragments selected by similarity to theme centroids. For the financial view, labels come from weighted valuation, growth, profitability, liquidity, and momentum feature profiles.
+
+## Historical Text Artifacts
+
+The primary historical text artifact is:
+
+```text
+data/processed/historical_text_10k_10q
+```
+
+The dedicated Historical Text tab is hidden in the current class-demo dashboard, but these artifacts still power business-view labels and central filing snippets in Similarity Explorer.
+
+To regenerate compact historical text features:
+
+```bash
+.venv/bin/python -m scripts.historical_text.stream_features \
   --since 2010-01-01 \
   --forms "10-K,10-Q" \
   --output-dir data/processed/historical_text_10k_10q
 ```
 
-For non-XBRL forms such as 8-Ks, proxies, or S-1s, use SEC submissions discovery:
+To backfill evidence snippets from an already downloaded raw corpus:
 
 ```bash
-.venv/bin/python scripts/24_stream_historical_text_features.py \
-  --since 2024-01-01 \
-  --forms "8-K,8-K/A,DEF 14A,S-1,S-1/A" \
-  --discovery-source submissions \
-  --output-dir data/processed/historical_text_event_proxy_ipo
+.venv/bin/python scripts/historical_text/backfill_snippets_from_raw_corpus.py --resume
 ```
-
-Theme names live in `report/theme_labels.csv`. The file is seeded with top-firm labels, and you can improve them manually from the `Label themes` expander in the dashboard.
-
-For honest historical maps, use the point-in-time decomposed experiment. The `business` and `network` views only have dates where actual filing text or relationship evidence exists; they no longer project current structure backward across the full history.

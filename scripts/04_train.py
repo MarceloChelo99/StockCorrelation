@@ -1,42 +1,27 @@
+"""Compatibility wrapper for the stage 04 model training script."""
 from __future__ import annotations
 
 import sys
+
+import importlib.util
 from pathlib import Path
 
-import pandas as pd
+
+def _load_wrapper_helper():
+    path = Path(__file__).resolve().parent / "_run_moved.py"
+    spec = importlib.util.spec_from_file_location("_stock_embeddings_run_moved", path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load wrapper helper from {path}.")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from src.config import load_config
-from src.experiment import Experiment
-from src.models.train import train_embedding_model
-from src.utils.logging import log
-from src.utils.seed import set_seed
+load = _load_wrapper_helper().load
 
 
-def main(config_name: str = "baseline") -> None:
-    config = load_config(config_name)
-    set_seed(int(config["random_seed"]))
-
-    dataset_path = Path(config["paths"]["dataset_dir"]) / f"{config['assembly']['dataset_name']}.parquet"
-    dataset = pd.read_parquet(dataset_path)
-    experiment = Experiment.create(
-        config["paths"]["experiments_dir"],
-        config["experiment_name"],
-        config,
-    )
-    _, embeddings, history = train_embedding_model(
-        dataset,
-        config,
-        model_dir=experiment.model_dir,
-        embeddings_path=experiment.embeddings_path,
-        history_path=experiment.history_path,
-    )
-    log(f"Training wrote {len(embeddings)} embeddings to {experiment.embeddings_path}.", tag="train")
-    log(f"Training history: {history}.", tag="train", log_path=experiment.log_path)
+_impl = load("pipeline/stage_04_model/train.py", "script_train")
+main = _impl.main
 
 
 if __name__ == "__main__":

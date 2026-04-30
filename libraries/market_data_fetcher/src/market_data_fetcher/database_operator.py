@@ -635,7 +635,7 @@ class DatabaseOperator:
             return
         sqlite_frame = frame.copy()
         sqlite_frame.insert(0, "group_name", group_name)
-        sqlite_frame = sqlite_frame.where(pd.notnull(sqlite_frame), None)
+        sqlite_frame = _sqlite_compatible_frame(sqlite_frame)
         _ensure_sqlite_table_columns(connection, table_name, sqlite_frame)
         sqlite_frame.to_sql(table_name, connection, if_exists="append", index=False)
 
@@ -710,6 +710,30 @@ def _optional_existing_path(path: Path) -> Path | None:
 def _split_failure(message: str) -> tuple[str, str]:
     stage, _, error = message.partition(": ")
     return stage or "unknown", error or message
+
+
+def _sqlite_compatible_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return a frame containing only scalar values sqlite can bind directly."""
+    result = frame.copy()
+    for column in result.columns:
+        if pd.api.types.is_datetime64_any_dtype(result[column]):
+            result[column] = result[column].map(_sqlite_scalar)
+        elif pd.api.types.is_object_dtype(result[column]):
+            result[column] = result[column].map(_sqlite_scalar)
+    return result.where(pd.notnull(result), None)
+
+
+def _sqlite_scalar(value):
+    """Convert pandas/Python temporal scalars before sqlite binding."""
+    if pd.isna(value):
+        return None
+    if isinstance(value, pd.Timestamp):
+        return value.isoformat()
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    return value
 
 
 def _ensure_sqlite_table_columns(

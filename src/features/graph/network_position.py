@@ -23,6 +23,9 @@ NETWORK_COLUMNS = [
     "net_in_degree_customer",
     "net_in_degree_supplier",
     "net_in_degree_competitor",
+    "net_supplies_to_count",
+    "net_supplied_by_count",
+    "net_supply_chain_degree",
     "net_pagerank",
     "net_betweenness",
     "net_clustering_coefficient",
@@ -85,6 +88,10 @@ def compute_network_features(relationships: pd.DataFrame, universe_tickers: list
     frame = relationships.copy()
     frame["source_ticker"] = frame["source_ticker"].astype(str).str.upper()
     frame["target_ticker"] = frame["target_ticker"].astype(str).str.upper()
+    for column in ["supplier_ticker", "customer_ticker"]:
+        if column not in frame.columns:
+            frame[column] = ""
+        frame[column] = frame[column].fillna("").astype(str).str.upper()
     min_confidence = float(config["features"].get("graph", {}).get("min_confidence", 0.45))
     frame = frame[frame["confidence"].astype(float) >= min_confidence]
 
@@ -106,6 +113,8 @@ def compute_network_features(relationships: pd.DataFrame, universe_tickers: list
     rows = []
     for ticker in universe_tickers:
         incoming = frame[frame["target_ticker"] == ticker]
+        supplies_to = frame[frame["supplier_ticker"] == ticker]
+        supplied_by = frame[frame["customer_ticker"] == ticker]
         rows.append(
             {
                 "ticker": ticker,
@@ -114,6 +123,9 @@ def compute_network_features(relationships: pd.DataFrame, universe_tickers: list
                 "net_in_degree_customer": float((incoming["relationship_type"] == "customer").sum()),
                 "net_in_degree_supplier": float((incoming["relationship_type"] == "supplier").sum()),
                 "net_in_degree_competitor": float((incoming["relationship_type"] == "competitor").sum()),
+                "net_supplies_to_count": float(len(supplies_to)),
+                "net_supplied_by_count": float(len(supplied_by)),
+                "net_supply_chain_degree": float(len(supplies_to) + len(supplied_by)),
                 "net_pagerank": float(pagerank.get(ticker, 0.0)),
                 "net_betweenness": float(betweenness.get(ticker, 0.0)),
                 "net_clustering_coefficient": float(clustering.get(ticker, 0.0)),

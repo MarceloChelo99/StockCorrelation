@@ -6,19 +6,19 @@ Top-5 nearest peers per view for selected companies.
 
 | View | Top Peers |
 | --- | --- |
-| business | CRM (Salesforce), CRWD (CrowdStrike), PLTR (Palantir Technologies), APP (AppLovin), WDAY (Workday, Inc.) |
+| business | PLTR (Palantir Technologies), APP (AppLovin), CTSH (Cognizant), CRM (Salesforce), EPAM (EPAM Systems) |
 | behavioral | AMZN (Amazon), AAPL (Apple Inc.), GOOGL (Alphabet Inc. (Class A)), MSFT (Microsoft), AVGO (Broadcom) |
-| growth | GOOG (Alphabet Inc. (Class C)), IP (International Paper), ORCL (Oracle Corporation), MSFT (Microsoft), AMZN (Amazon) |
-| network | MET (MetLife), MLM (Martin Marietta Materials), MCHP (Microchip Technology), MS (Morgan Stanley), MCD (McDonald's) |
+| growth | ORCL (Oracle Corporation), WMB (Williams Companies), NI (NiSource), EVRG (Evergy), GOOG (Alphabet Inc. (Class C)) |
+| network | MLM (Martin Marietta Materials), MET (MetLife), MCHP (Microchip Technology), MS (Morgan Stanley), MCD (McDonald's) |
 
 ## AAPL - Apple Inc.
 
 | View | Top Peers |
 | --- | --- |
-| business | C (Citigroup), AFL (Aflac), NKE (Nike, Inc.), GRMN (Garmin), APH (Amphenol) |
+| business | ADSK (Autodesk), HAS (Hasbro), APP (AppLovin), UBER (Uber), BBY (Best Buy) |
 | behavioral | MSFT (Microsoft), META (Meta Platforms), AMZN (Amazon), GOOGL (Alphabet Inc. (Class A)), GOOG (Alphabet Inc. (Class C)) |
-| growth | DUK (Duke Energy), AXP (American Express), DE (Deere & Company), PNC (PNC Financial Services), ICE (Intercontinental Exchange) |
-| network | GM (General Motors), CTRA (Coterra), GS (Goldman Sachs), VLO (Valero Energy), XOM (ExxonMobil) |
+| growth | CFG (Citizens Financial Group), PFG (Principal Financial Group), DIS (Walt Disney Company (The)), CVX (Chevron Corporation), TFC (Truist Financial) |
+| network | GM (General Motors), VLO (Valero Energy), MOS (Mosaic Company (The)), JBHT (J.B. Hunt), EIX (Edison International) |
 
 ## BRK.B - 
 
@@ -33,43 +33,43 @@ Top-5 nearest peers per view for selected companies.
 
 | View | Top Peers |
 | --- | --- |
-| business | COP (ConocoPhillips), DVN (Devon Energy), APA (APA Corporation), TRGP (Targa Resources), OXY (Occidental Petroleum) |
+| business | CVX (Chevron Corporation), VLO (Valero Energy), COP (ConocoPhillips), EXE (Expand Energy), TRGP (Targa Resources) |
 | behavioral | CVX (Chevron Corporation), CME (CME Group), EOG (EOG Resources), T (AT&T), COP (ConocoPhillips) |
-| growth | COP (ConocoPhillips), PFE (Pfizer), PSX (Phillips 66), CMCSA (Comcast), TFC (Truist Financial) |
-| network | MOS (Mosaic Company (The)), GS (Goldman Sachs), VLO (Valero Energy), NUE (Nucor), UNH (UnitedHealth Group) |
+| growth | PFE (Pfizer), COP (ConocoPhillips), CVX (Chevron Corporation), PFG (Principal Financial Group), PSX (Phillips 66) |
+| network | MOS (Mosaic Company (The)), GS (Goldman Sachs), ULTA (Ulta Beauty), VLO (Valero Energy), LIN (Linde plc) |
 
 ## JPM - JPMorgan Chase
 
 | View | Top Peers |
 | --- | --- |
-| business | BAC (Bank of America), MTB (M&T Bank), AWK (American Water Works), COF (Capital One), NTRS (Northern Trust) |
+| business | MTB (M&T Bank), TFC (Truist Financial), BAC (Bank of America), WELL (Welltower), SOLV (Solventum) |
 | behavioral | WMT (Walmart), BAC (Bank of America), COST (Costco), V (Visa Inc.), MA (Mastercard) |
-| growth | WFC (Wells Fargo), BRK-B (Berkshire Hathaway), GS (Goldman Sachs), BAC (Bank of America), USB (U.S. Bancorp) |
-| network | BX (Blackstone Inc.), NI (NiSource), WAT (Waters Corporation), MNST (Monster Beverage), HLT (Hilton Worldwide) |
+| growth | BRK-B (Berkshire Hathaway), USB (U.S. Bancorp), GS (Goldman Sachs), BAC (Bank of America), BK (BNY Mellon) |
+| network | BX (Blackstone Inc.), BAC (Bank of America), NI (NiSource), RVTY (Revvity), SO (Southern Company) |
 
 ## SBUX - Starbucks
 
 | View | Top Peers |
 | --- | --- |
-| business | HSY (Hershey Company (The)), LULU (Lululemon Athletica), KO (Coca-Cola Company (The)), STZ (Constellation Brands), KDP (Keurig Dr Pepper) |
+| business | MAS (Masco), KDP (Keurig Dr Pepper), KHC (Kraft Heinz), SJM (J.M. Smucker Company (The)), SW (Smurfit Westrock) |
 | behavioral | TRMB (Trimble Inc.), IEX (IDEX Corporation), ABNB (Airbnb), STZ (Constellation Brands), BMY (Bristol Myers Squibb) |
-| growth | OTIS (Otis Worldwide), LOW (Lowe's), MO (Altria), HCA (HCA Healthcare), MAR (Marriott International) |
-| network | PEP (PepsiCo), NSC (Norfolk Southern), CCL (Carnival), ROK (Rockwell Automation), AMAT (Applied Materials) |
+| growth | OTIS (Otis Worldwide), BKNG (Booking Holdings), LOW (Lowe's), HCA (HCA Healthcare), RF (Regions Financial Corporation) |
+| network | NSC (Norfolk Southern), CCL (Carnival), RTX (RTX Corporation), FISV (Fiserv), APH (Amphenol) |
 
 ## PFE - Pfizer
 
 | View | Top Peers |
 | --- | --- |
-| business | SOLV (Solventum), EW (Edwards Lifesciences), BSX (Boston Scientific), AMGN (Amgen), DGX (Quest Diagnostics) |
+| business | VTRS (Viatris), AMGN (Amgen), GILD (Gilead Sciences), BSX (Boston Scientific), MRNA (Moderna) |
 | behavioral | HON (Honeywell), CTVA (Corteva), YUM (Yum! Brands), CMCSA (Comcast), PEP (PepsiCo) |
-| growth | DE (Deere & Company), FITB (Fifth Third Bancorp), STT (State Street Corporation), DIS (Walt Disney Company (The)), CFG (Citizens Financial Group) |
-| network | VZ (Verizon), NXPI (NXP Semiconductors), AMT (American Tower), NWSA (News Corp (Class A)), RTX (RTX Corporation) |
+| growth | XOM (ExxonMobil), COP (ConocoPhillips), PSX (Phillips 66), DE (Deere & Company), PFG (Principal Financial Group) |
+| network | UNP (Union Pacific Corporation), PYPL (PayPal), DD (DuPont), CMCSA (Comcast), EXPE (Expedia Group) |
 
 ## NEE - NextEra Energy
 
 | View | Top Peers |
 | --- | --- |
-| business | DD (DuPont), PWR (Quanta Services), AWK (American Water Works), SRE (Sempra), VRT (Vertiv) |
+| business | NRG (NRG Energy), SLB (Schlumberger), SNDK (Sandisk), ARE (Alexandria Real Estate Equities), DLR (Digital Realty) |
 | behavioral | SRE (Sempra), PFE (Pfizer), YUM (Yum! Brands), GILD (Gilead Sciences), AMGN (Amgen) |
-| growth | TRV (Travelers Companies (The)), RTX (RTX Corporation), FITB (Fifth Third Bancorp), CFG (Citizens Financial Group), STT (State Street Corporation) |
-| network | NDSN (Nordson Corporation), NEM (Newmont), MTD (Mettler Toledo), NTRS (Northern Trust), MTB (M&T Bank) |
+| growth | NTRS (Northern Trust), FITB (Fifth Third Bancorp), SRE (Sempra), CAT (Caterpillar Inc.), RTX (RTX Corporation) |
+| network | NDSN (Nordson Corporation), NEM (Newmont), NTRS (Northern Trust), MTD (Mettler Toledo), MTB (M&T Bank) |

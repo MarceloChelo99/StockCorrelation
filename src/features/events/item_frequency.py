@@ -31,7 +31,8 @@ class EventItemFrequencyProducer(FeatureProducer):
         events_path = Path(config["paths"]["events_path"])
         if not events_path.exists():
             raise FileNotFoundError(
-                f"8-K events not found at {events_path}. Run scripts/00_fetch_8k_events.py first."
+                "8-K events not found at "
+                f"{events_path}. Run scripts/pipeline/stage_01_ingest/fetch_8k_events.py first."
             )
 
         panel = build_observation_panel(db, config)

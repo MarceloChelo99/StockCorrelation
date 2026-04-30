@@ -4,6 +4,7 @@
   "paths": {
     "sqlite_path": "data/raw_filing_corpora/raw_filing_corpora.sqlite",
     "metadata_path": "data/processed/metadata/sp500_gics.parquet",
+    "sp500_membership_path": "data/processed/metadata/sp500_membership_history.parquet",
     "events_path": "data/processed/events/eight_k_events.parquet",
     "relationships_path": "data/processed/relationships/relationships.parquet",
     "fundamentals_path": "data/processed/features/fundamentals.parquet",
@@ -24,7 +25,8 @@
     "enabled": [
       "price_volatility",
       "price_momentum",
-      "price_liquidity"
+      "price_liquidity",
+      "text_historical"
     ],
     "price": {
       "volatility_windows": [21, 63, 252],
@@ -41,6 +43,14 @@
       "business_embedding_dim": 32,
       "risk_embedding_dim": 32,
       "min_token_length": 3
+    },
+    "text_historical": {
+      "input_path": "data/processed/historical_text_10k_10q/historical_section_embeddings.parquet",
+      "target_dim": 64,
+      "aggregation": "concat_business_risk",
+      "business_sections": ["business"],
+      "risk_sections": ["risk_factors", "q_risk_factors"],
+      "pca_fit_end_date": "2023-12-31"
     },
     "events": {
       "since": "2024-01-01",
@@ -94,7 +104,7 @@
   },
   "views": {
     "business": {
-      "feature_pattern": "^(text_business|text_risk)_",
+      "feature_pattern": "^text_hist_emb_",
       "embedding_dim": 32,
       "hidden_dims": [256, 128]
     },
@@ -105,9 +115,14 @@
       "reuse_embeddings_path": "experiments/20260423_232623_risk_embedding/embeddings.parquet"
     },
     "growth": {
-      "feature_pattern": "^growth_",
+      "feature_pattern": "^(growth_|valuation_)",
       "embedding_dim": 8,
       "hidden_dims": [32, 16]
+    },
+    "financial": {
+      "feature_pattern": "^(price_|growth_|valuation_)",
+      "embedding_dim": 12,
+      "hidden_dims": [64, 32]
     },
     "network": {
       "feature_pattern": "^net_",
@@ -116,7 +131,7 @@
       "min_feature_abs_sum": 1e-12
     }
   },
-  "views_enabled": ["business", "behavioral", "growth", "network"],
+  "views_enabled": ["business", "behavioral", "growth", "financial", "network"],
   "pipeline": {
     "views": false,
     "gmm": false,

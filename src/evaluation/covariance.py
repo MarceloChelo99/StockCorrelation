@@ -5,7 +5,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.covariance import LedoitWolf
 
+from src.applications.portfolio_optimization import minimum_variance_long_only
 from src.evaluation.base import Evaluator
 from src.evaluation.peers import daily_returns_matrix
 from src.utils.dates import month_end_dates
@@ -51,7 +53,7 @@ class CovarianceEvaluator(Evaluator):
                 settings,
             )
             for method, covariance in estimates.items():
-                weights = minimum_variance_weights(covariance)
+                weights = minimum_variance_long_only(covariance)
                 ticker_weights = pd.Series(weights, index=window.tickers)
                 turnover = portfolio_turnover(previous_weights.get(method), ticker_weights)
                 previous_weights[method] = ticker_weights
@@ -204,16 +206,18 @@ def covariance_estimates(
     embedding_matrix: np.ndarray,
     settings: dict,
 ) -> dict[str, np.ndarray]:
-    """Build sample, Ledoit-Wolf, and embedding-prior covariance estimates."""
+    """Build sample, standard Ledoit-Wolf, legacy shrinkage, and embedding-prior estimates."""
     matrix = history_returns.astype(float).to_numpy()
     sample = sample_covariance(matrix)
     ledoit = ledoit_wolf_covariance(matrix)
+    legacy = _legacy_constant_variance_shrinkage(matrix)
     prior_alpha = float(settings.get("embedding_alpha", 0.25))
     prior_corr = embedding_similarity_prior(embedding_matrix)
     embedding_covariance = shrink_covariance_to_prior(sample, prior_corr, prior_alpha)
     return {
         "sample": sample,
         "ledoit_wolf": ledoit,
+        "legacy_constant_variance": legacy,
         "embedding_prior": embedding_covariance,
     }
 
@@ -226,7 +230,19 @@ def sample_covariance(matrix: np.ndarray) -> np.ndarray:
 
 
 def ledoit_wolf_covariance(matrix: np.ndarray) -> np.ndarray:
-    """Shrink sample covariance toward a constant-variance diagonal target."""
+    """Return sklearn's standard Ledoit-Wolf covariance estimate."""
+    values = np.asarray(matrix, dtype=float)
+    estimator = LedoitWolf().fit(values)
+    return regularize_covariance(estimator.covariance_)
+
+
+def _legacy_constant_variance_shrinkage(matrix: np.ndarray) -> np.ndarray:
+    """Legacy local shrinkage toward constant variance, not standard Ledoit-Wolf.
+
+    This is retained for migration comparisons because earlier reports labeled
+    this estimator as Ledoit-Wolf. New headline benchmarks should use
+    ``ledoit_wolf_covariance``, which delegates to ``sklearn.covariance.LedoitWolf``.
+    """
     centered = matrix - matrix.mean(axis=0, keepdims=True)
     n_observations, n_assets = centered.shape
     sample = centered.T @ centered / n_observations
@@ -288,32 +304,8 @@ def regularize_covariance(covariance: np.ndarray) -> np.ndarray:
 
 
 def minimum_variance_weights(covariance: np.ndarray) -> np.ndarray:
-    """Return long-only minimum-variance weights using a simple active-set solve."""
-    n_assets = len(covariance)
-    active = np.arange(n_assets)
-    weights = np.zeros(n_assets)
-    for _ in range(n_assets):
-        sub_covariance = covariance[np.ix_(active, active)]
-        ones = np.ones(len(active))
-        try:
-            raw = np.linalg.solve(sub_covariance, ones)
-        except np.linalg.LinAlgError:
-            raw = np.linalg.pinv(sub_covariance) @ ones
-        if raw.sum() <= 0.0:
-            raw = np.ones(len(active))
-        active_weights = raw / raw.sum()
-        if np.all(active_weights >= -1e-10):
-            weights[active] = np.clip(active_weights, 0.0, None)
-            weights = weights / weights.sum()
-            return weights
-
-        keep = active_weights > 1e-10
-        if not np.any(keep):
-            keep[np.argmax(active_weights)] = True
-        active = active[keep]
-
-    weights[active] = 1.0 / len(active)
-    return weights
+    """Backward-compatible wrapper around the shared cvxpy optimizer."""
+    return minimum_variance_long_only(covariance)
 
 
 def portfolio_turnover(previous: pd.Series | None, current: pd.Series) -> float:

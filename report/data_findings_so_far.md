@@ -89,7 +89,7 @@ This is a good, honest result. The semantic embedding contains relationship-netw
 
 ## Covariance And Portfolio Findings
 
-The full-universe covariance result remains negative versus Ledoit-Wolf. In the original single-view covariance test, Ledoit-Wolf realized annual variance was around `0.00969`, sample covariance around `0.00978`, and embedding-prior shrinkage around `0.00994`.
+The full-universe covariance result remains negative versus Ledoit-Wolf. In the original single-view covariance test, Ledoit-Wolf realized annual variance was around `0.00969`, sample covariance around `0.00978`, and embedding-prior shrinkage around `0.00994`. After migrating to sklearn's standard `LedoitWolf` and the shared cvxpy optimizer, the risk-embedding rerun produced Ledoit-Wolf around `0.00963`, sample covariance around `0.00966`, and embedding-prior shrinkage around `0.01000`. The ranking and conclusion did not change; see `report/ledoit_wolf_migration_note.md` and `report/covariance_optimizer_migration_note.md`.
 
 The slice results are more interesting. Embedding-prior shrinkage beats Ledoit-Wolf in 3 of 9 tested slices:
 

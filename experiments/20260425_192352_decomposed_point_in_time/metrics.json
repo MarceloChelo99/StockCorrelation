@@ -1,0 +1,100 @@
+{
+  "clustering": {
+    "ari": 0.061732620273437296,
+    "embedding_columns": [
+      "embedding_0",
+      "embedding_1",
+      "embedding_2",
+      "embedding_3",
+      "embedding_4",
+      "embedding_5",
+      "embedding_6",
+      "embedding_7",
+      "embedding_8",
+      "embedding_9",
+      "embedding_10",
+      "embedding_11",
+      "embedding_12",
+      "embedding_13",
+      "embedding_14",
+      "embedding_15"
+    ],
+    "inertia": 2706.1423147402493,
+    "k": 11,
+    "label_column": "gics_sector",
+    "matched_metadata_rows": 502,
+    "n_labels": 11,
+    "n_tickers": 502,
+    "nmi": 0.15985111579951072
+  },
+  "multiview_peers": {
+    "best_forward_days": 504,
+    "best_mean_corr_diff": -0.0688968222835772,
+    "best_view": "business",
+    "rows": 20,
+    "valid_rows": 18
+  },
+  "peers": {
+    "benchmark_column": "gics_sub_industry",
+    "diff_std": 0.20688104142795677,
+    "forward_days": 21,
+    "k": 5,
+    "mean_benchmark_peer_corr": 0.6531810416281558,
+    "mean_corr_diff": -0.06595211434483524,
+    "mean_embedding_peer_corr": 0.5872289272833205,
+    "median_corr_diff": -0.03217051342932664,
+    "n_dates": 10,
+    "n_observations": 2001,
+    "n_unique_tickers": 217,
+    "p_value_normal_approx": 0.0,
+    "t_stat": -14.260395603393194
+  },
+  "relationships": {
+    "benchmark_column": "gics_sub_industry",
+    "embedding_minus_benchmark_direct": {
+      "diff_std": 0.18961712161769834,
+      "mean_benchmark_peer_corr": 0.17260273972602738,
+      "mean_corr_diff": -0.14109589041095888,
+      "mean_embedding_peer_corr": 0.031506849315068496,
+      "median_corr_diff": -0.1,
+      "p_value_normal_approx": 0.0,
+      "t_stat": -8.991108587536697
+    },
+    "embedding_minus_benchmark_jaccard": {
+      "diff_std": 0.10602811582765384,
+      "mean_benchmark_peer_corr": 0.07566758563286194,
+      "mean_corr_diff": -0.02357029803624876,
+      "mean_embedding_peer_corr": 0.052097287596613175,
+      "median_corr_diff": 0.0,
+      "p_value_normal_approx": 0.007229374922653076,
+      "t_stat": -2.686089369410816
+    },
+    "embedding_minus_random_direct": {
+      "diff_std": 0.09134485674132944,
+      "mean_benchmark_peer_corr": 0.009589041095890411,
+      "mean_corr_diff": 0.021917808219178086,
+      "mean_embedding_peer_corr": 0.031506849315068496,
+      "median_corr_diff": 0.0,
+      "p_value_normal_approx": 0.0037402636097525477,
+      "t_stat": 2.899275271761769
+    },
+    "k": 5,
+    "mean_benchmark_direct_rate": 0.17260273972602738,
+    "mean_benchmark_jaccard": 0.07566758563286194,
+    "mean_embedding_direct_rate": 0.031506849315068496,
+    "mean_embedding_jaccard": 0.052097287596613175,
+    "mean_random_direct_rate": 0.009589041095890411,
+    "mean_random_jaccard": 0.010567666610729859,
+    "n_observations": 146
+  },
+  "view_comparison": {
+    "max_off_diagonal_nmi": 0.3282373494617724,
+    "mean_off_diagonal_nmi": 0.2523701612092224,
+    "views": [
+      "behavioral",
+      "business",
+      "growth",
+      "network"
+    ]
+  }
+}

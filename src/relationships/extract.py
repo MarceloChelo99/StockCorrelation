@@ -21,12 +21,10 @@ SUPPLIER_WORDS = [
     "vendor",
     "vendors",
     "sourced",
-    "purchase",
-    "purchases",
-    "purchased",
     "procure",
     "procures",
     "procured",
+    "supplied",
 ]
 COMPETITOR_WORDS = [
     "compete",
@@ -44,6 +42,7 @@ PARTNER_WORDS = [
     "partners",
     "partnership",
     "collaboration",
+    "collaborative",
     "collaborate",
     "alliance",
     "joint venture",
@@ -89,6 +88,10 @@ GENERIC_ALIASES = {
     "huntington",
     "monster",
     "host",
+    "booking",
+    "southern",
+    "trimble",
+    "old dominion",
 }
 
 COMPANY_SUFFIXES = [
@@ -110,6 +113,28 @@ COMPANY_SUFFIXES = [
     "the",
 ]
 
+AMBIGUOUS_SUPPLY_CHAIN_PATTERNS = [
+    r"\bmarketplace\b",
+    r"\bapp\s+store\b",
+    r"\bjoint\s+venture\b",
+    r"\bcollaborat(?:e|es|ed|ion|ive)\b",
+    r"\balliance\b",
+    r"\bpartner(?:s|ship|ed|ing)?\b",
+    r"\breseller\b",
+    r"\bdistributor\b",
+    r"\bdistribution\s+agreement\b",
+    r"\blicens(?:e|es|ed|ing)\b",
+    r"\btrademark\b",
+    r"\bcredit\s+agreement\b",
+    r"\brevolving\s+credit\b",
+    r"\bloan\s+agreement\b",
+    r"\blender\b",
+    r"\badministrative\s+agent\b",
+    r"\bunderwrit(?:er|ers|ing)\b",
+    r"\bcompanies\s+that\s+incorporate\b",
+    r"\binternal\s+solutions?\s+or\s+platforms?\b",
+]
+
 
 @dataclass(frozen=True)
 class CompanyAlias:
@@ -119,6 +144,18 @@ class CompanyAlias:
     company_name: str
     alias: str
     pattern: re.Pattern[str]
+
+
+@dataclass(frozen=True)
+class RelationshipClassification:
+    """Coarse relationship label plus explicit supplier/customer direction."""
+
+    relationship_type: str
+    confidence: float
+    source_role: str
+    target_role: str
+    supply_chain_direction: str
+    direction_confidence: float
 
 
 def extract_relationships(
@@ -148,19 +185,25 @@ def extract_relationships(
             continue
 
         for match in find_company_mentions(text, aliases, source_ticker):
-            relationship_type, confidence = classify_relationship(match["context"])
-            if confidence < min_confidence:
+            classification = classify_relationship_detail(match["context"], matched_alias=match["alias"])
+            if classification.confidence < min_confidence:
                 continue
+            direction = directed_supply_chain_fields(
+                source_ticker=source_ticker,
+                target_ticker=match["target_ticker"],
+                classification=classification,
+            )
             rows.append(
                 {
                     "source_ticker": source_ticker,
                     "target_ticker": match["target_ticker"],
-                    "relationship_type": relationship_type,
+                    "relationship_type": classification.relationship_type,
                     "filing_date": pd.Timestamp(filing["filing_date"]).strftime("%Y-%m-%d"),
                     "form": "10-K",
                     "accession_no": filing["accession_no"],
-                    "confidence": confidence,
+                    "confidence": classification.confidence,
                     "matched_alias": match["alias"],
+                    **direction,
                     "context_snippet": compact_snippet(match["context"]),
                 }
             )
@@ -246,6 +289,9 @@ def is_usable_alias(alias: str) -> bool:
     """Keep aliases that are unlikely to create obvious false positives."""
     if len(alias) < 5:
         return False
+    lower_alias = alias.lower().replace(".", "")
+    if lower_alias in GENERIC_ALIASES:
+        return False
     words = alias.lower().replace(".", "").split()
     if not words:
         return False
@@ -267,6 +313,8 @@ def find_company_mentions(text: str, aliases: list[CompanyAlias], source_ticker:
         if alias.alias.lower() not in lowered_text:
             continue
         for match in alias.pattern.finditer(text):
+            if not is_probable_company_mention(alias, match.group(0)):
+                continue
             span = match.span()
             if overlaps_existing_span(span, matched_spans):
                 continue
@@ -279,6 +327,21 @@ def find_company_mentions(text: str, aliases: list[CompanyAlias], source_ticker:
                 }
             )
     return mentions
+
+
+def is_probable_company_mention(alias: CompanyAlias, matched_text: str) -> bool:
+    """Reject obvious common-phrase matches while preserving named companies.
+
+    We prefer precision over recall for graph edges. A lowercase phrase like
+    "applied materials" is usually descriptive text, not a public-company name.
+    """
+    alias_words = alias.alias.lower().replace(".", "").split()
+    has_legal_suffix = any(word in COMPANY_SUFFIXES for word in alias_words)
+    if has_legal_suffix:
+        return True
+    if matched_text.islower():
+        return False
+    return True
 
 
 def overlaps_existing_span(span: tuple[int, int], existing: list[tuple[int, int]]) -> bool:
@@ -306,20 +369,43 @@ def context_window(text: str, start: int, end: int, *, radius: int = 280) -> str
 
 def classify_relationship(context: str) -> tuple[str, float]:
     """Classify a mention context into a coarse relationship type."""
+    classification = classify_relationship_detail(context)
+    return classification.relationship_type, classification.confidence
+
+
+def classify_relationship_detail(context: str, matched_alias: str | None = None) -> RelationshipClassification:
+    """Classify context and attach source/target role semantics."""
     lowered = context.lower()
+    if is_non_operating_context(lowered):
+        return RelationshipClassification(
+            relationship_type="generic",
+            confidence=0.35,
+            source_role="",
+            target_role="",
+            supply_chain_direction="",
+            direction_confidence=0.0,
+        )
+
     scores = {
         "customer": keyword_score(lowered, CUSTOMER_WORDS),
-        "supplier": keyword_score(lowered, SUPPLIER_WORDS),
+        "supplier": supplier_context_score(lowered),
         "competitor": keyword_score(lowered, COMPETITOR_WORDS),
         "partner": keyword_score(lowered, PARTNER_WORDS),
         "agreement": keyword_score(lowered, AGREEMENT_WORDS),
     }
+    has_competitor_context = has_competitor_list_pattern(lowered)
+    if has_competitor_context:
+        scores["competitor"] += 4
+    if matched_alias and target_appears_as_buyer(lowered, matched_alias):
+        scores["customer"] += 2
+    if matched_alias and target_appears_as_supplier(lowered, matched_alias):
+        scores["supplier"] += 2
 
     # Competition lists often also contain generic customer/supplier words.
     # Prefer competitor unless another relationship has much stronger evidence.
     if scores["competitor"] > 0:
         strongest_non_competitor = max(score for key, score in scores.items() if key != "competitor")
-        if scores["competitor"] >= strongest_non_competitor:
+        if has_competitor_context or scores["competitor"] >= strongest_non_competitor:
             relationship_type = "competitor"
         else:
             relationship_type = max(scores, key=scores.get)
@@ -327,9 +413,222 @@ def classify_relationship(context: str) -> tuple[str, float]:
         relationship_type = max(scores, key=scores.get)
     score = scores[relationship_type]
     if score == 0:
-        return "generic", 0.35
+        return RelationshipClassification(
+            relationship_type="generic",
+            confidence=0.35,
+            source_role="",
+            target_role="",
+            supply_chain_direction="",
+            direction_confidence=0.0,
+        )
+    if relationship_type in {"customer", "supplier"} and is_ambiguous_supply_chain_context(lowered):
+        has_directional_evidence = has_strong_customer_evidence(lowered, matched_alias)
+        if relationship_type == "supplier":
+            has_directional_evidence = has_strong_supplier_evidence(lowered, matched_alias)
+        if not has_directional_evidence:
+            relationship_type = preferred_ambiguous_relationship_type(scores)
+            if relationship_type == "generic":
+                return RelationshipClassification(
+                    relationship_type="generic",
+                    confidence=0.35,
+                    source_role="",
+                    target_role="",
+                    supply_chain_direction="",
+                    direction_confidence=0.0,
+                )
+            score = scores[relationship_type]
+            if score == 0:
+                return RelationshipClassification(
+                    relationship_type="generic",
+                    confidence=0.35,
+                    source_role="",
+                    target_role="",
+                    supply_chain_direction="",
+                    direction_confidence=0.0,
+                )
+
     confidence = min(0.95, 0.45 + 0.12 * score)
-    return relationship_type, confidence
+    source_role = ""
+    target_role = ""
+    supply_chain_direction = ""
+    direction_confidence = 0.0
+    if relationship_type == "customer":
+        source_role = "supplier"
+        target_role = "customer"
+        supply_chain_direction = "source_supplies_target"
+        direction_confidence = 0.75 if has_customer_list_pattern(lowered, matched_alias) else 0.60
+    elif relationship_type == "supplier":
+        source_role = "customer"
+        target_role = "supplier"
+        supply_chain_direction = "target_supplies_source"
+        direction_confidence = 0.75 if has_supplier_purchase_pattern(lowered) else 0.60
+    elif relationship_type == "competitor":
+        source_role = "competitor"
+        target_role = "competitor"
+    elif relationship_type in {"partner", "agreement"}:
+        source_role = "counterparty"
+        target_role = "counterparty"
+
+    return RelationshipClassification(
+        relationship_type=relationship_type,
+        confidence=confidence,
+        source_role=source_role,
+        target_role=target_role,
+        supply_chain_direction=supply_chain_direction,
+        direction_confidence=direction_confidence,
+    )
+
+
+def supplier_context_score(text: str) -> int:
+    """Score supplier evidence while avoiding generic purchase-language traps."""
+    score = keyword_score(text, SUPPLIER_WORDS)
+    if has_supplier_purchase_pattern(text):
+        score += 2
+    return score
+
+
+def has_competitor_list_pattern(text: str) -> bool:
+    """Return true when vendor-like words appear inside competitor lists."""
+    patterns = [
+        r"\b(?:compete|competes|competing|competition|competitors?)\b.{0,140}\b(?:including|include|includes|with|from)\b",
+        r"\bcompetitors?\b.{0,120}\b(?:are|were|such\s+as|like)\b",
+        r"\bcompetition\b.{0,120}\b(?:coming\s+from|from|with)\b.{0,120}\b(?:vendors?|providers?|companies|solutions?)\b",
+        r"\bvendors?\b.{0,160}\bcompetitive\s+solutions?\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def is_ambiguous_supply_chain_context(text: str) -> bool:
+    """Return true for relationships that are often commercial links but not supply-chain direction."""
+    return any(re.search(pattern, text) for pattern in AMBIGUOUS_SUPPLY_CHAIN_PATTERNS)
+
+
+def preferred_ambiguous_relationship_type(scores: dict[str, int]) -> str:
+    """Choose the least misleading non-supply-chain label for ambiguous contexts."""
+    if scores.get("partner", 0) >= scores.get("agreement", 0) and scores.get("partner", 0) > 0:
+        return "partner"
+    if scores.get("agreement", 0) > 0:
+        return "agreement"
+    if scores.get("competitor", 0) > 0:
+        return "competitor"
+    return "generic"
+
+
+def has_strong_customer_evidence(text: str, matched_alias: str | None) -> bool:
+    """Return true when the snippet clearly says the target buys from the filer."""
+    if matched_alias and target_appears_as_buyer(text, matched_alias):
+        return True
+    return has_customer_list_pattern(text, matched_alias)
+
+
+def has_strong_supplier_evidence(text: str, matched_alias: str | None) -> bool:
+    """Return true when the snippet clearly says the target supplies the filer."""
+    if has_supplier_purchase_pattern(text):
+        return True
+    if not matched_alias:
+        return False
+    alias = re.escape(matched_alias.lower())
+    patterns = [
+        rf"\b{alias}\b.{{0,80}}\b(?:exclusive\s+)?(?:supplier|vendor|service\s+provider)\b",
+        rf"\b(?:supplied|provided|manufactured)\s+by\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:purchase|purchases|purchased|procure|procures|procured|source|sourced)\b.{{0,80}}\bfrom\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:rely|relies|relying|depend|depends|dependent)\b.{{0,160}}\b{alias}\b",
+        rf"\b(?:host|hosts|hosted|hosting|run|runs|running|operate|operates|operating)\b.{{0,180}}\b{alias}\b",
+        rf"\b(?:third-party\s+)?(?:provider|providers|service\s+provider|service\s+providers)\b.{{0,120}}\b{alias}\b",
+        rf"\b(?:cloud|infrastructure|technology|payment|data\s+center)\s+(?:providers?|platforms?|services?)\b.{{0,120}}\b(?:including|include|includes|such\s+as|like|primarily)\b.{{0,100}}\b{alias}\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def target_appears_as_buyer(text: str, matched_alias: str) -> bool:
+    """Return true when the matched company is described as buying from the filer."""
+    alias = re.escape(matched_alias.lower())
+    if re.search(rf"\b{alias}\b.{{0,80}}\bpurchase\s+price\b", text):
+        return False
+    patterns = [
+        rf"\b{alias}\b.{{0,80}}\b(?:will\s+)?(?:purchase|purchases|purchased|buy|buys|bought|procure|procures|procured)\b",
+        rf"\bwe\b.{{0,40}}\b(?:supply|supplied|provide|provided|sell|sold|deliver|delivered|license|licensed)\b.{{0,140}}\b(?:to|for)\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:sold|sales|revenue|revenues)\s+(?:to|with)\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:customers?|clients?)\b.{{0,80}}\b(?:include|includes|included|are|were|was|is)\b.{{0,100}}\b{alias}\b",
+        rf"\b{alias}\b.{{0,100}}\b(?:accounted\s+for|represented|represents|comprised|comprises)\b.{{0,100}}\b(?:sales|revenue|revenues)\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def target_appears_as_supplier(text: str, matched_alias: str) -> bool:
+    """Return true when the matched company is described as supplying the filer."""
+    alias = re.escape(matched_alias.lower())
+    patterns = [
+        rf"\b{alias}\b.{{0,80}}\b(?:exclusive\s+)?(?:supplier|suppliers|vendor|vendors)\b",
+        rf"\b(?:supplier|suppliers|vendor|vendors)\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:supplied|provided|manufactured)\s+by\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:purchase|purchases|purchased|procure|procures|procured|source|sourced)\b.{{0,80}}\bfrom\b.{{0,80}}\b{alias}\b",
+        rf"\b(?:use|uses|using|utilize|utilizes|utilizing|rely|relies|relying|depend|depends|dependent|host|hosts|hosted|hosting|run|runs|running|operate|operates|operating)\b.{{0,180}}\b{alias}\b",
+        rf"\bour\s+(?:third-party\s+)?(?:provider|providers|service\s+provider|service\s+providers)\b.{{0,100}}\b{alias}\b",
+        rf"\b(?:cloud|infrastructure|ai|technology|payment|data\s+center)\s+(?:providers?|platforms?|services?)\b.{{0,120}}\b(?:including|include|includes|such\s+as|like|primarily)\b.{{0,100}}\b{alias}\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def has_customer_list_pattern(text: str, matched_alias: str | None = None) -> bool:
+    """Return true when context says the matched firm buys from the filer."""
+    patterns = [
+        r"\b(?:our|the company's|company's)?\s*(?:customers?|clients?)\s+(?:include|includes|included|are|were)\b",
+        r"\b(?:sales|revenue|revenues)\s+(?:to|from)\b",
+        r"\baccounts?\s+receivable\s+from\b",
+    ]
+    if matched_alias:
+        alias = re.escape(matched_alias.lower())
+        patterns.append(
+            rf"\bwe\b.{{0,40}}\b(?:supply|supplied|provide|provided|sell|sold|deliver|delivered|license|licensed)\b.{{0,140}}\b(?:to|for)\b.{{0,80}}\b{alias}\b"
+        )
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def has_supplier_purchase_pattern(text: str) -> bool:
+    """Return true when context says the matched firm supplies the filer."""
+    patterns = [
+        r"\b(?:purchase|purchases|purchased|procure|procures|procured|source|sourced)\b.{0,80}\bfrom\b",
+        r"\b(?:supplied|provided|manufactured)\s+by\b",
+        r"\b(?:depend|depends|dependent|rely|relies|reliant)\b.{0,80}\b(?:supplier|suppliers|vendor|vendors)\b",
+        r"\b(?:supplier|suppliers|vendor|vendors)\s+(?:include|includes|included|are|were)\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def is_non_operating_context(text: str) -> bool:
+    """Return true for biographical mentions that are not company relationships."""
+    patterns = [
+        r"\b(?:served|serves|previously\s+served|currently\s+serves)\s+as\b.{0,160}\b(?:chief|executive|president|chairman|director|board)\b",
+        r"\b(?:board\s+of\s+directors|executive\s+officer|chairman\s+of\s+the\s+board)\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def directed_supply_chain_fields(
+    *,
+    source_ticker: str,
+    target_ticker: str,
+    classification: RelationshipClassification,
+) -> dict[str, object]:
+    """Return explicit supplier/customer columns for a classified edge."""
+    supplier_ticker = ""
+    customer_ticker = ""
+    if classification.supply_chain_direction == "source_supplies_target":
+        supplier_ticker = source_ticker
+        customer_ticker = target_ticker
+    elif classification.supply_chain_direction == "target_supplies_source":
+        supplier_ticker = target_ticker
+        customer_ticker = source_ticker
+
+    return {
+        "source_role": classification.source_role,
+        "target_role": classification.target_role,
+        "supplier_ticker": supplier_ticker,
+        "customer_ticker": customer_ticker,
+        "supply_chain_direction": classification.supply_chain_direction,
+        "direction_confidence": classification.direction_confidence,
+    }
 
 
 def keyword_score(text: str, keywords: list[str]) -> int:
@@ -360,6 +659,12 @@ def empty_relationship_frame() -> pd.DataFrame:
             "accession_no",
             "confidence",
             "matched_alias",
+            "source_role",
+            "target_role",
+            "supplier_ticker",
+            "customer_ticker",
+            "supply_chain_direction",
+            "direction_confidence",
             "context_snippet",
         ]
     )
