@@ -54,14 +54,13 @@ The network view is intentionally kept in the separate Network tab, where the re
 ### Network
 
 Current-state relationship evidence from SEC filings. The tab focuses on readable supplier/customer/competitor/partner evidence rather than historical network animation.
+It also includes a supply-chain disruption simulation that walks upstream to suppliers or downstream to customers using the extracted supplier -> customer graph.
 
 ### Sector Outlook
 
 Walk-forward group excess-return predictions. Current scores are separated from completed historical predictions. Treat the simulation as a research backtest, not a trading recommendation.
 
-### Model Comparison
-
-Static presentation-style summary of model choices, saved metrics, and caveats. This tab is intentionally not a live experiment runner.
+Model-comparison notes are kept in the written report and presentation materials rather than the dashboard, so the app stays focused on company exploration and the historical sector backtest.
 
 ## Theme Labels
 

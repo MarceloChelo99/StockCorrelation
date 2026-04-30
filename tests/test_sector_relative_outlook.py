@@ -6,6 +6,7 @@ import pandas as pd
 
 from src.applications.sector_relative_outlook import (
     apply_theme_assignment_strategy,
+    backtest_validity_label,
     completed_sector_predictions,
     default_theme_assignment_strategy,
     rotation_simulation_metrics,
@@ -19,6 +20,24 @@ from src.applications.sector_relative_outlook import (
 
 
 class SectorRelativeOutlookTests(unittest.TestCase):
+    def test_backtest_validity_labels_distinguish_survivorship_modes(self) -> None:
+        self.assertEqual(
+            backtest_validity_label("current", "gics"),
+            "diagnostic_current_roster_survivorship_biased",
+        )
+        self.assertEqual(
+            backtest_validity_label("date_added", "gics"),
+            "date_added_current_roster_survivorship_limited",
+        )
+        self.assertEqual(
+            backtest_validity_label("historical", "gics"),
+            "historical_constituent_backtest",
+        )
+        self.assertEqual(
+            backtest_validity_label("historical", "theme"),
+            "historical_covered_theme_universe_backtest",
+        )
+
     def test_sector_outlook_backtest_produces_walk_forward_predictions(self) -> None:
         prices = synthetic_prices()
         metadata = pd.DataFrame(

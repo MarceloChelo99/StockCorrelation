@@ -75,6 +75,34 @@ class RelationshipExtractionTests(unittest.TestCase):
         self.assertEqual(classification.target_role, "supplier")
         self.assertEqual(classification.supply_chain_direction, "target_supplies_source")
 
+    def test_marketplace_context_is_not_forced_to_supply_chain(self) -> None:
+        classification = classify_relationship_detail(
+            "Customers can access a free trial through AWS Marketplace and Microsoft Marketplace.",
+            matched_alias="Microsoft",
+        )
+
+        self.assertIn(classification.relationship_type, {"partner", "agreement", "generic"})
+        self.assertEqual(classification.supply_chain_direction, "")
+
+    def test_collaboration_context_is_partner_not_supplier(self) -> None:
+        classification = classify_relationship_detail(
+            "We maintain collaborative relationships with PepsiCo for branded distribution programs.",
+            matched_alias="PepsiCo",
+        )
+
+        self.assertEqual(classification.relationship_type, "partner")
+        self.assertEqual(classification.supply_chain_direction, "")
+
+    def test_internal_platform_list_is_not_supplier_direction(self) -> None:
+        classification = classify_relationship_detail(
+            "The market includes suppliers of Arm-based CPUs and companies that incorporate hardware "
+            "and software for internal solutions or platforms, such as Amazon and Microsoft.",
+            matched_alias="Amazon",
+        )
+
+        self.assertNotEqual(classification.relationship_type, "supplier")
+        self.assertEqual(classification.supply_chain_direction, "")
+
     def test_filer_supplied_to_target_is_customer_direction(self) -> None:
         classification = classify_relationship_detail(
             "We have supplied engines to PACCAR for 81 years.",

@@ -36,9 +36,10 @@ The main dependencies are declared in `pyproject.toml`: `pandas`, `pyarrow`, `to
 ## What To Use In The Dashboard
 
 - `Similarity Explorer`: pick a company and inspect its business or financial theme mix, closest peers, movement summary, and dynamic label evidence.
-- `Network`: current-state relationship evidence from filings, focused on suppliers, customers, competitors, partners, and source snippets.
+- `Network`: current-state relationship evidence from filings, plus an upstream/downstream supply-chain disruption simulation.
 - `Sector Outlook`: walk-forward group excess-return predictions, historical simulation, and feature importance/evidence.
-- `Model Comparison`: presentation-style summary of model choices, saved metrics, and caveats. It is not meant to run new experiments interactively.
+
+Model-comparison material now lives in the written report/presentation instead of the product dashboard, so the app stays focused on exploration.
 
 ## Important Artifacts To Keep
 

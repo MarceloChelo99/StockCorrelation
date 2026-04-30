@@ -69,6 +69,7 @@ PRICE_MOMENTUM_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "p
 PRICE_LIQUIDITY_FEATURE_PATH = REPO_ROOT / "data" / "processed" / "features" / "price_liquidity.parquet"
 RELATIONSHIPS_PATH = REPO_ROOT / "data" / "processed" / "relationships" / "relationships.parquet"
 DEFAULT_SP500_BENCHMARK_PATH = REPO_ROOT / "data" / "processed" / "benchmarks" / "spy_benchmark.parquet"
+SECTOR_OUTLOOK_SOURCE_PATH = REPO_ROOT / "src" / "applications" / "sector_relative_outlook.py"
 TOPIC_OPTIONS = {
     "AI": "topic_ai_score_per_10k_words",
     "Cloud / Compute": "topic_cloud_compute_score_per_10k_words",
@@ -98,13 +99,69 @@ DEFAULT_MIN_THEME_EFFECTIVE_MEMBERS = 5.0
 DEFAULT_SHIFT_THEME_COUNT = 10
 DEFAULT_MARKET_TRAIL_MONTHS = 18
 DEFAULT_SIMULATION_CAPITAL = 10_000.0
+DEFAULT_ROTATION_TRANSACTION_COST_BPS = 10.0
+DEFAULT_NETWORK_DISRUPTION_DEPTH = 4
+DEFAULT_NETWORK_DISRUPTION_EDGES_PER_COMPANY = 5
+DEFAULT_NETWORK_DISRUPTION_MIN_STRENGTH = 0.60
 MAP_EXCLUDED_VIEWS = {"behavioral", "growth", "network"}
+AMBIGUOUS_SUPPLY_CHAIN_EVIDENCE_PATTERNS = [
+    r"\bmarketplace\b",
+    r"\bjoint\s+venture\b",
+    r"\bcollaborat(?:e|es|ed|ion|ive)\b",
+    r"\balliance\b",
+    r"\bpartner(?:s|ship|ed|ing)?\b",
+    r"\breseller\b",
+    r"\bdistributor\b",
+    r"\bdistribution\s+agreement\b",
+    r"\blicens(?:e|es|ed|ing)\b",
+    r"\btrademark\b",
+    r"\bcredit\s+agreement\b",
+    r"\brevolving\s+credit\b",
+    r"\blender\b",
+    r"\badministrative\s+agent\b",
+    r"\bunderwrit(?:er|ers|ing)\b",
+    r"\bcompanies\s+that\s+incorporate\b",
+    r"\binternal\s+solutions?\s+or\s+platforms?\b",
+]
+CLEAR_SUPPLY_CHAIN_EVIDENCE_PATTERNS = [
+    r"\b(?:largest|key|major)\s+(?:customer|customers|client|clients)\b",
+    r"\bcustomers?\s+(?:include|includes|included|are|were)\b",
+    r"\b(?:accounted\s+for|represented|represents|comprised|comprises)\b.{0,100}\b(?:sales|revenue|revenues)\b",
+    r"\b(?:sales|revenue|revenues)\s+(?:to|from|with)\b",
+    r"\b(?:purchase|purchases|purchased|procure|procures|procured|source|sourced)\b.{0,100}\bfrom\b",
+    r"\b(?:supplied|provided|manufactured)\s+by\b",
+    r"\b(?:rely|relies|relying|depend|depends|dependent)\b",
+    r"\b(?:host|hosts|hosted|hosting)\b.{0,180}\b(?:amazon\s+web\s+services|aws|azure|google\s+cloud|cloud|data\s+centers?)\b",
+    r"\bexclusive\s+(?:supplier|vendor|provider)\b",
+]
 MAX_DYNAMIC_LABEL_WORDS = 12
 MAX_DYNAMIC_LABEL_CHARS = 96
 MAX_CENTRAL_FRAGMENT_DESCRIPTION_WORDS = 30
 MAX_CENTRAL_FRAGMENT_DESCRIPTION_CHARS = 240
 MAX_CHART_TOPIC_WORDS = 5
 METADATA_CACHE_VERSION = 2
+SECTOR_DRIVER_LABELS = {
+    "sector_excess_momentum_21d": "21-day relative momentum",
+    "sector_excess_momentum_63d": "63-day relative momentum",
+    "sector_excess_momentum_126d": "126-day relative momentum",
+    "sector_excess_volatility_63d": "63-day relative volatility",
+    "sector_excess_hit_rate_63d": "63-day hit rate",
+    "valuation_sales_yield": "Sales yield",
+    "valuation_earnings_yield": "Earnings yield",
+    "valuation_operating_income_yield": "Operating-income yield",
+    "valuation_gross_profit_yield": "Gross-profit yield",
+    "valuation_book_to_market": "Book-to-market",
+    "valuation_debt_to_market": "Debt-to-market",
+    "valuation_shareholder_yield": "Shareholder yield",
+    "growth_revenue_yoy_1y": "1-year revenue growth",
+    "growth_revenue_cagr_3y": "3-year revenue CAGR",
+    "growth_gross_margin": "Gross margin",
+    "growth_operating_margin": "Operating margin",
+    "growth_rd_intensity": "R&D intensity",
+    "growth_capex_intensity": "Capex intensity",
+    "growth_payout_total_yield": "Total payout yield",
+    "growth_leverage": "Leverage",
+}
 
 
 def inject_neumorphic_theme() -> None:
@@ -910,6 +967,339 @@ def model_decision_frame() -> pd.DataFrame:
     )
 
 
+@st.cache_data(show_spinner=False)
+def artifact_metric_summary(
+    historical_text_path: str,
+    text_features_path: str,
+    valuation_path: str,
+    growth_path: str,
+    relationships_path: str,
+) -> dict[str, object]:
+    """Return compact artifact metrics for the model-comparison narrative."""
+    summary: dict[str, object] = {}
+    paths = {
+        "historical_text": Path(historical_text_path),
+        "text_features": Path(text_features_path),
+        "valuation": Path(valuation_path),
+        "growth": Path(growth_path),
+        "relationships": Path(relationships_path),
+    }
+
+    if paths["historical_text"].exists():
+        frame = pd.read_parquet(paths["historical_text"])
+        summary["historical_text_rows"] = int(len(frame))
+        summary["historical_text_tickers"] = int(frame["ticker"].nunique()) if "ticker" in frame.columns else np.nan
+        summary["historical_text_sections"] = int(frame["section"].nunique()) if "section" in frame.columns else np.nan
+        if "filing_date" in frame.columns:
+            dates = pd.to_datetime(frame["filing_date"], errors="coerce").dropna()
+            if not dates.empty:
+                summary["historical_text_range"] = f"{dates.min().date()} to {dates.max().date()}"
+
+    if paths["text_features"].exists():
+        frame = pd.read_parquet(paths["text_features"])
+        summary["text_feature_rows"] = int(len(frame))
+        summary["text_feature_tickers"] = int(frame["ticker"].nunique()) if "ticker" in frame.columns else np.nan
+        summary["text_feature_dims"] = len([column for column in frame.columns if column.startswith("text_hist_emb_")])
+
+    for key in ["valuation", "growth"]:
+        if paths[key].exists():
+            frame = pd.read_parquet(paths[key])
+            summary[f"{key}_rows"] = int(len(frame))
+            summary[f"{key}_tickers"] = int(frame["ticker"].nunique()) if "ticker" in frame.columns else np.nan
+
+    if paths["relationships"].exists():
+        frame = pd.read_parquet(paths["relationships"])
+        summary["relationship_edges"] = int(len(frame))
+        source_count = frame["source_ticker"].nunique() if "source_ticker" in frame.columns else np.nan
+        target_count = frame["target_ticker"].nunique() if "target_ticker" in frame.columns else np.nan
+        summary["relationship_tickers"] = int(pd.Series([source_count, target_count]).max(skipna=True))
+    return summary
+
+
+def extraction_model_comparison_frame(summary: dict[str, object]) -> pd.DataFrame:
+    """Return data-extraction choices with coverage metrics."""
+    historical_rows = summary.get("historical_text_rows", np.nan)
+    historical_tickers = summary.get("historical_text_tickers", np.nan)
+    historical_sections = summary.get("historical_text_sections", np.nan)
+    historical_range = summary.get("historical_text_range", "not available")
+    return pd.DataFrame(
+        [
+            {
+                "phase": "Data extraction",
+                "model_or_method": "SEC EDGAR historical filing stream + section parser",
+                "used": "Current default",
+                "performance_metrics": (
+                    f"{historical_rows:,} embedded section rows; {historical_tickers:,} tickers; "
+                    f"{historical_sections:,} section types; filings {historical_range}"
+                ),
+                "why_default_or_not": "Gives point-in-time history, not just today's filing text, while staying compact enough for a laptop demo.",
+            },
+            {
+                "phase": "Data extraction",
+                "model_or_method": "Latest-filing-only parser",
+                "used": "Original baseline",
+                "performance_metrics": "Useful for initial coverage checks, but no meaningful time movement.",
+                "why_default_or_not": "Retired for historical analysis because every past month effectively inherited the current company description.",
+            },
+            {
+                "phase": "Data extraction",
+                "model_or_method": "Store full raw filing text for every filing",
+                "used": "Rejected storage design",
+                "performance_metrics": "Higher auditability, but much larger local storage and slower dashboard iteration.",
+                "why_default_or_not": "We instead embed and keyword-count each section as it arrives, then store compact numeric artifacts.",
+            },
+        ]
+    )
+
+
+def cleaning_feature_model_frame(summary: dict[str, object]) -> pd.DataFrame:
+    """Return preprocessing and feature-engineering comparisons."""
+    return pd.DataFrame(
+        [
+            {
+                "phase": "Cleaning / feature layer",
+                "model_or_method": "Historical MiniLM section features + PCA",
+                "used": "Current business-view default",
+                "performance_metrics": (
+                    f"{summary.get('text_feature_rows', np.nan):,} firm-month rows; "
+                    f"{summary.get('text_feature_tickers', np.nan):,} tickers; "
+                    f"{summary.get('text_feature_dims', np.nan):,} PCA text dimensions"
+                ),
+                "why_default_or_not": "Promotes the historical text stream into the standard feature pipeline and keeps dimensions manageable.",
+            },
+            {
+                "phase": "Cleaning / feature layer",
+                "model_or_method": "Valuation and growth fundamentals",
+                "used": "Current financial-view inputs",
+                "performance_metrics": (
+                    f"Valuation: {summary.get('valuation_rows', np.nan):,} rows / "
+                    f"{summary.get('valuation_tickers', np.nan):,} tickers; "
+                    f"growth: {summary.get('growth_rows', np.nan):,} rows / "
+                    f"{summary.get('growth_tickers', np.nan):,} tickers"
+                ),
+                "why_default_or_not": "Adds interpretable financial state: cheap/expensive, profitable/unprofitable, mature/growing.",
+            },
+            {
+                "phase": "Cleaning / feature layer",
+                "model_or_method": "Relationship graph extraction",
+                "used": "Current network tab",
+                "performance_metrics": (
+                    f"{summary.get('relationship_edges', np.nan):,} extracted relationship edges; "
+                    f"roughly {summary.get('relationship_tickers', np.nan):,} mentioned source/target tickers"
+                ),
+                "why_default_or_not": "Useful for current-state supply-chain exploration, but still too sparse/noisy for timeline modeling.",
+            },
+            {
+                "phase": "Cleaning / feature layer",
+                "model_or_method": "Raw 8-K item counts",
+                "used": "Tested but not main default",
+                "performance_metrics": "NMI 0.091; peer gap -0.262 in the ablation table.",
+                "why_default_or_not": "Counts know that an event happened but not what the event meant, so they were weak on their own.",
+            },
+        ]
+    )
+
+
+def embedding_model_comparison_frame(experiments: pd.DataFrame, ablation: pd.DataFrame) -> pd.DataFrame:
+    """Return embedding-model comparison rows from saved reports plus considered baselines."""
+    rows: list[dict[str, object]] = []
+    source = ablation if not ablation.empty else experiments
+    label_column = "label" if "label" in source.columns else "experiment_name"
+    for _, row in source.iterrows():
+        label = str(row.get(label_column, row.get("experiment_name", "")))
+        rows.append(
+            {
+                "phase": "Embedding",
+                "model_or_method": label,
+                "used": "Tested",
+                "clustering_nmi": row.get("clustering_nmi", np.nan),
+                "clustering_ari": row.get("clustering_ari", np.nan),
+                "peer_corr_diff": row.get("peer_corr_diff", np.nan),
+                "reconstruction_mse": row.get("final_reconstruction_mse", np.nan),
+                "why_default_or_not": embedding_model_read(label),
+            }
+        )
+    rows.extend(
+        [
+            {
+                "phase": "Embedding",
+                "model_or_method": "PyTorch autoencoder",
+                "used": "Current reusable model layer",
+                "clustering_nmi": np.nan,
+                "clustering_ari": np.nan,
+                "peer_corr_diff": np.nan,
+                "reconstruction_mse": np.nan,
+                "why_default_or_not": "Chosen over the legacy NumPy implementation for maintainability, minibatches, save/load, and future temporal models.",
+            },
+            {
+                "phase": "Embedding",
+                "model_or_method": "Temporal autoencoder",
+                "used": "Experimental",
+                "clustering_nmi": np.nan,
+                "clustering_ari": np.nan,
+                "peer_corr_diff": np.nan,
+                "reconstruction_mse": np.nan,
+                "why_default_or_not": "Promising for smoother trajectories, but not promoted as the default until validation tests are consistently stronger.",
+            },
+            {
+                "phase": "Embedding",
+                "model_or_method": "FinBERT text embeddings",
+                "used": "Considered, not used",
+                "clustering_nmi": np.nan,
+                "clustering_ari": np.nan,
+                "peer_corr_diff": np.nan,
+                "reconstruction_mse": np.nan,
+                "why_default_or_not": "Potential finance-specific language model, but slower/heavier; MiniLM already produced clear semantic structure.",
+            },
+        ]
+    )
+    return pd.DataFrame(rows)
+
+
+def embedding_model_read(label: str) -> str:
+    """Return a short interpretation for one embedding/ablation row."""
+    lowered = label.lower()
+    if "minilm text" in lowered:
+        return "Best semantic structure: this is why the business view is centered on filing-language embeddings."
+    if "price" in lowered and "text" not in lowered:
+        return "Best for stock-behavior similarity, but less useful for classroom theme interpretation."
+    if "8-k" in lowered or "event" in lowered:
+        return "Weak alone; event counts need richer content to explain company identity."
+    if "hashed" in lowered:
+        return "Useful early baseline, superseded by historical MiniLM features."
+    return "Kept as a comparison point for the representation-learning story."
+
+
+def clustering_model_comparison_frame() -> pd.DataFrame:
+    """Return saved classroom clustering comparison metrics."""
+    return pd.DataFrame(
+        [
+            {
+                "phase": "Clustering",
+                "model_or_method": "Gaussian Mixture Model",
+                "used": "Current default",
+                "groups_found": 10,
+                "noise_share": 0.000,
+                "largest_group_share": 0.259,
+                "nmi_vs_gics": 0.451,
+                "ari_vs_gics": 0.314,
+                "why_default_or_not": "Nearly matches k-means on hard alignment while giving soft mixed-membership loadings.",
+            },
+            {
+                "phase": "Clustering",
+                "model_or_method": "k-means",
+                "used": "Classroom baseline",
+                "groups_found": 10,
+                "noise_share": 0.000,
+                "largest_group_share": 0.144,
+                "nmi_vs_gics": 0.446,
+                "ari_vs_gics": 0.322,
+                "why_default_or_not": "Strong hard-label baseline, but too rigid for companies with mixed business models.",
+            },
+            {
+                "phase": "Clustering",
+                "model_or_method": "DBSCAN",
+                "used": "Outlier diagnostic",
+                "groups_found": 1,
+                "noise_share": 0.020,
+                "largest_group_share": 0.980,
+                "nmi_vs_gics": 0.020,
+                "ari_vs_gics": 0.002,
+                "why_default_or_not": "Collapsed most firms into one cluster, so it is not a good default for this embedding space.",
+            },
+        ]
+    )
+
+
+def sector_predictor_model_comparison_frame() -> pd.DataFrame:
+    """Return saved walk-forward sector-predictor metrics."""
+    return pd.DataFrame(
+        [
+            ["Ridge", "Current default", 0.098, 0.0115, 0.543, 68674, 1.397, "Transparent, stable, and appropriate for a small monthly panel."],
+            ["Elastic Net", "Tested", 0.108, 0.0102, 0.543, 64559, 0.986, "Similar linear model; did not clearly improve the story over ridge."],
+            ["Huber robust regression", "Tested", 0.094, 0.0077, 0.562, 78116, 2.342, "Higher capital in this run, but more sensitive to a few sector calls."],
+            ["Random Forest", "Tested", 0.083, 0.0097, 0.543, 69743, 1.504, "Flexible nonlinear baseline; useful comparison but less transparent."],
+            ["Extra Trees", "Tested", 0.078, 0.0077, 0.582, 50152, -0.455, "Higher hit rate but weaker capital result versus SPY."],
+            ["Gradient Boosting", "Tested", 0.038, 0.0026, 0.510, 76929, 2.223, "Large simulated capital but weak rank signal; needs robustness checks before being a default."],
+        ],
+        columns=[
+            "model_or_method",
+            "used",
+            "mean_rank_ic",
+            "mean_top_minus_bottom",
+            "top_sector_hit_rate",
+            "ending_capital",
+            "excess_return_vs_sp500",
+            "why_default_or_not",
+        ],
+    )
+
+
+def covariance_model_comparison_frame(experiments: pd.DataFrame) -> pd.DataFrame:
+    """Return covariance-model comparison rows."""
+    rows = [
+        {
+            "phase": "Covariance / risk",
+            "model_or_method": "sklearn Ledoit-Wolf",
+            "used": "Current benchmark",
+            "annual_variance": 0.00963,
+            "sharpe": 1.407,
+            "max_drawdown": 0.224,
+            "why_default_or_not": "Strong standard shrinkage estimator; remains the full-universe benchmark.",
+        },
+        {
+            "phase": "Covariance / risk",
+            "model_or_method": "Sample covariance",
+            "used": "Naive baseline",
+            "annual_variance": 0.00966,
+            "sharpe": np.nan,
+            "max_drawdown": np.nan,
+            "why_default_or_not": "Simple reference point; close in this run but less stable theoretically.",
+        },
+        {
+            "phase": "Covariance / risk",
+            "model_or_method": "Single-view embedding-prior shrinkage",
+            "used": "Tested",
+            "annual_variance": 0.01000,
+            "sharpe": np.nan,
+            "max_drawdown": np.nan,
+            "why_default_or_not": "Did not beat Ledoit-Wolf full-universe, though it helped in a few slices.",
+        },
+        {
+            "phase": "Covariance / risk",
+            "model_or_method": "Multi-view factor covariance",
+            "used": "Tested, negative result",
+            "annual_variance": 0.01522,
+            "sharpe": np.nan,
+            "max_drawdown": np.nan,
+            "why_default_or_not": "Stacking all soft-theme views was too blunt; use views for interpretation or targeted hybrid routing instead.",
+        },
+    ]
+    if not experiments.empty:
+        cov = experiments.dropna(subset=["cov_embedding_annual_variance", "cov_ledoit_wolf_annual_variance"])
+        if not cov.empty:
+            row = cov.iloc[0]
+            rows[2]["annual_variance"] = float(row["cov_embedding_annual_variance"])
+            rows[0]["annual_variance"] = float(row["cov_ledoit_wolf_annual_variance"])
+    return pd.DataFrame(rows)
+
+
+def model_metric_dictionary_frame() -> pd.DataFrame:
+    """Explain the metrics shown in the model comparison tab."""
+    return pd.DataFrame(
+        [
+            {"metric": "NMI vs GICS", "meaning": "How much cluster labels overlap with GICS sectors. Higher means more sector-like semantic structure."},
+            {"metric": "ARI vs GICS", "meaning": "Pairwise agreement with GICS adjusted for chance. Higher is better; zero is roughly random."},
+            {"metric": "Peer corr diff", "meaning": "Embedding-peer return correlation minus GICS-peer correlation. Positive would beat the GICS peer benchmark."},
+            {"metric": "Rank IC", "meaning": "Spearman correlation between predicted and realized group ranks. Positive means the ordering has signal."},
+            {"metric": "Top-bottom excess", "meaning": "Average realized excess return of favored groups minus lagging groups over the forward horizon."},
+            {"metric": "Hit rate", "meaning": "Share of dates where the model's favored group beats the broad universe or lands near the winner, depending on table."},
+            {"metric": "Ending capital", "meaning": "Historical rotation simulation from $10,000. Useful but sensitive to a few calls, so not the only criterion."},
+            {"metric": "Annual variance", "meaning": "Realized portfolio variance. Lower is better for covariance/risk estimators."},
+        ]
+    )
+
+
 def sector_model_display_name(model_key: str) -> str:
     """Return a selector label for one sector predictor."""
     label = SECTOR_MODEL_LABELS.get(model_key, str(model_key))
@@ -1400,6 +1790,11 @@ def fragment_theme_label_artifacts(
             "representative_form": representative.get("form", ""),
             "representative_section": section_label,
             "section_chars": int(representative.get("section_chars", 0)),
+            "section_quality_note": section_quality_note(
+                section_label,
+                representative.get("section_chars", 0),
+                str(representative.get("form", "")),
+            ),
             "word_count": int(topic_row.get("word_count", 0)) if not topic_row.empty else None,
             "fragment_similarity": float(similarity[best_position]),
             "chart_topic_label": label_core,
@@ -1682,6 +2077,12 @@ def compact_label_text(value: str) -> str:
     return " ".join(str(value).replace("\n", " ").split())
 
 
+def safe_number_value(value: object, default: float = 0.0) -> float:
+    """Return a numeric scalar without tripping over pandas nullable values."""
+    numeric = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+    return float(numeric) if pd.notna(numeric) else float(default)
+
+
 def strip_label_lead_in(phrase: str) -> str:
     """Remove common filing boilerplate from the front of a short label."""
     cleaned = phrase.strip()
@@ -1758,16 +2159,16 @@ def representative_snippet_row(snippet_lookup: pd.DataFrame, representative: pd.
         candidates = row.sort_values("snippet_rank").copy()
         candidates["_label_phrase"] = candidates.apply(
             lambda item: snippet_label_phrase(
-                str(item.get("evidence_snippet", "") or ""),
-                str(item.get("snippet_terms", "") or ""),
+                compact_label_text(item.get("evidence_snippet", "")),
+                compact_label_text(item.get("snippet_terms", "")),
             ),
             axis=1,
         )
         section_label = short_section_label(str(representative.get("section_label", representative["section"])))
         candidates["_central_description"] = candidates.apply(
             lambda item: central_fragment_description(
-                str(item.get("evidence_snippet", "") or ""),
-                str(item.get("snippet_terms", "") or ""),
+                compact_label_text(item.get("evidence_snippet", "")),
+                compact_label_text(item.get("snippet_terms", "")),
                 section_label,
             ),
             axis=1,
@@ -1780,11 +2181,11 @@ def representative_snippet_row(snippet_lookup: pd.DataFrame, representative: pd.
 
 def snippet_quality_score(row: pd.Series) -> float:
     """Score candidate snippets for dynamic labels and central-fragment descriptions."""
-    phrase = str(row.get("_label_phrase", "") or "")
-    description = str(row.get("_central_description", "") or "")
-    topic = str(row.get("snippet_topic", "") or "")
-    terms = str(row.get("snippet_terms", "") or "")
-    snippet = compact_label_text(str(row.get("evidence_snippet", "") or ""))
+    phrase = compact_label_text(row.get("_label_phrase", ""))
+    description = compact_label_text(row.get("_central_description", ""))
+    topic = compact_label_text(row.get("snippet_topic", ""))
+    terms = compact_label_text(row.get("snippet_terms", ""))
+    snippet = compact_label_text(row.get("evidence_snippet", ""))
 
     score = 0.0
     if phrase:
@@ -1874,6 +2275,20 @@ def short_section_label(label: str) -> str:
     return replacements.get(label, label.replace("10-K ", "").replace("10-Q ", ""))
 
 
+def section_quality_note(section_label: str, section_chars: int | float | None, form: str = "") -> str:
+    """Return a short warning when a filing section is likely noisy or structurally biased."""
+    label = compact_label_text(section_label)
+    form_value = compact_label_text(form).upper()
+    char_count = int(safe_number_value(section_chars, 0.0))
+    if "Cybersecurity" in label:
+        return "Interpret carefully: Item 1C is a newer rule-driven disclosure, so post-2023 changes may be disclosure-regime effects."
+    if form_value == "10-K" and label in {"MD&A", "Market Risk", "Item 7A Market Risk"} and 0 < char_count < 1_000:
+        return "Parser warning: unusually short 10-K section; this may be a missed table/section boundary."
+    if 0 < char_count < 500:
+        return "Short section: often boilerplate or a no-material-change statement."
+    return ""
+
+
 def latest_decomposed_experiment() -> Path | None:
     candidates = []
     for root in sorted((REPO_ROOT / "experiments").glob("*decomposed*"), reverse=True):
@@ -1940,6 +2355,7 @@ def sector_outlook_artifact_signature(
         SP500_GICS_PATH,
         VALUATION_FEATURE_PATH,
         GROWTH_FEATURE_PATH,
+        SECTOR_OUTLOOK_SOURCE_PATH,
     ]
     if membership_mode == "historical":
         paths.extend([SP500_MEMBERSHIP_PATH, SP500_DELETED_PRICES_PATH])
@@ -2031,6 +2447,7 @@ def theme_evidence_frame(fragment_explanations: pd.DataFrame, themes: list[str] 
         "representative_section",
         "central_filing_description",
         "evidence_snippet",
+        "section_quality_note",
         "label_phrase",
         "tracked_topic_signal",
         "topic_evidence",
@@ -2161,6 +2578,11 @@ def theme_change_summary_frame(
     current = company_history.iloc[int(date_index)]
     previous = company_history.iloc[max(0, int(date_index) - 1)]
     first = company_history.iloc[0]
+    current_date = pd.Timestamp(current["date"]).strftime("%Y-%m-%d")
+    previous_date = pd.Timestamp(previous["date"]).strftime("%Y-%m-%d")
+    first_date = pd.Timestamp(first["date"]).strftime("%Y-%m-%d")
+    previous_column = f"change_from_{previous_date}_to_{current_date}"
+    first_column = f"change_from_{first_date}_to_{current_date}"
 
     rows = []
     for column in columns:
@@ -2171,8 +2593,8 @@ def theme_change_summary_frame(
             {
                 "theme": display_theme_name(column, labels),
                 "current_loading": current_loading,
-                "change_vs_previous": change_vs_previous,
-                "change_since_first": change_since_first,
+                previous_column: change_vs_previous,
+                first_column: change_since_first,
                 "focus_score": max(abs(change_vs_previous), abs(change_since_first)),
             }
         )
@@ -2861,6 +3283,30 @@ def relationship_strength(row: pd.Series) -> float:
     return max(values) if values else 0.0
 
 
+def has_pattern(value: str, patterns: list[str]) -> bool:
+    """Return true when any regex pattern appears in lower-cased text."""
+    text = compact_label_text(value).lower()
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
+def is_confident_supply_chain_evidence(row: pd.Series) -> bool:
+    """Return true when an existing artifact row should still display as supplier/customer.
+
+    Older relationship artifacts were intentionally broad. The dashboard now
+    keeps directional supplier/customer links only when the evidence snippet is
+    not one of the common ambiguous commercial contexts, or when the snippet has
+    explicit buying/selling/reliance language.
+    """
+    snippet = compact_label_text(row.get("context_snippet", ""))
+    if not snippet.strip():
+        return False
+    has_clear_evidence = has_pattern(snippet, CLEAR_SUPPLY_CHAIN_EVIDENCE_PATTERNS)
+    has_ambiguous_evidence = has_pattern(snippet, AMBIGUOUS_SUPPLY_CHAIN_EVIDENCE_PATTERNS)
+    if has_ambiguous_evidence and not has_clear_evidence:
+        return False
+    return True
+
+
 def relationship_side_for_focus(row: pd.Series, focus_ticker: str) -> dict[str, str | float]:
     """Return focal-company relationship semantics for a raw edge row."""
     focus = str(focus_ticker).upper()
@@ -2871,6 +3317,15 @@ def relationship_side_for_focus(row: pd.Series, focus_ticker: str) -> dict[str, 
     relationship_type = clean_relationship_value(row.get("relationship_type", "")).lower() or "mention"
 
     if supplier and customer:
+        if not is_confident_supply_chain_evidence(row):
+            counterparty = customer if supplier == focus else supplier if customer == focus else ""
+            if counterparty:
+                return {
+                    "relationship_side": "Partner / agreement",
+                    "counterparty": counterparty,
+                    "direction": f"{focus} linked with {counterparty}",
+                    "relationship_label": "ambiguous commercial link",
+                }
         if supplier == focus and customer != focus:
             return {
                 "relationship_side": "Customer",
@@ -3271,6 +3726,232 @@ def network_strength_chart(edges: pd.DataFrame) -> alt.Chart:
     )
 
 
+def supply_chain_edge_frame(relationships: pd.DataFrame, metadata: pd.DataFrame) -> pd.DataFrame:
+    """Return directed supplier-to-customer edges with readable metadata."""
+    if relationships.empty:
+        return pd.DataFrame()
+    frame = ensure_columns(
+        relationships,
+        [
+            "supplier_ticker",
+            "customer_ticker",
+            "relationship_type",
+            "filing_date",
+            "form",
+            "confidence",
+            "direction_confidence",
+            "matched_alias",
+            "context_snippet",
+        ],
+    ).copy()
+    frame["supplier_ticker"] = frame["supplier_ticker"].fillna("").astype(str).str.upper()
+    frame["customer_ticker"] = frame["customer_ticker"].fillna("").astype(str).str.upper()
+    frame = frame[
+        frame["supplier_ticker"].ne("")
+        & frame["customer_ticker"].ne("")
+        & frame["supplier_ticker"].ne(frame["customer_ticker"])
+    ].copy()
+    if not frame.empty:
+        frame = frame[frame.apply(is_confident_supply_chain_evidence, axis=1)].copy()
+    if frame.empty:
+        return frame
+
+    frame["strength"] = frame.apply(relationship_strength, axis=1)
+    frame["filing_date"] = pd.to_datetime(frame["filing_date"], errors="coerce")
+    frame = frame.sort_values(["strength", "filing_date"], ascending=[False, False], na_position="last")
+    frame = frame.drop_duplicates(["supplier_ticker", "customer_ticker"], keep="first")
+
+    keep = ["ticker", "title", "gics_sector", "gics_sub_industry"]
+    metadata_subset = ensure_columns(metadata, keep).loc[:, keep].drop_duplicates("ticker").copy()
+    metadata_subset["ticker"] = metadata_subset["ticker"].astype(str).str.upper()
+    frame = frame.merge(
+        metadata_subset.add_prefix("supplier_"),
+        left_on="supplier_ticker",
+        right_on="supplier_ticker",
+        how="left",
+    )
+    frame = frame.merge(
+        metadata_subset.add_prefix("customer_"),
+        left_on="customer_ticker",
+        right_on="customer_ticker",
+        how="left",
+    )
+    frame["supplier_name"] = frame["supplier_title"].fillna(frame["supplier_ticker"])
+    frame["customer_name"] = frame["customer_title"].fillna(frame["customer_ticker"])
+    frame["supplier_sector"] = frame["supplier_gics_sector"].fillna("Unknown")
+    frame["customer_sector"] = frame["customer_gics_sector"].fillna("Unknown")
+    frame["supplier_industry"] = frame["supplier_gics_sub_industry"].fillna("Unknown")
+    frame["customer_industry"] = frame["customer_gics_sub_industry"].fillna("Unknown")
+    return frame.reset_index(drop=True)
+
+
+def simulate_supply_chain_disruption(
+    relationships: pd.DataFrame,
+    metadata: pd.DataFrame,
+    focus_ticker: str,
+    impact_direction: str,
+    max_depth: int,
+    max_edges_per_node: int,
+    min_strength: float,
+) -> pd.DataFrame:
+    """Walk the directed supply-chain graph from a disrupted company."""
+    edge_frame = supply_chain_edge_frame(relationships, metadata)
+    if edge_frame.empty:
+        return pd.DataFrame()
+    edge_frame = edge_frame[pd.to_numeric(edge_frame["strength"], errors="coerce").fillna(0.0) >= float(min_strength)]
+    if edge_frame.empty:
+        return pd.DataFrame()
+
+    focus = str(focus_ticker).upper()
+    directions = (
+        ["Upstream suppliers", "Downstream customers"]
+        if impact_direction == "Both directions"
+        else [impact_direction]
+    )
+    metadata_lookup = company_metadata_lookup(metadata)
+    rows = []
+    for direction in directions:
+        frontier = [{"ticker": focus, "depth": 0, "path": [focus]}]
+        visited = {focus}
+        while frontier:
+            current = frontier.pop(0)
+            if int(current["depth"]) >= int(max_depth):
+                continue
+            current_ticker = str(current["ticker"])
+            if direction == "Upstream suppliers":
+                candidates = edge_frame[edge_frame["customer_ticker"].eq(current_ticker)].copy()
+                candidates["affected_ticker"] = candidates["supplier_ticker"]
+                candidates["from_ticker"] = candidates["customer_ticker"]
+                candidates["affected_name"] = candidates["supplier_name"]
+                candidates["affected_sector"] = candidates["supplier_sector"]
+                candidates["affected_industry"] = candidates["supplier_industry"]
+                candidates["relationship_direction"] = (
+                    candidates["supplier_ticker"] + " supplies " + candidates["customer_ticker"]
+                )
+                impact_note = "Upstream supplier exposed to disrupted buyer"
+            else:
+                candidates = edge_frame[edge_frame["supplier_ticker"].eq(current_ticker)].copy()
+                candidates["affected_ticker"] = candidates["customer_ticker"]
+                candidates["from_ticker"] = candidates["supplier_ticker"]
+                candidates["affected_name"] = candidates["customer_name"]
+                candidates["affected_sector"] = candidates["customer_sector"]
+                candidates["affected_industry"] = candidates["customer_industry"]
+                candidates["relationship_direction"] = (
+                    candidates["supplier_ticker"] + " supplies " + candidates["customer_ticker"]
+                )
+                impact_note = "Downstream customer exposed to disrupted supplier"
+
+            candidates = candidates.sort_values(["strength", "filing_date"], ascending=[False, False]).head(
+                int(max_edges_per_node)
+            )
+            for _, edge in candidates.iterrows():
+                affected = str(edge["affected_ticker"]).upper()
+                if not affected or affected in visited:
+                    continue
+                depth = int(current["depth"]) + 1
+                path = list(current["path"])
+                if direction == "Upstream suppliers":
+                    path = [affected, *path]
+                else:
+                    path = [*path, affected]
+                affected_meta = metadata_lookup.get(affected, {})
+                affected_name = (
+                    clean_relationship_value(affected_meta.get("title", ""))
+                    or clean_relationship_value(edge.get("affected_name", ""))
+                    or affected
+                )
+                affected_sector = (
+                    clean_relationship_value(affected_meta.get("gics_sector", ""))
+                    or clean_relationship_value(edge.get("affected_sector", ""))
+                    or "Unknown"
+                )
+                affected_industry = (
+                    clean_relationship_value(affected_meta.get("gics_sub_industry", ""))
+                    or clean_relationship_value(edge.get("affected_industry", ""))
+                    or "Unknown"
+                )
+                rows.append(
+                    {
+                        "depth": depth,
+                        "impact_direction": direction,
+                        "affected_ticker": affected,
+                        "affected_company": affected_name,
+                        "affected_sector": affected_sector,
+                        "affected_industry": affected_industry,
+                        "from_ticker": edge["from_ticker"],
+                        "relationship_direction": edge["relationship_direction"],
+                        "impact_note": impact_note,
+                        "relationship_path": " -> ".join(path),
+                        "strength": float(edge.get("strength", 0.0) or 0.0),
+                        "filing_date": edge.get("filing_date"),
+                        "form": edge.get("form", ""),
+                        "matched_alias": edge.get("matched_alias", ""),
+                        "context_snippet": edge.get("context_snippet", ""),
+                    }
+                )
+                visited.add(affected)
+                frontier.append({"ticker": affected, "depth": depth, "path": path})
+
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return result
+    return result.sort_values(["depth", "strength"], ascending=[True, False]).reset_index(drop=True)
+
+
+def company_metadata_lookup(metadata: pd.DataFrame) -> dict[str, dict[str, object]]:
+    """Return ticker-keyed metadata dicts for quick network labeling."""
+    keep = ["ticker", "title", "gics_sector", "gics_sub_industry"]
+    frame = ensure_columns(metadata, keep).loc[:, keep].drop_duplicates("ticker").copy()
+    frame["ticker"] = frame["ticker"].astype(str).str.upper()
+    return {str(row["ticker"]): row.to_dict() for _, row in frame.iterrows()}
+
+
+def disruption_depth_chart(simulation: pd.DataFrame) -> alt.Chart:
+    """Show affected company counts by graph distance from the disruption."""
+    frame = (
+        simulation.groupby(["impact_direction", "depth"])["affected_ticker"]
+        .nunique()
+        .reset_index(name="affected_companies")
+    )
+    return (
+        alt.Chart(frame)
+        .mark_bar(cornerRadiusTopRight=8, cornerRadiusBottomRight=8)
+        .encode(
+            x=alt.X("depth:O", title="Connection step"),
+            y=alt.Y("affected_companies:Q", title="Affected companies"),
+            color=alt.Color("impact_direction:N", title="Direction"),
+            tooltip=["impact_direction:N", "depth:O", "affected_companies:Q"],
+        )
+        .properties(height=300)
+    )
+
+
+def disruption_sector_chart(simulation: pd.DataFrame) -> alt.Chart:
+    """Show affected companies by sector."""
+    frame = (
+        simulation.groupby(["affected_sector", "impact_direction"])["affected_ticker"]
+        .nunique()
+        .reset_index(name="affected_companies")
+    )
+    sector_order = (
+        frame.groupby("affected_sector")["affected_companies"]
+        .sum()
+        .sort_values(ascending=False)
+        .index.tolist()
+    )
+    return (
+        alt.Chart(frame)
+        .mark_bar(cornerRadiusTopRight=8, cornerRadiusBottomRight=8)
+        .encode(
+            x=alt.X("affected_companies:Q", title="Affected companies"),
+            y=alt.Y("affected_sector:N", sort=sector_order, title=None, axis=alt.Axis(labelLimit=260)),
+            color=alt.Color("impact_direction:N", title="Direction"),
+            tooltip=["affected_sector:N", "impact_direction:N", "affected_companies:Q"],
+        )
+        .properties(height=max(260, 28 * len(sector_order)))
+    )
+
+
 def focus_dominant_theme_members(points: pd.DataFrame, focus_ticker: str, max_rows: int = 15) -> pd.DataFrame:
     """Return companies sharing the focus ticker's dominant map theme."""
     if points.empty:
@@ -3581,8 +4262,8 @@ def company_language_story_frame(
             ].copy()
             if not evidence.empty:
                 evidence = evidence.sort_values("snippet_rank")
-                snippet_terms = str(evidence.iloc[0].get("snippet_terms", "") or "")
-                evidence_snippet = str(evidence.iloc[0].get("evidence_snippet", "") or "")
+                snippet_terms = compact_label_text(evidence.iloc[0].get("snippet_terms", ""))
+                evidence_snippet = compact_label_text(evidence.iloc[0].get("evidence_snippet", ""))
 
         source_url = ""
         if not sources.empty:
@@ -3590,7 +4271,7 @@ def company_language_story_frame(
                 sources["ticker"].eq(str(ticker).upper()) & sources["accession_no"].eq(best["accession_no"])
             ]
             if not source_match.empty:
-                source_url = str(source_match.iloc[0].get("source_url", "") or "")
+                source_url = compact_label_text(source_match.iloc[0].get("source_url", ""))
 
         early_score = float(pd.to_numeric(early[score_column], errors="coerce").mean())
         recent_score = float(pd.to_numeric(late[score_column], errors="coerce").mean())
@@ -3789,9 +4470,9 @@ def topic_change_evidence_frame(
         evidence_snippet = ""
         source_url = ""
         if not evidence.empty:
-            snippet_terms = str(evidence.iloc[0].get("snippet_terms", "") or "")
-            evidence_snippet = str(evidence.iloc[0].get("evidence_snippet", "") or "")
-            source_url = str(evidence.iloc[0].get("source_url", "") or "")
+            snippet_terms = compact_label_text(evidence.iloc[0].get("snippet_terms", ""))
+            evidence_snippet = compact_label_text(evidence.iloc[0].get("evidence_snippet", ""))
+            source_url = compact_label_text(evidence.iloc[0].get("source_url", ""))
         rows.append(
             {
                 "ticker": ticker,
@@ -4216,7 +4897,7 @@ def load_sector_predictor_comparison(
                 completed,
                 starting_capital=DEFAULT_SIMULATION_CAPITAL,
                 top_n=1,
-                transaction_cost_bps=0.0,
+                transaction_cost_bps=DEFAULT_ROTATION_TRANSACTION_COST_BPS,
                 benchmark_returns=benchmark_returns if not benchmark_returns.empty else None,
                 benchmark_label="Regular S&P 500 (SPY)",
             )
@@ -4311,29 +4992,230 @@ def optional_feature_frame(path: Path) -> pd.DataFrame:
     return frame
 
 
-def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
-    """Build current sector outlook bar chart."""
+def latest_scores_display_frame(latest: pd.DataFrame) -> pd.DataFrame:
+    """Return latest score rows with unique ranked display labels."""
     frame = latest.copy()
+    if frame.empty:
+        return frame
     group_column = "group_label" if "group_label" in frame.columns else "gics_sector"
     frame["predicted_excess_return"] = pd.to_numeric(frame["predicted_excess_return"], errors="coerce")
     frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["predicted_excess_return"])
+    if "date" in frame.columns:
+        frame["date"] = pd.to_datetime(frame["date"])
+        latest_date = frame["date"].max()
+        frame = frame[frame["date"].eq(latest_date)].copy()
+    if frame.empty:
+        return frame
+    if "prediction_rank" not in frame.columns:
+        frame["prediction_rank"] = frame["predicted_excess_return"].rank(ascending=False, method="first")
+    frame["prediction_rank"] = pd.to_numeric(frame["prediction_rank"], errors="coerce")
+    frame = frame.sort_values(["prediction_rank", "predicted_excess_return"], ascending=[True, False]).reset_index(drop=True)
+    frame["group_display"] = frame[group_column].fillna("Unknown").astype(str)
+    frame["ranked_group"] = [
+        f"#{int(rank) if pd.notna(rank) else index + 1} {label}"
+        for index, (rank, label) in enumerate(zip(frame["prediction_rank"], frame["group_display"], strict=False))
+    ]
     frame["direction"] = np.where(frame["predicted_excess_return"] >= 0.0, "Positive", "Negative")
-    return (
+    return frame
+
+
+def sector_latest_score_chart(latest: pd.DataFrame) -> alt.Chart:
+    """Build current sector outlook bar chart."""
+    frame = latest_scores_display_frame(latest)
+    if frame.empty:
+        return alt.Chart(pd.DataFrame({"ranked_group": [], "predicted_excess_return": []})).mark_bar()
+    order = frame["ranked_group"].tolist()
+    x_max = float(frame["predicted_excess_return"].abs().max())
+    x_domain = [-max(x_max * 1.18, 0.01), max(x_max * 1.18, 0.01)]
+    bars = (
         alt.Chart(frame)
-        .mark_bar(cornerRadiusEnd=3)
+        .mark_bar(cornerRadiusEnd=8)
         .encode(
-            y=alt.Y(f"{group_column}:N", sort="-x", title="Group"),
-            x=alt.X("predicted_excess_return:Q", title="Predicted excess return vs S&P"),
-            color=alt.Color("direction:N", scale=alt.Scale(range=["#1f7a4d", "#b8423f"]), legend=None),
+            y=alt.Y("ranked_group:N", sort=order, title=None, axis=alt.Axis(labelLimit=340)),
+            x=alt.X(
+                "predicted_excess_return:Q",
+                title="Predicted excess return vs equal-weight S&P",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(domain=x_domain),
+            ),
+            color=alt.Color(
+                "direction:N",
+                scale=alt.Scale(domain=["Positive", "Negative"], range=["#2f6f64", "#b8423f"]),
+                legend=None,
+            ),
             tooltip=[
-                alt.Tooltip(f"{group_column}:N", title="Group"),
+                alt.Tooltip("group_display:N", title="Group"),
                 alt.Tooltip("predicted_excess_return:Q", title="Predicted excess", format=".2%"),
                 alt.Tooltip("score_z:Q", title="Score z", format=".2f"),
                 alt.Tooltip("prediction_rank:Q", title="Rank", format=".0f"),
             ],
         )
-        .properties(height=360)
     )
+    labels = (
+        alt.Chart(frame)
+        .mark_text(align="left", dx=6, color="#24312f", fontWeight="bold")
+        .encode(
+            y=alt.Y("ranked_group:N", sort=order, title=None),
+            x=alt.X("predicted_excess_return:Q", scale=alt.Scale(domain=x_domain)),
+            text=alt.Text("predicted_excess_return:Q", format="+.1%"),
+        )
+    )
+    zero = alt.Chart(pd.DataFrame({"x": [0.0]})).mark_rule(color="#52615d", opacity=0.45).encode(x="x:Q")
+    return (zero + bars + labels).properties(height=max(340, 34 * len(frame)))
+
+
+def sector_current_setup_chart(latest: pd.DataFrame) -> alt.Chart:
+    """Show current predictions against recent group momentum."""
+    frame = latest_scores_display_frame(latest)
+    required = {"predicted_excess_return", "sector_excess_momentum_63d", "group_display"}
+    if frame.empty or not required.issubset(frame.columns):
+        return alt.Chart(pd.DataFrame({"x": [], "y": []})).mark_circle()
+
+    frame["sector_excess_momentum_63d"] = pd.to_numeric(frame["sector_excess_momentum_63d"], errors="coerce")
+    frame["sector_excess_volatility_63d"] = pd.to_numeric(
+        frame.get("sector_excess_volatility_63d", pd.Series(index=frame.index, dtype=float)),
+        errors="coerce",
+    )
+    frame = frame.replace([np.inf, -np.inf], np.nan).dropna(
+        subset=["predicted_excess_return", "sector_excess_momentum_63d"]
+    )
+    if frame.empty:
+        return alt.Chart(pd.DataFrame({"x": [], "y": []})).mark_circle()
+
+    max_x = float(frame["sector_excess_momentum_63d"].abs().max())
+    max_y = float(frame["predicted_excess_return"].abs().max())
+    x_domain = [-max(max_x * 1.25, 0.01), max(max_x * 1.25, 0.01)]
+    y_domain = [-max(max_y * 1.25, 0.01), max(max_y * 1.25, 0.01)]
+    frame["volatility_size"] = frame["sector_excess_volatility_63d"].fillna(
+        frame["sector_excess_volatility_63d"].median()
+    )
+
+    points = (
+        alt.Chart(frame)
+        .mark_circle(opacity=0.86, stroke="#f6f2ea", strokeWidth=1.2)
+        .encode(
+            x=alt.X(
+                "sector_excess_momentum_63d:Q",
+                title="Recent 63-day excess momentum",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(domain=x_domain),
+            ),
+            y=alt.Y(
+                "predicted_excess_return:Q",
+                title="Predicted next-period excess return",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(domain=y_domain),
+            ),
+            size=alt.Size("volatility_size:Q", title="Recent volatility", legend=None, scale=alt.Scale(range=[90, 430])),
+            color=alt.Color(
+                "direction:N",
+                scale=alt.Scale(domain=["Positive", "Negative"], range=["#2f6f64", "#b8423f"]),
+                legend=None,
+            ),
+            tooltip=[
+                alt.Tooltip("group_display:N", title="Group"),
+                alt.Tooltip("prediction_rank:Q", title="Rank", format=".0f"),
+                alt.Tooltip("predicted_excess_return:Q", title="Prediction", format=".2%"),
+                alt.Tooltip("sector_excess_momentum_63d:Q", title="63d momentum", format=".2%"),
+                alt.Tooltip("sector_excess_volatility_63d:Q", title="63d volatility", format=".2%"),
+            ],
+        )
+    )
+    labels = (
+        alt.Chart(frame)
+        .mark_text(dx=8, align="left", baseline="middle", color="#24312f", fontSize=11)
+        .encode(
+            x=alt.X("sector_excess_momentum_63d:Q", scale=alt.Scale(domain=x_domain)),
+            y=alt.Y("predicted_excess_return:Q", scale=alt.Scale(domain=y_domain)),
+            text=alt.Text("group_display:N"),
+        )
+    )
+    x_rule = alt.Chart(pd.DataFrame({"x": [0.0]})).mark_rule(color="#52615d", opacity=0.35).encode(x="x:Q")
+    y_rule = alt.Chart(pd.DataFrame({"y": [0.0]})).mark_rule(color="#52615d", opacity=0.35).encode(y="y:Q")
+    return (x_rule + y_rule + points + labels).properties(height=360)
+
+
+def sector_current_watchlist_frame(latest: pd.DataFrame, top_n: int = 3) -> pd.DataFrame:
+    """Return top and bottom current predictions for a compact dashboard summary."""
+    frame = latest_scores_display_frame(latest)
+    if frame.empty:
+        return frame
+    keep = [
+        "prediction_rank",
+        "group_display",
+        "predicted_excess_return",
+        "score_z",
+    ]
+    top = frame.head(int(top_n)).copy()
+    top["bucket"] = "Favored"
+    bottom = frame.tail(int(top_n)).sort_values("prediction_rank").copy()
+    bottom["bucket"] = "Lagging"
+    output = pd.concat([top, bottom], ignore_index=True)
+    return safe_frame_subset(ensure_columns(output, ["bucket", *keep]), ["bucket", *keep])
+
+
+def sector_current_driver_frame(latest: pd.DataFrame, max_rows: int = 8) -> pd.DataFrame:
+    """Explain the top-ranked group's current feature profile versus other groups."""
+    frame = latest_scores_display_frame(latest)
+    if frame.empty:
+        return pd.DataFrame()
+    numeric_columns = [column for column in SECTOR_DRIVER_LABELS if column in frame.columns]
+    if not numeric_columns:
+        return pd.DataFrame()
+    top = frame.iloc[0]
+    rows = []
+    for column in numeric_columns:
+        values = pd.to_numeric(frame[column], errors="coerce")
+        value = pd.to_numeric(pd.Series([top.get(column)]), errors="coerce").iloc[0]
+        std = float(values.std(ddof=0))
+        if pd.isna(value) or not np.isfinite(std) or std <= 1e-12:
+            continue
+        z_score = float((float(value) - float(values.mean())) / std)
+        rows.append(
+            {
+                "feature": SECTOR_DRIVER_LABELS.get(column, column),
+                "top_group_value": float(value),
+                "cross_section_z": z_score,
+                "interpretation": "above peer groups" if z_score > 0 else "below peer groups",
+                "_abs_z": abs(z_score),
+            }
+        )
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return result
+    return result.sort_values("_abs_z", ascending=False).drop(columns="_abs_z").head(int(max_rows)).reset_index(drop=True)
+
+
+def sector_current_input_table_frame(
+    latest: pd.DataFrame,
+    display_columns: list[str],
+) -> tuple[pd.DataFrame, list[str]]:
+    """Return a cleaned current-input table without manufactured None columns."""
+    frame = latest_scores_display_frame(latest)
+    if frame.empty:
+        return frame, []
+
+    if "group_label" not in frame.columns or frame["group_label"].isna().all():
+        fallback = frame.get("group_display", frame.get("gics_sector", pd.Series(index=frame.index, dtype=object)))
+        frame["group_label"] = fallback
+
+    available_columns = []
+    omitted_columns = []
+    for column in display_columns:
+        if column not in frame.columns:
+            omitted_columns.append(column)
+            continue
+        if frame[column].notna().sum() == 0:
+            omitted_columns.append(column)
+            continue
+        available_columns.append(column)
+
+    cleaned = frame.loc[:, available_columns].copy()
+    cleaned = cleaned.replace({pd.NA: np.nan, None: np.nan})
+    for text_column in ["group_label", "gics_sector"]:
+        if text_column in cleaned.columns:
+            cleaned[text_column] = cleaned[text_column].fillna("").astype(str)
+    return cleaned, omitted_columns
 
 
 def sector_backtest_chart(dated: pd.DataFrame) -> alt.Chart:
@@ -4383,6 +5265,37 @@ def sector_rank_ic_chart(dated: pd.DataFrame) -> alt.Chart:
             ],
         )
         .properties(height=260)
+    )
+
+
+def sector_recent_decisions_frame(dated: pd.DataFrame, max_rows: int = 10) -> pd.DataFrame:
+    """Return recent completed prediction dates as a readable scoreboard."""
+    if dated.empty:
+        return pd.DataFrame()
+    frame = dated.copy()
+    for column in ["date", "target_end_date"]:
+        if column in frame.columns:
+            frame[column] = pd.to_datetime(frame[column], errors="coerce")
+    columns = [
+        "date",
+        "target_end_date",
+        "predicted_top_sector",
+        "realized_best_sector",
+        "top_bucket_excess",
+        "top_minus_bottom",
+        "rank_ic",
+    ]
+    frame = safe_frame_subset(ensure_columns(frame, columns), columns)
+    frame = frame.sort_values("date", ascending=False).head(int(max_rows)).reset_index(drop=True)
+    return frame.rename(
+        columns={
+            "date": "prediction_date",
+            "target_end_date": "horizon_end",
+            "predicted_top_sector": "model_favored",
+            "realized_best_sector": "realized_winner",
+            "top_bucket_excess": "favored_group_excess",
+            "top_minus_bottom": "top_minus_bottom_realized",
+        }
     )
 
 
@@ -4525,6 +5438,8 @@ def sector_rotation_step_table(simulation: pd.DataFrame) -> pd.DataFrame:
         frame["start_capital"] = frame["capital"] / (1.0 + frame["net_period_return"].replace(-1.0, np.nan))
     if "capital_change" not in frame.columns:
         frame["capital_change"] = frame["capital"] - frame["start_capital"]
+    if "transaction_cost" not in frame.columns:
+        frame["transaction_cost"] = 0.0
     if "start_market_capital" not in frame.columns:
         frame["start_market_capital"] = frame["market_capital"] / (1.0 + frame["period_market_return"].replace(-1.0, np.nan))
     if "market_capital_change" not in frame.columns:
@@ -4536,6 +5451,7 @@ def sector_rotation_step_table(simulation: pd.DataFrame) -> pd.DataFrame:
         "selected_group_label",
         "predicted_excess_return",
         "start_capital",
+        "transaction_cost",
         "net_period_return",
         "capital_change",
         "capital",
@@ -4562,6 +5478,7 @@ def sector_rotation_step_table(simulation: pd.DataFrame) -> pd.DataFrame:
             "selected_group_label": "selected_group",
             "predicted_excess_return": "predicted_excess",
             "start_capital": "strategy_start",
+            "transaction_cost": "transaction_cost",
             "net_period_return": "strategy_return",
             "capital_change": "strategy_dollar_change",
             "capital": "strategy_end",
@@ -4622,6 +5539,80 @@ def membership_mode_display(membership_mode: str) -> str:
     return labels.get(str(membership_mode), str(membership_mode))
 
 
+def rotation_overlap_count(simulation: pd.DataFrame) -> int:
+    """Return the number of holding periods that start before the prior one exits."""
+    if simulation.empty or len(simulation) < 2:
+        return 0
+    dates = pd.to_datetime(simulation["date"], errors="coerce").reset_index(drop=True)
+    exits = pd.to_datetime(simulation["target_end_date"], errors="coerce").reset_index(drop=True)
+    return int((dates.iloc[1:].to_numpy() < exits.iloc[:-1].to_numpy()).sum())
+
+
+def rotation_backtest_audit_frame(
+    predictions: pd.DataFrame,
+    simulation: pd.DataFrame,
+    benchmark_returns: pd.Series,
+    *,
+    membership_mode: str,
+    group_mode: str,
+) -> pd.DataFrame:
+    """Return readable pass/warn/fail checks for the rotation simulation."""
+    prediction_audit = sector_prediction_audit(predictions)
+    completed = completed_sector_predictions(predictions)
+    overlap_count = rotation_overlap_count(simulation)
+    has_benchmark = (
+        not benchmark_returns.empty
+        and not simulation.empty
+        and "benchmark_capital" in simulation.columns
+        and simulation["benchmark_capital"].notna().any()
+    )
+    rows = [
+        {
+            "check": "Historical membership",
+            "status": "Pass" if membership_mode == "historical" else "Fail",
+            "detail": (
+                "Uses historical S&P add/remove intervals."
+                if membership_mode == "historical"
+                else "Simulation is disabled unless Historical constituents is selected."
+            ),
+        },
+        {
+            "check": "Completed forward horizons",
+            "status": "Pass" if not completed.empty else "Fail",
+            "detail": f"{int(prediction_audit.get('n_completed_dates', 0)):,} completed prediction dates are available.",
+        },
+        {
+            "check": "Training leakage",
+            "status": "Pass" if int(prediction_audit.get("n_leakage_violations", 0)) == 0 else "Fail",
+            "detail": f"{int(prediction_audit.get('n_leakage_violations', 0)):,} rows train on outcomes ending at/after the prediction date.",
+        },
+        {
+            "check": "Non-overlapping holds",
+            "status": "Pass" if overlap_count == 0 else "Fail",
+            "detail": f"{overlap_count:,} overlapping holding periods detected.",
+        },
+        {
+            "check": "Regular S&P benchmark",
+            "status": "Pass" if has_benchmark else "Warning",
+            "detail": (
+                "SPY benchmark capital is available over the same holding windows."
+                if has_benchmark
+                else "SPY benchmark is missing, so only equal-weight universe comparison is shown."
+            ),
+        },
+        {
+            "check": "Universe coverage",
+            "status": "Warning" if group_mode == "theme" else "Pass",
+            "detail": (
+                "Learned-theme simulation is valid for ticker-dates with saved theme loadings; deleted members without embeddings are outside the covered universe."
+                if group_mode == "theme"
+                else "GICS simulation uses all available historical members with local prices and labels."
+            ),
+        },
+    ]
+    return pd.DataFrame(rows)
+
+
 def render_sector_outlook() -> None:
     st.subheader("Group Outlook")
     st.caption(
@@ -4652,8 +5643,8 @@ def render_sector_outlook() -> None:
         index=list(SECTOR_MODEL_LABELS.keys()).index(DEFAULT_SECTOR_MODEL),
         format_func=sector_model_display_name,
         help=(
-            "Choose the model used for the live Sector Outlook run. The Model Comparison tab keeps the broader "
-            "side-by-side benchmark table."
+            "Choose the model used for the live Sector Outlook run. The broader side-by-side benchmark table is kept "
+            "for the presentation/writeup rather than the product dashboard."
         ),
     )
     membership_mode_lookup = {
@@ -4662,6 +5653,7 @@ def render_sector_outlook() -> None:
         "Current roster (diagnostic only)": "current",
     }
     membership_mode = membership_mode_lookup[membership_choice]
+    membership = pd.DataFrame()
     if membership_mode == "historical":
         membership = load_sp500_membership_history(artifact_signature(SP500_MEMBERSHIP_PATH))
         if membership.empty:
@@ -4803,11 +5795,12 @@ def render_sector_outlook() -> None:
         "growth_operating_margin",
     ]
 
-    metric_columns = st.columns(4)
+    metric_columns = st.columns(5)
     metric_columns[0].metric("Completed dates", f"{int(audit.get('n_completed_dates', 0)):,}")
     metric_columns[1].metric("Mean rank IC", f"{float(metrics.get('mean_rank_ic', np.nan)):.3f}")
     metric_columns[2].metric("Top-bottom avg", f"{float(metrics.get('mean_top_minus_bottom', np.nan)):.2%}")
-    metric_columns[3].metric("Leakage flags", f"{int(audit.get('n_leakage_violations', 0)):,}")
+    metric_columns[3].metric("Top-pick hit rate", f"{float(metrics.get('top_sector_hit_rate', np.nan)):.1%}")
+    metric_columns[4].metric("Leakage flags", f"{int(audit.get('n_leakage_violations', 0)):,}")
     if int(audit.get("n_leakage_violations", 0)) > 0:
         st.error("Audit found prediction rows whose training outcomes ended on or after the prediction date.")
     else:
@@ -4829,16 +5822,94 @@ def render_sector_outlook() -> None:
     )
 
     with current_tab:
-        latest_date = latest["date"].max().strftime("%Y-%m-%d")
+        current_scores = latest_scores_display_frame(latest)
+        if not current_scores.empty and "date" in current_scores.columns:
+            latest_date = pd.Timestamp(current_scores["date"].max()).strftime("%Y-%m-%d")
+        elif not latest.empty and "date" in latest.columns:
+            latest_date = pd.Timestamp(latest["date"].max()).strftime("%Y-%m-%d")
+        else:
+            latest_date = "unknown"
         st.caption(
             f"Current scores are as of {latest_date}. They are live/unrealized rows, not historical backtest results."
         )
-        st.altair_chart(sector_latest_score_chart(latest), width="stretch")
-        with st.expander("Show current sector input table", expanded=False):
+        if current_scores.empty:
+            st.warning("No current group scores are available for the selected settings.")
+        else:
+            top_row = current_scores.iloc[0]
+            bottom_row = current_scores.iloc[-1]
+            spread = float(top_row["predicted_excess_return"] - bottom_row["predicted_excess_return"])
+            positive_count = int((current_scores["predicted_excess_return"] > 0.0).sum())
+            current_metrics = st.columns(4)
+            current_metrics[0].metric("Top group", str(top_row["group_display"]))
+            current_metrics[1].metric("Predicted excess", f"{float(top_row['predicted_excess_return']):+.2%}")
+            current_metrics[2].metric("Top-bottom spread", f"{spread:.2%}")
+            current_metrics[3].metric("Positive groups", f"{positive_count}/{len(current_scores)}")
+
+            outlook_columns = st.columns([1.55, 1.0])
+            with outlook_columns[0]:
+                st.markdown("**Ranked Current Outlook**")
+                st.altair_chart(sector_latest_score_chart(current_scores), width="stretch")
+            with outlook_columns[1]:
+                st.markdown("**What To Watch**")
+                st.caption(
+                    "The favored and lagging groups make the prediction easier to explain than one isolated score."
+                )
+                st.dataframe(
+                    sector_current_watchlist_frame(current_scores),
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "predicted_excess_return": st.column_config.NumberColumn("predicted_excess", format="percent"),
+                        "score_z": st.column_config.NumberColumn("score_z", format="%+.2f"),
+                    },
+                )
+                drivers = sector_current_driver_frame(current_scores)
+                if not drivers.empty:
+                    st.markdown(f"**Why {top_row['group_display']} Stands Out**")
+                    st.caption(
+                        "This is a cross-sectional feature profile, not a causal explanation. It shows where the "
+                        "top-ranked group differs most from the other groups today."
+                    )
+                    st.dataframe(
+                        drivers,
+                        width="stretch",
+                        hide_index=True,
+                        column_config={
+                            "top_group_value": st.column_config.NumberColumn("value", format="%.3f"),
+                            "cross_section_z": st.column_config.NumberColumn("z vs groups", format="%+.2f"),
+                        },
+                    )
+
+            st.markdown("**Current Setup Map**")
+            st.caption(
+                "Each point is one group. The upper-right quadrant means recent relative strength plus a positive "
+                "model forecast; upper-left means the model is favoring a group despite weak recent momentum."
+            )
+            st.altair_chart(sector_current_setup_chart(current_scores), width="stretch")
+
+        with st.expander("Show current model inputs", expanded=False):
+            input_table, omitted_input_columns = sector_current_input_table_frame(latest, display_columns)
+            if omitted_input_columns:
+                st.caption(
+                    "Omitted unavailable inputs for this selected setup: "
+                    + ", ".join(omitted_input_columns[:8])
+                    + ("..." if len(omitted_input_columns) > 8 else "")
+                )
             st.dataframe(
-                safe_frame_subset(ensure_columns(latest, display_columns), display_columns),
+                input_table,
                 width="stretch",
                 hide_index=True,
+                column_config={
+                    "predicted_excess_return": st.column_config.NumberColumn("predicted excess", format="percent"),
+                    "score_z": st.column_config.NumberColumn("score z", format="%+.2f"),
+                    "sector_excess_momentum_63d": st.column_config.NumberColumn("63d momentum", format="percent"),
+                    "sector_excess_momentum_126d": st.column_config.NumberColumn("126d momentum", format="percent"),
+                    "valuation_sales_yield": st.column_config.NumberColumn("sales yield", format="%.3f"),
+                    "valuation_earnings_yield": st.column_config.NumberColumn("earnings yield", format="%.3f"),
+                    "valuation_book_to_market": st.column_config.NumberColumn("book/market", format="%.3f"),
+                    "growth_revenue_yoy_1y": st.column_config.NumberColumn("revenue growth", format="percent"),
+                    "growth_operating_margin": st.column_config.NumberColumn("operating margin", format="percent"),
+                },
             )
 
     with historical_tab:
@@ -4848,6 +5919,23 @@ def render_sector_outlook() -> None:
             chart_columns = st.columns(2)
             chart_columns[0].altair_chart(sector_backtest_chart(dated), width="stretch")
             chart_columns[1].altair_chart(sector_rank_ic_chart(dated), width="stretch")
+            with st.expander("Recent completed prediction decisions", expanded=True):
+                st.caption(
+                    "This is the quickest way to sanity-check the walk-forward behavior: what the model favored, "
+                    "what actually won, and whether the favored bucket beat the broad universe."
+                )
+                st.dataframe(
+                    sector_recent_decisions_frame(dated),
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "prediction_date": st.column_config.DateColumn("prediction date"),
+                        "horizon_end": st.column_config.DateColumn("horizon end"),
+                        "favored_group_excess": st.column_config.NumberColumn("favored excess", format="percent"),
+                        "top_minus_bottom_realized": st.column_config.NumberColumn("top-bottom realized", format="percent"),
+                        "rank_ic": st.column_config.NumberColumn("rank IC", format="%.3f"),
+                    },
+                )
 
             completed_dates = sorted(completed_predictions["date"].dropna().unique())
             selected_date = st.selectbox(
@@ -4889,13 +5977,23 @@ def render_sector_outlook() -> None:
     with simulation_tab:
         if completed_predictions.empty:
             st.warning("No completed historical prediction horizons are available for simulation.")
+        elif membership_mode != "historical":
+            st.error(
+                "Rotation simulation is disabled for this universe mode. Switch to Historical constituents to avoid "
+                "current-roster survivorship bias."
+            )
+            st.caption(
+                "Date-added mode removes pre-addition returns for today's members, but it still omits deleted S&P 500 "
+                "constituents. Current-roster mode is diagnostic only."
+            )
         else:
             starting_capital = DEFAULT_SIMULATION_CAPITAL
             top_n = 1
-            transaction_cost_bps = 0.0
+            transaction_cost_bps = DEFAULT_ROTATION_TRANSACTION_COST_BPS
             st.caption(
                 "Simulation defaults: start with $10,000, rotate into the single best predicted group, "
-                "and assume zero transaction costs. This keeps the demo focused on the walk-forward signal."
+                f"charge {transaction_cost_bps:.0f} bps when the selected group changes, and use only "
+                "non-overlapping completed holding periods."
             )
             benchmark_returns = load_sp500_benchmark_returns(str(DEFAULT_SP500_BENCHMARK_PATH))
             if benchmark_returns.empty:
@@ -4937,11 +6035,15 @@ def render_sector_outlook() -> None:
                     "best predicted group using only information available then, holds through the selected forward "
                     "horizon, then waits for the next non-overlapping rebalance date."
                 )
-                if membership_mode == "current":
-                    st.error(
-                        "This specific simulation is not a valid historical backtest because the universe is today's "
-                        "current S&P roster. Switch to Historical constituents for the defensible version."
-                    )
+                audit_frame = rotation_backtest_audit_frame(
+                    predictions,
+                    simulation,
+                    benchmark_returns,
+                    membership_mode=membership_mode,
+                    group_mode=group_mode,
+                )
+                with st.expander("Backtest validity checks", expanded=True):
+                    st.dataframe(audit_frame, width="stretch", hide_index=True)
                 st.altair_chart(sector_rotation_equity_chart(simulation), width="stretch")
                 st.markdown("**How the $10,000 changes at each step**")
                 st.dataframe(
@@ -4951,6 +6053,7 @@ def render_sector_outlook() -> None:
                     column_config={
                         "predicted_excess": st.column_config.NumberColumn("predicted_excess", format="percent"),
                         "strategy_start": st.column_config.NumberColumn("strategy_start", format="$%.2f"),
+                        "transaction_cost": st.column_config.NumberColumn("transaction_cost", format="percent"),
                         "strategy_return": st.column_config.NumberColumn("strategy_return", format="percent"),
                         "strategy_dollar_change": st.column_config.NumberColumn(
                             "strategy_dollar_change",
@@ -5541,7 +6644,7 @@ def render_filing_browser() -> None:
             preview_text = operator.load_raw_submission_text(selected_group, selected_accession)
             st.text_area(
                 "Submission Text Preview",
-                value=(preview_text or "")[:12000],
+                value=compact_label_text(preview_text)[:12000],
                 height=320,
             )
 
@@ -5918,6 +7021,12 @@ def render_similarity_explorer() -> None:
         "Read this tab from top to bottom: the bar chart explains the selected company's theme mix, "
         "and the peer table shows the closest companies from the full theme-membership profile."
     )
+    if selected_view == "financial":
+        st.caption(
+            "Financial similarity is a numeric profile view, not a business-description view. It groups companies "
+            "with similar valuation, growth, profitability, size, liquidity, and momentum features, so large growth "
+            "companies can look close even when their products are unrelated."
+        )
 
     snapshot_columns = st.columns([1.0, 1.25])
     with snapshot_columns[0]:
@@ -5962,22 +7071,25 @@ def render_similarity_explorer() -> None:
     with st.expander(f"{focus_ticker} theme movement summary", expanded=False):
         st.caption(
             "Use this one table when asking what changed. The bar chart above already shows the current mix; "
-            "`change_since_first` is the full-history shift when the selected date is latest. "
+            "the change columns name the exact comparison dates. "
             "Current loading magnitude stays in the bar chart above."
         )
+        movement_summary = theme_change_summary_frame(
+            company_history,
+            all_theme_columns,
+            company_date_index,
+            label_lookup_for_view,
+        )
+        change_column_config = {
+            column: st.column_config.NumberColumn(column.replace("_", " "), format="%+.3f")
+            for column in movement_summary.columns
+            if column.startswith("change_from_")
+        }
         st.dataframe(
-            theme_change_summary_frame(
-                company_history,
-                all_theme_columns,
-                company_date_index,
-                label_lookup_for_view,
-            ),
+            movement_summary,
             width="stretch",
             hide_index=True,
-            column_config={
-                "change_vs_previous": st.column_config.NumberColumn("since previous", format="%+.3f"),
-                "change_since_first": st.column_config.NumberColumn("since first", format="%+.3f"),
-            },
+            column_config=change_column_config,
         )
 
     with st.expander(f"Companies sharing {focus_ticker}'s dominant theme", expanded=False):
@@ -6000,12 +7112,15 @@ def render_similarity_explorer() -> None:
                     "dynamic_label": st.column_config.TextColumn("chart label", width="medium"),
                     "central_filing_description": st.column_config.TextColumn("central filing phrase", width="large"),
                     "evidence_snippet": st.column_config.TextColumn("full context snippet", width="large"),
+                    "section_quality_note": st.column_config.TextColumn("quality note", width="medium"),
                 },
             )
             st.caption(
                 "Stable labels are generated by comparing candidate filing-section fragments to each theme centroid "
                 "in MiniLM embedding space. The charts use compact labels; the evidence table keeps the fuller "
-                "central phrase and context snippet so the label can be audited against actual filing language."
+                "central phrase and context snippet so the label can be audited against actual filing language. "
+                "Cybersecurity-specific language is excluded from business-theme labels because Item 1C is a newer "
+                "rule-driven disclosure."
             )
 
     if selected_view == "financial" and not financial_explanations.empty:
@@ -6064,7 +7179,7 @@ def render_network_explorer() -> None:
     overview["option_label"] = overview.apply(
         lambda row: (
             f"{row['ticker']} - {row['title']} "
-            f"({int(row.get('direct_counterparties', 0) or 0)} links)"
+            f"({int(safe_number_value(row.get('direct_counterparties', 0), 0.0))} links)"
         ),
         axis=1,
     )
@@ -6152,6 +7267,73 @@ def render_network_explorer() -> None:
         )
         st.altair_chart(network_sector_chart(visible_edges), width="stretch")
 
+    with st.expander("Supply-chain disruption simulation", expanded=True):
+        st.caption(
+            "This automatically walks the extracted supplier -> customer graph in both directions. Upstream rows show "
+            "suppliers exposed to the disrupted company as a buyer; downstream rows show customers exposed to the "
+            "disrupted company as a supplier. Ambiguous marketplace, partnership, licensing, and credit-agreement "
+            "snippets are excluded from the supply-chain walk unless the filing has explicit buying, selling, or "
+            "operational reliance language."
+        )
+        impact_direction = "Both directions"
+        max_depth = DEFAULT_NETWORK_DISRUPTION_DEPTH
+        max_edges_per_node = DEFAULT_NETWORK_DISRUPTION_EDGES_PER_COMPANY
+        min_strength = DEFAULT_NETWORK_DISRUPTION_MIN_STRENGTH
+        st.caption(
+            f"Defaults: trace up to {max_depth} connection steps in both directions, follow the "
+            f"{max_edges_per_node} strongest links per company, and require relationship strength >= {min_strength:.2f}."
+        )
+        disruption = simulate_supply_chain_disruption(
+            relationships,
+            metadata,
+            focus_ticker,
+            impact_direction,
+            int(max_depth),
+            int(max_edges_per_node),
+            float(min_strength),
+        )
+        if disruption.empty:
+            st.info(
+                "No supply-chain paths were found with these settings. Try lowering the strength filter or selecting "
+                "Both directions."
+            )
+        else:
+            sim_metrics = st.columns(4)
+            sim_metrics[0].metric("Affected companies", int(disruption["affected_ticker"].nunique()))
+            sim_metrics[1].metric("Direct links", int(disruption[disruption["depth"].eq(1)]["affected_ticker"].nunique()))
+            sim_metrics[2].metric("Sectors touched", int(disruption["affected_sector"].nunique()))
+            sim_metrics[3].metric("Max step reached", int(disruption["depth"].max()))
+
+            sim_charts = st.columns([0.85, 1.25])
+            with sim_charts[0]:
+                st.altair_chart(disruption_depth_chart(disruption), width="stretch")
+            with sim_charts[1]:
+                st.altair_chart(disruption_sector_chart(disruption), width="stretch")
+
+            simulation_columns = [
+                "depth",
+                "impact_direction",
+                "affected_ticker",
+                "affected_company",
+                "affected_sector",
+                "relationship_path",
+                "relationship_direction",
+                "impact_note",
+                "strength",
+                "filing_date",
+                "context_snippet",
+            ]
+            st.dataframe(
+                safe_frame_subset(ensure_columns(disruption, simulation_columns), simulation_columns).head(80),
+                width="stretch",
+                hide_index=True,
+                column_config={
+                    "strength": st.column_config.NumberColumn("strength", format="%.2f"),
+                    "filing_date": st.column_config.DateColumn("filing_date"),
+                    "context_snippet": st.column_config.TextColumn("filing evidence", width="large"),
+                },
+            )
+
     st.markdown("**Relationship Evidence**")
     evidence_columns = [
         "relationship_side",
@@ -6204,156 +7386,158 @@ def render_network_explorer() -> None:
         )
         st.write(
             "The extraction is intentionally evidence-first. A link is useful when the snippet makes economic sense; "
-            "if the snippet looks generic or noisy, treat that edge as weak."
+            "if the snippet looks generic or noisy, treat that edge as weak. The dashboard is intentionally conservative "
+            "about supply-chain direction, so ambiguous commercial links are shown as partner/agreement evidence instead "
+            "of supplier/customer paths."
         )
 
 
 def render_model_comparison() -> None:
     st.subheader("Model Comparison")
     st.caption(
-        "A presentation-style summary of the modeling choices. This tab explains what each model did, "
-        "why the default was chosen, and what the saved results say."
+        "A phase-by-phase explanation of the modeling decisions. Each section says what we used, what we tested "
+        "or intentionally did not use, what the metrics mean, and why the dashboard default is the best current choice."
     )
 
-    st.markdown("### 1. Current Defaults")
-    st.write(
-        "These are the choices used by the main dashboard. The goal is not to claim every default is universally best, "
-        "but to keep the demo honest, interpretable, and reproducible."
+    summary = artifact_metric_summary(
+        str(default_historical_text_dir() / "historical_section_embeddings.parquet"),
+        str(REPO_ROOT / "data" / "processed" / "features" / "text_historical.parquet"),
+        str(VALUATION_FEATURE_PATH),
+        str(GROWTH_FEATURE_PATH),
+        str(RELATIONSHIPS_PATH),
     )
-    st.dataframe(model_decision_frame(), width="stretch", hide_index=True)
-
-    st.markdown("### 2. Embedding Models")
     experiments = compact_experiment_comparison(load_report_csv("experiment_comparison.csv"))
     ablation = load_report_csv("feature_ablation_summary.csv")
-    if experiments.empty:
-        st.info("No `report/experiment_comparison.csv` file found yet.")
-    else:
-        best_nmi = experiments.dropna(subset=["clustering_nmi"]).head(1)
-        best_peer = experiments.dropna(subset=["peer_corr_diff"]).sort_values("peer_corr_diff", ascending=False).head(1)
-        covariance_rows = experiments.dropna(subset=["cov_embedding_annual_variance", "cov_ledoit_wolf_annual_variance"])
-        metric_cols = st.columns(4)
-        if not best_nmi.empty:
-            metric_cols[0].metric(
-                "Best semantic NMI",
-                f"{float(best_nmi.iloc[0]['clustering_nmi']):.3f}",
-                str(best_nmi.iloc[0]["experiment_name"]),
-            )
-        if not best_peer.empty:
-            metric_cols[1].metric(
-                "Best peer gap",
-                f"{float(best_peer.iloc[0]['peer_corr_diff']):.3f}",
-                str(best_peer.iloc[0]["experiment_name"]),
-            )
-        if not covariance_rows.empty:
-            row = covariance_rows.iloc[0]
-            diff = float(row["cov_embedding_annual_variance"] - row["cov_ledoit_wolf_annual_variance"])
-            metric_cols[2].metric("Embedding vs LW variance", f"{diff:+.5f}", str(row["experiment_name"]))
-        metric_cols[3].metric("Experiments compared", f"{len(experiments):,}")
-        st.write(
-            "Headline reading: text embeddings gave the clearest business structure, while the price-only behavioral "
-            "view was too noisy for the main dashboard. The full-universe peer and covariance tests did not beat the "
-            "strongest benchmarks, which became part of the project's thesis: different similarity views answer "
-            "different questions, and some views are better used as diagnostics than presentation features."
-        )
-        st.dataframe(
-            experiments.head(8),
-            width="stretch",
-            hide_index=True,
-            column_config={
-                "final_reconstruction_mse": st.column_config.NumberColumn("recon_mse", format="%.4f"),
-                "clustering_nmi": st.column_config.NumberColumn("clustering_nmi", format="%.3f"),
-                "clustering_ari": st.column_config.NumberColumn("clustering_ari", format="%.3f"),
-                "peer_corr_diff": st.column_config.NumberColumn("peer_corr_diff", format="%.3f"),
-                "cov_embedding_annual_variance": st.column_config.NumberColumn("embedding_cov_var", format="%.5f"),
-                "cov_ledoit_wolf_annual_variance": st.column_config.NumberColumn("lw_cov_var", format="%.5f"),
-            },
-        )
+    sector_ae = compact_sector_autoencoder_comparison(load_report_csv("sector_autoencoder_outlook.csv"))
+    embedding_corr = load_report_csv("sector_autoencoder_embedding_correlations.csv")
 
     if not ablation.empty:
-        st.markdown("**Feature ablation takeaway**")
-        best_ablation = ablation.sort_values("clustering_nmi", ascending=False, na_position="last").head(1)
-        if not best_ablation.empty:
-            row = best_ablation.iloc[0]
-            st.write(
-                f"The strongest GICS-alignment ablation was **{row['label']}** "
-                f"(NMI {float(row['clustering_nmi']):.3f}, ARI {float(row['clustering_ari']):.3f}). "
-                "That supports the interpretation that filing text carries most of the semantic company-identity signal."
-            )
+        best_semantic = ablation.sort_values("clustering_nmi", ascending=False, na_position="last").head(1)
+    else:
+        best_semantic = experiments.sort_values("clustering_nmi", ascending=False, na_position="last").head(1)
+
+    headline = st.columns(4)
+    if not best_semantic.empty:
+        row = best_semantic.iloc[0]
+        label = row.get("label", row.get("experiment_name", "best text model"))
+        headline[0].metric("Best semantic NMI", f"{float(row.get('clustering_nmi', np.nan)):.3f}", str(label))
+    headline[1].metric("Historical text rows", f"{int(summary.get('historical_text_rows', 0)):,}")
+    if not sector_ae.empty:
+        row = sector_ae.sort_values("ending_capital", ascending=False, na_position="last").iloc[0]
+        headline[2].metric("Best sector sim", f"${float(row['ending_capital']):,.0f}", str(row["feature_set"]))
+    headline[3].metric("Default predictor", "Ridge", "transparent baseline")
+
+    st.info(
+        "Main read: MiniLM filing text is the best source for semantic company identity; GMM is kept because mixed "
+        "memberships are more realistic than one hard label; Ridge is the default sector predictor because it gives "
+        "a positive walk-forward ranking signal without hiding the logic in a flexible black box."
+    )
+
+    overview_tab, extraction_tab, feature_tab, embedding_tab, clustering_tab, prediction_tab, risk_tab = st.tabs(
+        ["Overview", "Data Extraction", "Cleaning / Features", "Embedding", "Clustering", "Prediction", "Risk / Covariance"]
+    )
+
+    with overview_tab:
+        st.markdown("### Pipeline Defaults")
+        st.write(
+            "This is the compact version of the model stack. The detailed tabs below explain the alternatives and metrics."
+        )
+        st.dataframe(model_decision_frame(), width="stretch", hide_index=True)
+        st.markdown("### Metric Dictionary")
+        st.dataframe(model_metric_dictionary_frame(), width="stretch", hide_index=True)
+
+    with extraction_tab:
+        st.markdown("### Data Extraction Phase")
+        st.write(
+            "This phase decides what gets pulled from SEC/market sources and how much raw information we keep. "
+            "The important design choice was streaming historical filings into compact section artifacts instead of "
+            "only using the latest filing or storing every full filing as dashboard input."
+        )
+        st.dataframe(extraction_model_comparison_frame(summary), width="stretch", hide_index=True)
+        st.success(
+            "Why the current method wins: it gives us real historical movement while keeping the storage and dashboard fast enough."
+        )
+
+    with feature_tab:
+        st.markdown("### Cleaning And Feature Construction")
+        st.write(
+            "This is where raw records become monthly, point-in-time model inputs. The feature layer is deliberately "
+            "split into interpretable views: business text, valuation/growth financials, price behavior, and relationships."
+        )
+        st.dataframe(cleaning_feature_model_frame(summary), width="stretch", hide_index=True)
+        st.write(
+            "The key negative result here is useful: raw 8-K item counts were weak by themselves, so we should not sell "
+            "them as a major source of semantic structure unless we later add stronger 8-K content embeddings."
+        )
+
+    with embedding_tab:
+        st.markdown("### Embedding Models")
+        st.write(
+            "Embeddings turn high-dimensional feature rows into compact company vectors. We evaluate them by whether "
+            "they recover meaningful structure, not by pretending they directly forecast stock returns."
+        )
+        embedding_rows = embedding_model_comparison_frame(experiments, ablation)
         st.dataframe(
-            safe_frame_subset(
-                ensure_columns(
-                    ablation,
-                    ["label", "clustering_nmi", "clustering_ari", "peer_corr_diff", "features_enabled"],
-                ),
-                ["label", "clustering_nmi", "clustering_ari", "peer_corr_diff", "features_enabled"],
-            ),
+            embedding_rows,
             width="stretch",
             hide_index=True,
             column_config={
                 "clustering_nmi": st.column_config.NumberColumn("NMI", format="%.3f"),
                 "clustering_ari": st.column_config.NumberColumn("ARI", format="%.3f"),
-                "peer_corr_diff": st.column_config.NumberColumn("peer gap", format="%.3f"),
+                "peer_corr_diff": st.column_config.NumberColumn("peer gap", format="%+.3f"),
+                "reconstruction_mse": st.column_config.NumberColumn("recon MSE", format="%.4f"),
             },
         )
+        st.write(
+            "Why the current business embedding wins: the MiniLM text model has the strongest GICS-alignment metric "
+            "among simple ablations, and it produces peer groups that are interpretable in the dashboard. Price-only "
+            "embeddings are useful for behavior, but noisier as a classroom visualization."
+        )
+        if not experiments.empty:
+            with st.expander("Raw experiment comparison table", expanded=False):
+                st.dataframe(
+                    experiments.head(10),
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "final_reconstruction_mse": st.column_config.NumberColumn("recon_mse", format="%.4f"),
+                        "clustering_nmi": st.column_config.NumberColumn("NMI", format="%.3f"),
+                        "clustering_ari": st.column_config.NumberColumn("ARI", format="%.3f"),
+                        "peer_corr_diff": st.column_config.NumberColumn("peer gap", format="%+.3f"),
+                    },
+                )
 
-    st.markdown("### 3. Clustering Choice")
-    st.write(
-        "The dashboard uses **Gaussian Mixture Models** for theme membership because public companies rarely belong to "
-        "one clean category. A company can be partly cloud infrastructure, partly advertising, partly AI platform, and "
-        "partly enterprise software. Soft GMM loadings preserve that mixed identity."
-    )
-    clustering_summary = pd.DataFrame(
-        [
-            {
-                "method": "Gaussian Mixture Model",
-                "role": "Default theme model",
-                "what_it_outputs": "Soft probabilities across themes",
-                "why_it_matters": "Matches the idea that companies can belong to several economic themes at once.",
-            },
-            {
-                "method": "k-means",
-                "role": "Simple classroom baseline",
-                "what_it_outputs": "One hard label per company",
-                "why_it_matters": "Easy to explain, but too rigid for mixed business models.",
-            },
-            {
-                "method": "DBSCAN",
-                "role": "Outlier/density diagnostic",
-                "what_it_outputs": "Dense clusters plus noise points",
-                "why_it_matters": "Useful for anomaly discovery, but unstable for high-dimensional market embeddings.",
-            },
-        ]
-    )
-    st.dataframe(clustering_summary, width="stretch", hide_index=True)
-
-    st.markdown("### 4. Sector / Group Prediction Models")
-    st.write(
-        "The prediction task is walk-forward: at each date, use only information available up to that date to predict "
-        "future group excess return. Ridge regression remains the default because the sample is small, features are "
-        "correlated, and interpretability matters more than raw flexibility."
-    )
-    sector_ae = compact_sector_autoencoder_comparison(load_report_csv("sector_autoencoder_outlook.csv"))
-    embedding_corr = load_report_csv("sector_autoencoder_embedding_correlations.csv")
-    if sector_ae.empty:
-        st.info("No `report/sector_autoencoder_outlook.csv` file found yet.")
-    else:
-        best_sector = sector_ae.sort_values("ending_capital", ascending=False, na_position="last").iloc[0]
-        raw_baseline = sector_ae[sector_ae["feature_set"].eq("raw_baseline")]
-        metric_cols = st.columns(4)
-        metric_cols[0].metric("Best sector feature set", str(best_sector["feature_set"]))
-        metric_cols[1].metric("Ending capital", f"${float(best_sector['ending_capital']):,.0f}")
-        metric_cols[2].metric("SPY benchmark", f"${float(best_sector['spy_ending_capital']):,.0f}")
-        metric_cols[3].metric("Max drawdown", f"{float(best_sector['max_drawdown']):.1%}")
-        if not raw_baseline.empty:
-            raw = raw_baseline.iloc[0]
-            st.write(
-                f"The raw structured-feature baseline ended at USD {float(raw['ending_capital']):,.0f}. "
-                f"The best diagnostic sector-autoencoder feature set ended at USD {float(best_sector['ending_capital']):,.0f}. "
-                "This suggests the numerical embedding can add useful structure, but this result should be presented "
-                "as a backtest finding with survivorship and benchmark caveats, not as a trading strategy."
-            )
+    with clustering_tab:
+        st.markdown("### Similarity Clustering")
+        st.write(
+            "After embeddings are built, clustering turns continuous company vectors into themes. The important choice "
+            "is not just accuracy against GICS; it is whether the output is useful for interpreting mixed businesses."
+        )
         st.dataframe(
-            sector_ae,
+            clustering_model_comparison_frame(),
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "noise_share": st.column_config.NumberColumn("noise", format="percent"),
+                "largest_group_share": st.column_config.NumberColumn("largest group", format="percent"),
+                "nmi_vs_gics": st.column_config.NumberColumn("NMI vs GICS", format="%.3f"),
+                "ari_vs_gics": st.column_config.NumberColumn("ARI vs GICS", format="%.3f"),
+            },
+        )
+        st.success(
+            "Why GMM wins: k-means is slightly competitive on hard ARI, but GMM gives the soft theme loadings that make "
+            "Amazon-style mixed businesses explainable. DBSCAN mostly collapses the market into one dense cluster."
+        )
+
+    with prediction_tab:
+        st.markdown("### Sector / Group Prediction")
+        st.write(
+            "This phase asks whether group-level features can rank future excess returns in a walk-forward setup. "
+            "It is historical and point-in-time: every prediction date trains only on completed prior outcomes."
+        )
+        st.markdown("**Predictor model comparison**")
+        st.dataframe(
+            sector_predictor_model_comparison_frame(),
             width="stretch",
             hide_index=True,
             column_config={
@@ -6361,30 +7545,72 @@ def render_model_comparison() -> None:
                 "mean_top_minus_bottom": st.column_config.NumberColumn("top-bottom", format="percent"),
                 "top_sector_hit_rate": st.column_config.NumberColumn("hit rate", format="percent"),
                 "ending_capital": st.column_config.NumberColumn("ending capital", format="$%.0f"),
-                "spy_ending_capital": st.column_config.NumberColumn("SPY capital", format="$%.0f"),
-                "excess_total_return_vs_spy": st.column_config.NumberColumn("excess vs SPY", format="percent"),
-                "max_drawdown": st.column_config.NumberColumn("max drawdown", format="percent"),
+                "excess_return_vs_sp500": st.column_config.NumberColumn("excess vs SPY", format="percent"),
             },
         )
-
-    if not embedding_corr.empty:
-        with st.expander("Numerical embedding feature correlations", expanded=False):
-            st.write(
-                "These correlations were used as a sanity check for which sector-state embedding dimensions carried "
-                "predictive information."
-            )
+        st.write(
+            "Why Ridge is still the default: Huber and Gradient Boosting can show larger capital curves in this sample, "
+            "but Ridge has a cleaner positive rank signal and is easier to explain, audit, and defend in class."
+        )
+        if sector_ae.empty:
+            st.info("No `report/sector_autoencoder_outlook.csv` file found yet.")
+        else:
+            st.markdown("**Feature-set comparison for the sector predictor**")
             st.dataframe(
-                embedding_corr,
+                sector_ae,
                 width="stretch",
                 hide_index=True,
                 column_config={
-                    "pearson_corr": st.column_config.NumberColumn("pearson", format="%.3f"),
-                    "spearman_corr": st.column_config.NumberColumn("spearman", format="%.3f"),
-                    "abs_spearman_corr": st.column_config.NumberColumn("|spearman|", format="%.3f"),
+                    "mean_rank_ic": st.column_config.NumberColumn("rank IC", format="%.3f"),
+                    "mean_top_minus_bottom": st.column_config.NumberColumn("top-bottom", format="percent"),
+                    "top_sector_hit_rate": st.column_config.NumberColumn("hit rate", format="percent"),
+                    "ending_capital": st.column_config.NumberColumn("ending capital", format="$%.0f"),
+                    "spy_ending_capital": st.column_config.NumberColumn("SPY capital", format="$%.0f"),
+                    "excess_total_return_vs_spy": st.column_config.NumberColumn("excess vs SPY", format="percent"),
+                    "max_drawdown": st.column_config.NumberColumn("max drawdown", format="percent"),
                 },
             )
 
-    st.markdown("### 5. Final Caveats")
+        if not embedding_corr.empty:
+            with st.expander("Numerical embedding feature correlations", expanded=False):
+                st.write(
+                    "These correlations were used as a sanity check for which sector-state embedding dimensions carried "
+                    "predictive information."
+                )
+                st.dataframe(
+                    embedding_corr,
+                    width="stretch",
+                    hide_index=True,
+                    column_config={
+                        "pearson_corr": st.column_config.NumberColumn("pearson", format="%.3f"),
+                        "spearman_corr": st.column_config.NumberColumn("spearman", format="%.3f"),
+                        "abs_spearman_corr": st.column_config.NumberColumn("|spearman|", format="%.3f"),
+                    },
+                )
+
+    with risk_tab:
+        st.markdown("### Covariance / Risk Modeling")
+        st.write(
+            "This phase tests whether embeddings improve portfolio covariance estimates. The honest answer is mostly no "
+            "for the full universe: Ledoit-Wolf remains the benchmark. That is still a valuable negative result."
+        )
+        st.dataframe(
+            covariance_model_comparison_frame(experiments),
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "annual_variance": st.column_config.NumberColumn("annual variance", format="%.5f"),
+                "sharpe": st.column_config.NumberColumn("Sharpe", format="%.3f"),
+                "max_drawdown": st.column_config.NumberColumn("max drawdown", format="percent"),
+            },
+        )
+        st.warning(
+            "Why Ledoit-Wolf wins: covariance estimation is a specialized statistical problem. Our embeddings capture "
+            "business similarity, but direct embedding-based covariance did not beat a mature shrinkage estimator across "
+            "the full universe. The next sensible path is hybrid routing, not replacing Ledoit-Wolf."
+        )
+
+    st.markdown("### Caveats To Say Out Loud")
     caveats = pd.DataFrame(
         [
             {
@@ -6397,19 +7623,19 @@ def render_model_comparison() -> None:
             },
             {
                 "topic": "S&P membership",
-                "caveat": "The dashboard now favors historical membership data, but older deleted constituents can still have incomplete filings/prices.",
+                "caveat": "The dashboard favors historical membership data, but deleted constituents can still have incomplete filings/prices.",
             },
             {
                 "topic": "Theme labels",
-                "caveat": "Theme labels are generated dynamically from representative filing fragments or financial feature profiles; they are aids for interpretation, not supervised truth.",
+                "caveat": "Theme labels are dynamically generated aids for interpretation, not supervised truth.",
             },
         ]
     )
     st.dataframe(caveats, width="stretch", hide_index=True)
 
 
-similarity_tab, network_tab, sector_tab, comparison_tab = st.tabs(
-    ["Similarity Explorer", "Network", "Sector Outlook", "Model Comparison"]
+similarity_tab, network_tab, sector_tab = st.tabs(
+    ["Similarity Explorer", "Network", "Sector Outlook"]
 )
 
 with similarity_tab:
@@ -6420,6 +7646,3 @@ with network_tab:
 
 with sector_tab:
     render_sector_outlook()
-
-with comparison_tab:
-    render_model_comparison()

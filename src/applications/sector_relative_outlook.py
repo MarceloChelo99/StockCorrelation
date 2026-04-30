@@ -159,11 +159,7 @@ def sector_outlook_backtest(
     metrics["model_type"] = model_type
     metrics["group_mode"] = group_mode
     metrics["membership_mode"] = membership_mode
-    metrics["backtest_validity"] = (
-        "diagnostic_current_roster"
-        if membership_mode == "current"
-        else "covered_historical_universe"
-    )
+    metrics["backtest_validity"] = backtest_validity_label(membership_mode, group_mode)
     metrics["theme_assignment"] = resolved_theme_assignment
     metrics["include_embedding_features"] = bool(include_embedding_features)
     metrics["min_theme_effective_members"] = float(min_theme_effective_members)
@@ -176,6 +172,19 @@ def sector_outlook_backtest(
         metrics=metrics,
         coefficients=coefficients,
     )
+
+
+def backtest_validity_label(membership_mode: str, group_mode: str = "gics") -> str:
+    """Return an explicit validity label for the selected universe construction."""
+    membership_mode = normalized_membership_mode(membership_mode)
+    group_mode = normalized_group_mode(group_mode)
+    if membership_mode == "current":
+        return "diagnostic_current_roster_survivorship_biased"
+    if membership_mode == "date_added":
+        return "date_added_current_roster_survivorship_limited"
+    if group_mode == "theme":
+        return "historical_covered_theme_universe_backtest"
+    return "historical_constituent_backtest"
 
 
 def sector_and_market_returns(
@@ -1025,7 +1034,7 @@ def latest_sector_scores(
     if not feature_columns or panel.empty:
         return pd.DataFrame()
     model_type = normalized_model_type(model_type)
-    latest_date = pd.Timestamp(panel["date"].max())
+    latest_date = latest_complete_scoring_date(panel)
     train = panel[
         panel["is_horizon_complete"].fillna(False)
         & (panel["target_end_date"] < latest_date)
@@ -1043,6 +1052,48 @@ def latest_sector_scores(
     latest["training_latest_target_end_date"] = pd.Timestamp(train["target_end_date"].max())
     latest["model_type"] = model_type
     return latest.sort_values("prediction_rank").reset_index(drop=True)
+
+
+def latest_complete_scoring_date(panel: pd.DataFrame) -> pd.Timestamp:
+    """Return the latest date with a complete-enough group cross-section.
+
+    Price and membership data can produce a trailing partial date where only one
+    group has a row. Scoring that date makes the dashboard look like the model
+    only predicts one sector. Use the most recent date whose group count is close
+    to the historical maximum instead.
+    """
+    if panel.empty or "date" not in panel.columns:
+        raise ValueError("Cannot select a latest scoring date from an empty panel.")
+
+    group_column = "gics_sector"
+    if group_column not in panel.columns:
+        candidates = [column for column in ["group_label", "group_id"] if column in panel.columns]
+        if not candidates:
+            raise ValueError("Sector outlook panel must include a group identifier column.")
+        group_column = candidates[0]
+
+    dated = panel.dropna(subset=["date", group_column]).copy()
+    if dated.empty:
+        raise ValueError("Sector outlook panel has no dated group rows.")
+    dated["date"] = pd.to_datetime(dated["date"], errors="coerce")
+    dated = dated.dropna(subset=["date"])
+    counts = dated.groupby("date")[group_column].nunique().sort_index()
+    if counts.empty:
+        raise ValueError("Sector outlook panel has no usable group counts.")
+
+    max_groups = int(counts.max())
+    if max_groups <= 1:
+        return pd.Timestamp(counts.index.max())
+
+    if max_groups <= 12:
+        minimum_groups = max_groups
+    else:
+        minimum_groups = max(2, int(np.ceil(max_groups * 0.8)))
+
+    eligible = counts[counts >= minimum_groups]
+    if eligible.empty:
+        return pd.Timestamp(counts.index.max())
+    return pd.Timestamp(eligible.index.max())
 
 
 def fit_sector_model(
